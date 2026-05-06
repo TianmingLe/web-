@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type DoorPhase = 'LOCKED' | 'OPENING' | 'OPEN' | 'NORMAL_SCROLL'
 
@@ -13,7 +12,7 @@ interface DoorState {
   reset: () => void
 }
 
-const STORAGE_KEY = 'door_opened'
+const STORAGE_KEY = 'door_opened_v2'
 
 function getInitialPhase(): DoorPhase {
   if (typeof window === 'undefined') return 'LOCKED'
@@ -26,51 +25,43 @@ function getInitialPhase(): DoorPhase {
   return 'LOCKED'
 }
 
-export const useDoorState = create<DoorState>()(
-  persist(
-    (set) => ({
-      phase: getInitialPhase(),
-      progress: 0,
-      startOpening: () =>
-        set((state) => {
-          if (state.phase === 'LOCKED') {
-            return { phase: 'OPENING', progress: 0 }
-          }
-          return state
-        }),
-      setProgress: (progress) =>
-        set(() => ({
-          progress: Math.min(1, Math.max(0, progress)),
-        })),
-      finishOpening: () =>
-        set(() => {
-          try {
-            localStorage.setItem(STORAGE_KEY, 'true')
-          } catch {
-            // ignore
-          }
-          return { phase: 'OPEN', progress: 1 }
-        }),
-      enterNormalScroll: () =>
-        set((state) => {
-          if (state.phase === 'OPEN') {
-            return { phase: 'NORMAL_SCROLL' }
-          }
-          return state
-        }),
-      reset: () =>
-        set(() => {
-          try {
-            localStorage.removeItem(STORAGE_KEY)
-          } catch {
-            // ignore
-          }
-          return { phase: 'LOCKED', progress: 0 }
-        }),
+export const useDoorState = create<DoorState>((set) => ({
+  phase: getInitialPhase(),
+  progress: 0,
+  startOpening: () =>
+    set((state) => {
+      if (state.phase === 'LOCKED') {
+        return { phase: 'OPENING', progress: 0 }
+      }
+      return state
     }),
-    {
-      name: 'door-state',
-      storage: createJSONStorage(() => localStorage),
-    }
-  )
-)
+  setProgress: (progress) =>
+    set(() => ({
+      progress: Math.min(1, Math.max(0, progress)),
+    })),
+  finishOpening: () =>
+    set(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, 'true')
+      } catch {
+        // ignore
+      }
+      return { phase: 'OPEN', progress: 1 }
+    }),
+  enterNormalScroll: () =>
+    set((state) => {
+      if (state.phase === 'OPEN') {
+        return { phase: 'NORMAL_SCROLL' }
+      }
+      return state
+    }),
+  reset: () =>
+    set(() => {
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // ignore
+      }
+      return { phase: 'LOCKED', progress: 0 }
+    }),
+}))

@@ -25,29 +25,35 @@ function App() {
   }, [])
 
   const showContent = phase === 'OPEN' || phase === 'NORMAL_SCROLL'
-  const isDoorVisible = phase !== 'NORMAL_SCROLL'
+  const showDoor = phase === 'LOCKED' || phase === 'OPENING' || phase === 'OPEN'
+  const showLockedButton = phase === 'LOCKED'
 
   return (
     <div className="relative min-h-screen bg-base">
-      {showContent && (
-        <>
-          <ParticleCanvas />
-          <Nav />
-          <main className="relative z-10">
-            <Home />
-            <Energy />
-            <AI />
-            <Media />
-            <Thought />
-            <Other />
-          </main>
-          <MusicDock />
-        </>
-      )}
+      {/* 内容区域 - 门开启后显示 */}
+      <div
+        className={`transition-opacity duration-1000 ${
+          showContent ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <ParticleCanvas />
+        <Nav />
+        <main className="relative z-10">
+          <Home />
+          <Energy />
+          <AI />
+          <Media />
+          <Thought />
+          <Other />
+        </main>
+        <MusicDock />
+      </div>
 
-      {isDoorVisible && <Door />}
+      {/* 门扉覆盖层 */}
+      {showDoor && <Door />}
 
-      {phase === 'LOCKED' && (
+      {/* 锁定状态下的开启按钮 */}
+      {showLockedButton && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <button
             onClick={startOpening}

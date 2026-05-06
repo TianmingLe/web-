@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ChevronDown, Zap, Brain, Code, Rocket } from 'lucide-react'
 import CoverLayout from '@layouts/CoverLayout'
-import ParticleCanvas from '@components/ParticleCanvas'
 
 const traits = [
   { icon: <Zap size={24} />, label: '能源工程' },
@@ -53,10 +52,9 @@ export default function Home() {
 
   return (
     <CoverLayout id="home">
-      <ParticleCanvas />
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center px-6"
+        className="relative z-10 flex flex-col items-center justify-center text-center px-6 min-h-screen"
       >
         <h1 className="home-name text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
           胡亚伟

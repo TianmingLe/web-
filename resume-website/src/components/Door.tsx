@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import { gsap } from 'gsap'
 import { useDoorState, type DoorPhase } from '@store/doorState'
 import { prefersReducedMotion } from '@utils/reducedMotionCheck'
@@ -133,6 +133,7 @@ export default function Door() {
   const rightInnerRef = useRef<HTMLDivElement>(null)
   const tlRef = useRef<gsap.core.Timeline | null>(null)
   const phaseRef = useRef<DoorPhase>(phase)
+  const [shouldRender, setShouldRender] = useState(phase !== 'NORMAL_SCROLL')
 
   useEffect(() => {
     phaseRef.current = phase
@@ -157,11 +158,6 @@ export default function Door() {
 
     const tl = gsap.timeline({
       paused: true,
-      onComplete: () => {
-        if (containerRef.current) {
-          containerRef.current.style.pointerEvents = 'none'
-        }
-      },
     })
 
     tl.to(
@@ -219,23 +215,29 @@ export default function Door() {
     }
   }, [progress, phase])
 
+  // 当门完全打开后，延迟卸载组件
   useEffect(() => {
-    if (phase === 'OPEN' || phase === 'NORMAL_SCROLL') {
-      if (containerRef.current) {
-        containerRef.current.style.pointerEvents = 'none'
-      }
+    if (phase === 'OPEN') {
+      const timer = setTimeout(() => {
+        setShouldRender(false)
+      }, TOTAL_DURATION * 1000 + 200)
+      return () => clearTimeout(timer)
     }
   }, [phase])
 
-  const isVisible = phase !== 'NORMAL_SCROLL'
-
-  if (!isVisible) return null
+  // 如果已经卸载，不再渲染
+  if (!shouldRender) return null
 
   return (
     <div
       ref={containerRef}
       className="fixed inset-0 z-[100]"
-      style={{ perspective: '1200px' }}
+      style={{ 
+        perspective: '1200px',
+        pointerEvents: phase === 'OPEN' ? 'none' : 'auto',
+        opacity: phase === 'OPEN' ? 0 : 1,
+        transition: 'opacity 0.5s ease',
+      }}
       aria-hidden="true"
     >
       <div
