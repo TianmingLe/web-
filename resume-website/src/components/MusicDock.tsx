@@ -56,19 +56,26 @@ export default function MusicDock() {
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
     const handleLoadedMetadata = () => setDuration(audio.duration)
     const handleEnded = () => nextTrack()
+    const handleError = () => {
+      console.warn('Audio failed to load')
+      setPlaying(false)
+    }
 
     audio.addEventListener('timeupdate', handleTimeUpdate)
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
     audio.addEventListener('ended', handleEnded)
+    audio.addEventListener('error', handleError)
 
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate)
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
       audio.removeEventListener('ended', handleEnded)
+      audio.removeEventListener('error', handleError)
       audio.pause()
+      audio.src = ''
       audioRef.current = null
     }
-  }, [setCurrentTime, setDuration, nextTrack])
+  }, [setCurrentTime, setDuration, nextTrack, setPlaying])
 
   useEffect(() => {
     if (!audioRef.current || !currentTrack) return
@@ -233,7 +240,16 @@ export default function MusicDock() {
                 <SkipBack size={14} />
               </button>
 
-              <div className="flex-1 relative group cursor-pointer" onClick={handleProgressClick}>
+              <div
+                className="flex-1 relative group cursor-pointer"
+                onClick={handleProgressClick}
+                role="slider"
+                aria-label="播放进度"
+                aria-valuemin={0}
+                aria-valuemax={Math.round(duration || currentTrack?.duration || 0)}
+                aria-valuenow={Math.round(currentTime)}
+                tabIndex={0}
+              >
                 <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-100"

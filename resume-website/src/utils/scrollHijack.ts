@@ -36,7 +36,6 @@ export function createScrollHijack(options: ScrollHijackOptions) {
 
   let accumulated = 0
   let isActive = true
-  let rafId: number | null = null
   let lastTouchY = 0
 
   const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
@@ -119,10 +118,6 @@ export function createScrollHijack(options: ScrollHijackOptions) {
 
   function detach() {
     isActive = false
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId)
-      rafId = null
-    }
     window.removeEventListener('wheel', handleWheel)
     window.removeEventListener('touchstart', handleTouchStart)
     window.removeEventListener('touchmove', handleTouchMove)

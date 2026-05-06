@@ -48,7 +48,9 @@ export default function SectionLayout({
       )
     }, section)
 
-    return () => ctx.revert()
+    return () => {
+      ctx.revert()
+    }
   }, [])
 
   return (

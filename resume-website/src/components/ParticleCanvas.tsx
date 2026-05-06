@@ -62,9 +62,19 @@ export default function ParticleCanvas() {
     const handleMouseLeave = () => {
       mouseRef.current = { x: -1000, y: -1000 }
     }
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        mouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      }
+    }
+    const handleTouchEnd = () => {
+      mouseRef.current = { x: -1000, y: -1000 }
+    }
 
     window.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
+    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    window.addEventListener('touchend', handleTouchEnd)
 
     const animate = () => {
       frameCountRef.current++
@@ -143,6 +153,8 @@ export default function ParticleCanvas() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleTouchEnd)
       cancelAnimationFrame(rafRef.current)
     }
   }, [])

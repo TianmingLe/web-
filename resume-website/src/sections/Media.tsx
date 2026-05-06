@@ -4,7 +4,7 @@ import GlassCard from '@components/GlassCard'
 import mediaData from '@data/media.json'
 
 const platformIcons: Record<string, React.ReactNode> = {
-  B站: <Play size={20} />,
+  哔哩哔哩: <Play size={20} />,
   抖音: <Play size={20} />,
   小红书: <FileText size={20} />,
 }

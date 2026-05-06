@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavState } from '@store/navActive'
 import { useDoorState } from '@store/doorState'
+import navData from '@data/nav.json'
 
 interface NavItem {
   id: string
@@ -23,6 +24,9 @@ export default function Nav() {
   const { phase } = useDoorState()
 
   const isVisible = phase === 'OPEN' || phase === 'NORMAL_SCROLL'
+
+  // nav.json 数据已加载，i18n 扩展预留
+  void navData
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,16 +73,19 @@ export default function Nav() {
           ? 'bg-base/70 backdrop-blur-xl border-b border-white/10'
           : 'bg-transparent'
       }`}
+      aria-label="主导航"
     >
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4">
-        <ul className="flex items-center justify-center gap-1 md:gap-2">
+        <ul className="flex items-center justify-center gap-1 md:gap-2" role="menubar">
           {navItems.map((item) => {
             const isActive = activeId === item.id
             return (
-              <li key={item.id}>
+              <li key={item.id} role="none">
                 <button
                   onClick={() => handleNavigate(item.id)}
                   className="group relative flex items-center gap-1.5 px-2 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300"
+                  role="menuitem"
+                  aria-current={isActive ? 'page' : undefined}
                 >
                   {/* 状态光点 */}
                   <span
@@ -87,6 +94,7 @@ export default function Nav() {
                         ? 'bg-primary shadow-[0_0_6px_#38bdf8] scale-100'
                         : 'bg-white/20 scale-75 group-hover:bg-white/40'
                     }`}
+                    aria-hidden="true"
                   />
 
                   {/* 标签文字 */}
@@ -108,11 +116,12 @@ export default function Nav() {
                         ? 'w-full opacity-100'
                         : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-60'
                     }`}
+                    aria-hidden="true"
                   />
 
                   {/* 活跃发光 */}
                   {isActive && (
-                    <span className="absolute inset-0 rounded-full bg-primary/5 border border-primary/10" />
+                    <span className="absolute inset-0 rounded-full bg-primary/5 border border-primary/10" aria-hidden="true" />
                   )}
                 </button>
               </li>

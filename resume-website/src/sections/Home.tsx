@@ -51,7 +51,7 @@ export default function Home() {
   }, [])
 
   return (
-    <CoverLayout id="home">
+    <CoverLayout id="home" aria-label="首页封面">
       <div
         ref={contentRef}
         className="relative z-10 flex flex-col items-center justify-center text-center px-6 min-h-screen"
@@ -68,8 +68,9 @@ export default function Home() {
             <div
               key={index}
               className="flex flex-col items-center gap-3 px-6 py-4 glass-card"
+              role="listitem"
             >
-              <span className="text-primary">{trait.icon}</span>
+              <span className="text-primary" aria-hidden="true">{trait.icon}</span>
               <span className="text-sm text-gray-300 font-medium">
                 {trait.label}
               </span>
@@ -80,7 +81,7 @@ export default function Home() {
         <div ref={scrollHintRef} className="home-scroll absolute bottom-12">
           <div className="flex flex-col items-center gap-2 text-gray-400">
             <span className="text-xs tracking-widest uppercase">向下滚动</span>
-            <ChevronDown size={20} className="text-primary" />
+            <ChevronDown size={20} className="text-primary" aria-hidden="true" />
           </div>
         </div>
       </div>
