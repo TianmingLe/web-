@@ -92,6 +92,13 @@
     background-clip: text;
   }
 
+  .text-gradient-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #00e5ff 50%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   .gradient-border {
     position: relative;
   }
@@ -107,6 +114,101 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .hero-glow-cyan {
+    background: radial-gradient(circle, #00e5ff 0%, transparent 70%);
+  }
+
+  .hero-glow-purple {
+    background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+  }
+
+  .hero-glow-blue {
+    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  }
+
+  .section-divider {
+    position: relative;
+  }
+
+  .section-divider::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.3), transparent);
+  }
+
+  .evolution-line {
+    position: relative;
+  }
+
+  .evolution-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #00e5ff, #7c3aed);
+    transform: translateX(-50%);
+  }
+
+  .feature-image-frame {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .feature-image-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, transparent 60%, rgba(10, 15, 26, 0.8) 100%);
+    pointer-events: none;
+  }
+
+  .tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
+  }
+
+  .tag-pill:hover {
+    background: rgba(0, 229, 255, 0.1);
+    border-color: rgba(0, 229, 255, 0.3);
+    color: #00e5ff;
+  }
+
+  .tag-pill-active {
+    background: rgba(0, 229, 255, 0.15);
+    border-color: rgba(0, 229, 255, 0.4);
+    color: #00e5ff;
   }
 }
 

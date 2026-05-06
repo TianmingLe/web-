@@ -1,12 +1,13 @@
 import { Play, FileText, Target, Lightbulb, Clock, MessageCircle, CheckCircle, Wrench, TrendingUp, BookOpen, ListChecks } from 'lucide-react'
 import SectionLayout from '@layouts/SectionLayout'
 import GlassCard from '@components/GlassCard'
+import FeatureSection from '@components/FeatureSection'
 import mediaData from '@data/media.json'
 
 const platformIcons: Record<string, React.ReactNode> = {
-  哔哩哔哩: <Play size={20} />,
-  抖音: <Play size={20} />,
-  小红书: <FileText size={20} />,
+  '哔哩哔哩': <Play size={20} />,
+  '抖音': <Play size={20} />,
+  '小红书': <FileText size={20} />,
 }
 
 const strategyIcons = [Target, Lightbulb, Clock, MessageCircle]
@@ -93,6 +94,9 @@ function ProjectDetails({ project }: { project: Project }) {
 }
 
 export default function Media() {
+  const majorProjects = mediaData.projects.filter((p) => p.id === 'omniscraper' || p.id === 'steel_4k')
+  const minorProjects = mediaData.projects.filter((p) => p.id !== 'omniscraper' && p.id !== 'steel_4k')
+
   return (
     <SectionLayout
       id="media"
@@ -100,9 +104,9 @@ export default function Media() {
       subtitle={mediaData.subtitle}
       description={mediaData.description}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
         {mediaData.platforms.map((platform, index) => (
-          <GlassCard key={index} className="p-6">
+          <GlassCard key={index} className="p-6" glowColor="cyan" hoverEffect>
             <div className="flex items-center gap-3 mb-4">
               <span className="text-primary">{platformIcons[platform.name]}</span>
               <div>
@@ -121,7 +125,7 @@ export default function Media() {
         ))}
       </div>
 
-      <GlassCard className="p-6 mb-12">
+      <GlassCard className="p-6 mb-16" glowColor="purple">
         <h3 className="text-lg font-semibold text-white mb-4">内容策略</h3>
         <div className="flex flex-wrap gap-x-8 gap-y-4">
           {mediaData.contentStrategy.map((strategy, index) => {
@@ -142,9 +146,26 @@ export default function Media() {
         </div>
       </GlassCard>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {mediaData.projects.map((project, index) => (
-          <GlassCard key={index} className="p-6">
+      {majorProjects.map((project, index) => (
+        <FeatureSection
+          key={project.id}
+          title={project.title}
+          description={project.summary}
+          badge={project.period}
+          reverse={index % 2 !== 0}
+        >
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.tags.map((tag, i) => (
+              <span key={i} className="tag-pill text-xs">{tag}</span>
+            ))}
+          </div>
+          <ProjectDetails project={project} />
+        </FeatureSection>
+      ))}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {minorProjects.map((project, index) => (
+          <GlassCard key={index} className="p-6" glowColor={project.id === 'video_claw' ? 'blue' : 'purple'}>
             <h3 className="text-xl font-semibold text-white mb-1">{project.title}</h3>
             {project.period && (
               <p className="text-xs text-gray-500 mb-3">{project.period}</p>
@@ -152,12 +173,7 @@ export default function Media() {
             <p className="text-gray-400 text-sm leading-relaxed mb-4">{project.summary}</p>
             <div className="flex flex-wrap gap-2 mb-4">
               {project.tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className="px-3 py-1 text-xs font-medium rounded-full bg-accent/10 text-accent-light border border-accent/20"
-                >
-                  {tag}
-                </span>
+                <span key={i} className="tag-pill text-xs">{tag}</span>
               ))}
             </div>
             <ProjectDetails project={project} />

@@ -57,23 +57,23 @@ export default function SectionLayout({
     <section
       ref={sectionRef}
       id={id}
-      className={`relative min-h-screen py-24 px-6 ${className}`}
+      className={`relative py-24 md:py-32 px-6 section-divider ${className}`}
     >
       <div className="max-w-6xl mx-auto">
         {(title || subtitle || description) && (
-          <div className="mb-16 text-center">
+          <div className="mb-16 md:mb-20 text-center">
             {subtitle && (
-              <p className="text-primary text-sm font-medium tracking-widest uppercase mb-3">
+              <p className="text-primary text-xs md:text-sm font-medium tracking-[0.25em] uppercase mb-4">
                 {subtitle}
               </p>
             )}
             {title && (
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+              <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                 {description}
               </p>
             )}
