@@ -12,11 +12,15 @@ import Media from '@sections/Media'
 import Thought from '@sections/Thought'
 import Other from '@sections/Other'
 import { useDoorState } from '@store/doorState'
+import { useScrollLock } from '@hooks/useScrollLock'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function App() {
   const { phase, startOpening } = useDoorState()
+
+  // 启用滚动劫持
+  useScrollLock()
 
   useEffect(() => {
     return () => {
