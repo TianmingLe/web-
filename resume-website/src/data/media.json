@@ -4,37 +4,37 @@
   "description": "具备完整的自媒体运营能力，从内容采集、视频修复到多平台分发，掌握数据驱动的内容策略与粉丝运营方法。",
   "platforms": [
     {
-      "name": "B站",
+      "name": "哔哩哔哩",
       "nameEn": "Bilibili",
       "followers": "12k+",
       "videos": "50+",
-      "views": "500k+"
+      "views": "10w+"
     },
     {
       "name": "抖音",
       "nameEn": "Douyin",
       "followers": "4.9k+",
       "videos": "80+",
-      "views": "300k+"
+      "views": "50w+"
     },
     {
       "name": "小红书",
       "nameEn": "Xiaohongshu",
       "followers": "4.6k+",
       "notes": "60+",
-      "likes": "200k+"
+      "likes": "10w+"
     }
   ],
   "projects": [
     {
       "title": "OmniScraper Pro",
-      "description": "全平台内容采集与数据抓取工具，支持B站、小红书、抖音等多平台视频、图文、评论数据的自动化抓取与结构化存储。",
-      "tags": ["Python", "Scrapy", "Selenium", "MongoDB"]
+      "description": "从0手搓的视频抓取工具，基于MediaCrawler实现'采集→下载→ASR转写→LLM分析→导出'完整链路，支持Electron桌面端。",
+      "tags": ["Python", "yt-dlp", "Whisper", "Electron", "React", "CI/CD"]
     },
     {
-      "title": "4K视频修复",
-      "description": "利用AI超分技术对低分辨率老视频进行4K修复，结合去噪与色彩增强，恢复影像细节。",
-      "tags": ["Real-ESRGAN", "FFmpeg", "OpenCV", "Python"]
+      "title": "《钢铁是怎样炼成的》4K修复",
+      "description": "独立完成经典影片4K修复，使用Topaz Video AI、DaVinci Resolve等工具，全网引发红色经典学习热潮。",
+      "tags": ["Topaz Video AI", "DaVinci Resolve", "RIFE", "4K修复"]
     }
   ]
 }

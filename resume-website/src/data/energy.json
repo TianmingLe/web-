@@ -1,32 +1,32 @@
 {
   "title": "能动技术",
-  "subtitle": "能源与动力工程",
-  "description": "具备扎实的能源与动力工程基础，掌握热力学、流体力学、传热学等核心学科知识。在仿真建模、嵌入式开发、实验测试与工程管理方面形成完整技术栈，能够将AI技术与传统能源领域深度融合。",
+  "subtitle": "能源与动力工程专业核心",
+  "description": "掌握能源动力领域核心仿真工具链与工程实践能力，包括热力系统建模、CFD仿真、三维设计、嵌入式开发与工程管理。",
   "skills": [
     {
       "category": "仿真软件",
       "icon": "monitor",
-      "items": ["ANSYS Fluent", "MATLAB/Simulink", "COMSOL", "Aspen Plus"]
+      "items": ["EBSILON Professional", "ANSYS Fluent", "ANSYS Mechanical", "ASPEN Plus", "COMSOL", "AutoCAD", "SolidWorks"]
     },
     {
       "category": "编程开发",
       "icon": "code",
-      "items": ["Python", "C/C++", "Fortran", "SQL"]
+      "items": ["Python 数据分析", "C/C++ 嵌入式", "SQL 数据库", "Java Web开发"]
     },
     {
-      "category": "嵌入式",
+      "category": "嵌入式系统",
       "icon": "cpu",
-      "items": ["STM32", "Arduino", "ESP32", "传感器集成"]
+      "items": ["51单片机", "STM32", "PLC控制", "ESP32", "智能门锁/小车/写字机"]
     },
     {
       "category": "实验测试",
       "icon": "flask-conical",
-      "items": ["热工实验", "流场测试", "数据采集", "误差分析"]
+      "items": ["热电偶/热电阻", "流量计", "NI DAQ采集", "实验方案设计"]
     },
     {
       "category": "工程管理",
       "icon": "clipboard-list",
-      "items": ["项目管理", "技术文档", "成本控制", "风险评估"]
+      "items": ["PERT/甘特图", "ROI/NPV评估", "成本控制", "风险评估"]
     }
   ]
 }

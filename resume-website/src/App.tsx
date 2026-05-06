@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Door from '@components/Door'
@@ -12,7 +12,6 @@ import Media from '@sections/Media'
 import Thought from '@sections/Thought'
 import Other from '@sections/Other'
 import { useDoorState } from '@store/doorState'
-import { scrollToSection } from '@utils/scrollHijack'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,10 +24,6 @@ function App() {
     }
   }, [])
 
-  const handleNavigate = useCallback((id: string) => {
-    scrollToSection(id)
-  }, [])
-
   const showContent = phase === 'OPEN' || phase === 'NORMAL_SCROLL'
   const isDoorVisible = phase !== 'NORMAL_SCROLL'
 
@@ -37,7 +32,7 @@ function App() {
       {showContent && (
         <>
           <ParticleCanvas />
-          <Nav onNavigate={handleNavigate} />
+          <Nav />
           <main className="relative z-10">
             <Home />
             <Energy />

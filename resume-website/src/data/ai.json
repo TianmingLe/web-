@@ -1,38 +1,38 @@
 {
   "title": "AI特种技术",
-  "subtitle": "人工智能应用开发",
-  "description": "深入掌握大语言模型、计算机视觉与AIGC技术栈，具备从算法研究到工程落地的全链路能力。善于将前沿AI技术与实际业务场景结合，打造智能化解决方案。",
+  "subtitle": "人工智能前沿探索",
+  "description": "深入掌握大语言模型、智能体开发、AIGC与嵌入式AI技术，具备从算法研究到工程落地的全链路能力。",
   "projects": [
     {
-      "title": "智能眼镜",
-      "description": "基于多模态大模型的智能AR眼镜系统，实现实时视觉理解与语音交互。",
-      "tags": ["多模态", "AR", "LLM", "边缘计算"]
+      "title": "智能眼镜系统",
+      "description": "基于ESP32-S3的'轻眼镜+重后端'架构，实现BLE音频/视觉特征提取、Flutter App、FastAPI后端与PC中继服务的多跳链路。",
+      "tags": ["ESP32-S3", "Flutter", "FastAPI", "TFLite", "BLE", "WebSocket"]
     },
     {
       "title": "知心AI",
-      "description": "情感陪伴型AI对话系统，支持长期记忆与个性化人设定制。",
-      "tags": ["情感计算", "RAG", "记忆系统", "角色扮演"]
+      "description": "基于Spring AI的情感与规划助手，支持RAG检索增强、动态工具调用、MCP协议与ReAct自主规划模式。",
+      "tags": ["Spring AI", "RAG", "PGvector", "MCP", "ReAct", "Tool Calling"]
     },
     {
       "title": "Prompt工程",
-      "description": "系统化Prompt设计与优化框架，提升大模型输出质量与稳定性。",
-      "tags": ["Prompt设计", "Chain-of-Thought", "Few-Shot", "输出结构化"]
+      "description": "精通思路链、小样本学习、系统提示等框架，具备Agent架构设计能力，熟悉ComfyUI及n8n工作流编排。",
+      "tags": ["CoT", "Few-shot", "Agent架构", "ComfyUI", "n8n", "MCP"]
     },
     {
-      "title": "AIGC",
-      "description": "基于扩散模型与GAN的图像/视频生成 pipeline，支持风格迁移与内容创作。",
-      "tags": ["Stable Diffusion", "ComfyUI", "LoRA", "ControlNet"]
+      "title": "AIGC应用",
+      "description": "数字人、语音克隆、AI音乐、AI绘画(Midjourney/Stable Diffusion)、AI视频等全流程内容生成能力。",
+      "tags": ["数字人", "语音克隆", "Suno", "Midjourney", "SD", "ControlNet"]
     },
     {
-      "title": "书生浦语",
-      "description": "基于InternLM大模型的行业知识库问答系统，支持私有化部署。",
-      "tags": ["InternLM", "RAG", "私有化部署", "知识图谱"]
+      "title": "书生·浦语",
+      "description": "在A100上完成InternLM-8B大模型LoRA微调，掌握大模型训练、评估与部署完整流程。",
+      "tags": ["InternLM", "LoRA", "DeepSpeed", "PyTorch", "A100"]
     }
   ],
   "skillTags": [
-    "PyTorch", "TensorFlow", "Transformers", "LangChain", "LlamaIndex",
-    "OpenAI API", "Claude API", "向量数据库", "RAG", "Agent",
-    "Fine-tuning", "LoRA", "QLoRA", "模型量化", "ONNX",
-    "Gradio", "Streamlit", "FastAPI", "Docker", "Linux"
+    "Spring AI", "RAG", "MCP", "ReAct", "Agent",
+    "Prompt工程", "ComfyUI", "n8n", "LoRA", "QLoRA",
+    "TFLite Micro", "ESP32", "Flutter", "FastAPI", "WebSocket",
+    "PyTorch", "DeepSpeed", "向量数据库", "工具调用", "智能体"
   ]
 }

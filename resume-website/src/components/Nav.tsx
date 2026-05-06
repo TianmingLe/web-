@@ -1,28 +1,28 @@
 import { useState, useEffect } from 'react'
-import { Home, Zap, Brain, Image, Lightbulb, MoreHorizontal } from 'lucide-react'
+import { useNavState } from '@store/navActive'
+import { useDoorState } from '@store/doorState'
 
 interface NavItem {
   id: string
   label: string
-  icon: React.ReactNode
+  shortLabel: string
 }
 
 const navItems: NavItem[] = [
-  { id: 'home', label: '首页', icon: <Home size={18} /> },
-  { id: 'energy', label: '能源', icon: <Zap size={18} /> },
-  { id: 'ai', label: 'AI', icon: <Brain size={18} /> },
-  { id: 'media', label: '媒体', icon: <Image size={18} /> },
-  { id: 'thought', label: '思考', icon: <Lightbulb size={18} /> },
-  { id: 'other', label: '其他', icon: <MoreHorizontal size={18} /> },
+  { id: 'home', label: '首页', shortLabel: '首页' },
+  { id: 'energy', label: '能动技术', shortLabel: '能源' },
+  { id: 'ai', label: 'AI特种技术', shortLabel: 'AI' },
+  { id: 'media', label: '自媒体特种技术', shortLabel: '媒体' },
+  { id: 'thought', label: '思想领域高度技术', shortLabel: '思想' },
+  { id: 'other', label: '其他', shortLabel: '其他' },
 ]
 
-interface NavProps {
-  activeId?: string
-  onNavigate?: (id: string) => void
-}
-
-export default function Nav({ activeId = 'home', onNavigate }: NavProps) {
+export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const { activeId, setActiveId } = useNavState()
+  const { phase } = useDoorState()
+
+  const isVisible = phase === 'OPEN' || phase === 'NORMAL_SCROLL'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,31 +32,92 @@ export default function Nav({ activeId = 'home', onNavigate }: NavProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    const sections = navItems.map((item) => document.getElementById(item.id))
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id)
+          }
+        })
+      },
+      { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
+    )
+
+    sections.forEach((section) => {
+      if (section) observer.observe(section)
+    })
+
+    return () => observer.disconnect()
+  }, [setActiveId])
+
+  const handleNavigate = (id: string) => {
+    const element = document.getElementById(id)
+    if (!element) return
+    const top = element.getBoundingClientRect().top + window.scrollY - 80
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+
+  if (!isVisible) return null
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
         scrolled
-          ? 'bg-base/80 backdrop-blur-xl border-b border-surface-border'
+          ? 'bg-base/70 backdrop-blur-xl border-b border-white/10'
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 py-4">
-        <ul className="flex items-center justify-center gap-2">
-          {navItems.map((item) => (
-            <li key={item.id}>
-              <button
-                onClick={() => onNavigate?.(item.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeId === item.id
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                {item.icon}
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            </li>
-          ))}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4">
+        <ul className="flex items-center justify-center gap-1 md:gap-2">
+          {navItems.map((item) => {
+            const isActive = activeId === item.id
+            return (
+              <li key={item.id}>
+                <button
+                  onClick={() => handleNavigate(item.id)}
+                  className="group relative flex items-center gap-1.5 px-2 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300"
+                >
+                  {/* 状态光点 */}
+                  <span
+                    className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                      isActive
+                        ? 'bg-primary shadow-[0_0_6px_#38bdf8] scale-100'
+                        : 'bg-white/20 scale-75 group-hover:bg-white/40'
+                    }`}
+                  />
+
+                  {/* 标签文字 */}
+                  <span
+                    className={`transition-all duration-300 ${
+                      isActive
+                        ? 'text-white font-semibold'
+                        : 'text-white/60 group-hover:text-white/90'
+                    }`}
+                  >
+                    <span className="hidden md:inline">{item.label}</span>
+                    <span className="md:hidden">{item.shortLabel}</span>
+                  </span>
+
+                  {/* 悬停光条 */}
+                  <span
+                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
+                      isActive
+                        ? 'w-full opacity-100'
+                        : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-60'
+                    }`}
+                  />
+
+                  {/* 活跃发光 */}
+                  {isActive && (
+                    <span className="absolute inset-0 rounded-full bg-primary/5 border border-primary/10" />
+                  )}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </nav>
