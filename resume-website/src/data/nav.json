@@ -2,24 +2,24 @@
   "i18n": {
     "zh": {
       "brand": "胡亚伟",
-      "brandSubtitle": "AI NATIVE",
+      "brandSubtitle": "AI NATIVE GRADUATE",
       "menuLabel": "菜单",
       "closeLabel": "关闭"
     },
     "en": {
       "brand": "Hu Yawei",
-      "brandSubtitle": "AI NATIVE",
+      "brandSubtitle": "AI NATIVE GRADUATE",
       "menuLabel": "Menu",
       "closeLabel": "Close"
     }
   },
   "sections": [
     {
-      "id": "profile",
-      "label": "个人综述",
-      "labelEn": "Profile",
+      "id": "home",
+      "label": "首页",
+      "labelEn": "Home",
       "icon": "user",
-      "href": "#profile",
+      "href": "#home",
       "order": 1
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "id": "thought",
-      "label": "思想领域",
+      "label": "思想领域高度技术",
       "labelEn": "Thought",
       "icon": "lightbulb",
       "href": "#thought",
@@ -94,21 +94,21 @@
         "id": "bilibili",
         "name": "B站",
         "nameEn": "Bilibili",
-        "url": "https://space.bilibili.com",
+        "url": "https://b23.tv/NPxHvW4",
         "icon": "bilibili"
       },
       {
         "id": "xiaohongshu",
         "name": "小红书",
         "nameEn": "Xiaohongshu",
-        "url": "https://www.xiaohongshu.com",
+        "url": "https://xhslink.com/m/5h3GEynfA7n",
         "icon": "xiaohongshu"
       },
       {
         "id": "douyin",
         "name": "抖音",
         "nameEn": "Douyin",
-        "url": "https://www.douyin.com",
+        "url": "https://v.douyin.com/mMECQWKw-Vs/",
         "icon": "douyin"
       }
     ],
@@ -129,8 +129,8 @@
       }
     ],
     "copyright": {
-      "text": " 2025 胡亚伟. All rights reserved.",
-      "textEn": " 2025 Hu Yawei. All rights reserved."
+      "text": "© 2026 胡亚伟. All rights reserved.",
+      "textEn": "© 2026 Hu Yawei. All rights reserved."
     }
   }
 }

@@ -1,6 +1,7 @@
 import SectionLayout from '@layouts/SectionLayout'
 import GlassCard from '@components/GlassCard'
 import otherData from '@data/other.json'
+import { Award, BadgeCheck, Building2, GraduationCap, Phone, Mail } from 'lucide-react'
 
 const socialIcons: Record<string, React.ReactNode> = {
   github: (
@@ -25,6 +26,20 @@ const socialIcons: Record<string, React.ReactNode> = {
   ),
 }
 
+const levelBadge: Record<string, string> = {
+  '省级一等奖': 'bg-primary/10 text-primary border-primary/20',
+  '省级三等奖': 'bg-electric/10 text-electric border-electric/20',
+  '校级二等奖': 'bg-accent/10 text-accent border-accent/20',
+}
+
+const skillLabels: Record<string, string> = {
+  professional: '专业技能',
+  programming: '编程语言',
+  ai: 'AI 能力',
+  media: '媒体技能',
+  tools: '工具软件',
+}
+
 export default function Other() {
   return (
     <SectionLayout
@@ -34,10 +49,9 @@ export default function Other() {
       description={otherData.description}
     >
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* 获奖情况 */}
         <GlassCard glowColor="cyan">
           <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary" />
+            <Award className="w-5 h-5 text-primary" />
             获奖情况
           </h3>
           <div className="grid gap-3">
@@ -46,11 +60,12 @@ export default function Other() {
                 key={index}
                 className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/20 transition-colors"
               >
-                <div>
+                <div className="min-w-0 flex-1 mr-4">
                   <p className="text-white font-medium">{award.name}</p>
-                  <p className="text-sm text-gray-400">{award.year}年 · {award.description}</p>
+                  <p className="text-sm text-gray-400 mt-0.5">{award.year}年 · {award.project}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{award.role}</p>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${levelBadge[award.level] ?? 'bg-white/10 text-gray-300 border-white/20'}`}>
                   {award.level}
                 </span>
               </div>
@@ -58,21 +73,20 @@ export default function Other() {
           </div>
         </GlassCard>
 
-        {/* 证书与联系方式 */}
         <div className="grid md:grid-cols-2 gap-6">
           <GlassCard glowColor="purple">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent" />
+              <BadgeCheck className="w-5 h-5 text-accent" />
               证书情况
             </h3>
             <div className="space-y-2">
               {otherData.certificates.map((cert, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-white/5"
+                  className="p-3 rounded-lg bg-white/5 border border-white/5"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  <span className="text-gray-300">{cert.name}（{cert.status}）</span>
+                  <p className="text-white font-medium">{cert.name}</p>
+                  <p className="text-sm text-gray-400 mt-0.5">{cert.desc}</p>
                 </div>
               ))}
             </div>
@@ -80,40 +94,135 @@ export default function Other() {
 
           <GlassCard glowColor="blue">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-electric" />
-              联系方式
+              <GraduationCap className="w-5 h-5 text-electric" />
+              校园经历
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="text-gray-400 text-sm w-12">电话</span>
-                <span className="text-white">{otherData.contact.phone}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-400 text-sm w-12">邮箱</span>
-                <span className="text-white">{otherData.contact.email}</span>
-              </div>
-            </div>
-
-            {/* 社交链接 */}
-            <div className="mt-6 pt-4 border-t border-white/10">
-              <p className="text-sm text-gray-400 mb-3">社交媒体</p>
-              <div className="flex items-center gap-3">
-                {otherData.contact.social.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
-                    aria-label={link.name}
-                  >
-                    {socialIcons[link.icon] ?? link.name}
-                  </a>
-                ))}
-              </div>
+              {otherData.campus.map((item, index) => (
+                <div
+                  key={index}
+                  className="p-3 rounded-lg bg-white/5 border border-white/5"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-white font-medium">{item.role}</p>
+                    <span className="text-xs text-gray-500">{item.period}</span>
+                  </div>
+                  <p className="text-sm text-gray-400 mt-1">{item.desc}</p>
+                  <p className="text-sm text-primary/80 mt-1">{item.achievement}</p>
+                </div>
+              ))}
             </div>
           </GlassCard>
         </div>
+
+        <GlassCard glowColor="cyan">
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-primary" />
+            实习经历
+          </h3>
+          <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-white font-semibold text-lg">{otherData.internship.company}</p>
+                <p className="text-sm text-gray-400">{otherData.internship.role}</p>
+              </div>
+              <span className="text-xs text-gray-500 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                {otherData.internship.period}
+              </span>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-300 font-medium mb-2">工作内容</p>
+              <ul className="space-y-1.5">
+                {otherData.internship.work.map((item, index) => (
+                  <li key={index} className="text-sm text-gray-400 flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mt-1.5 shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm text-gray-300 font-medium mb-2">成果</p>
+              <div className="flex flex-wrap gap-2">
+                {otherData.internship.achievements.map((item, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+
+        <GlassCard glowColor="purple">
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-accent" />
+            技能概览
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {(Object.entries(otherData.skills) as [string, { level: string; items: string[] }][]).map(([key, skill]) => (
+              <div
+                key={key}
+                className="p-4 rounded-lg bg-white/5 border border-white/5"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-white font-medium">{skillLabels[key] ?? key}</p>
+                  <span className="text-sm text-primary/80">{skill.level}</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {skill.items.map((item, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-0.5 rounded text-xs bg-white/5 text-gray-300 border border-white/5"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        <GlassCard glowColor="blue">
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <Phone className="w-5 h-5 text-electric" />
+            联系方式
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-400 text-sm w-12">电话</span>
+              <span className="text-white">{otherData.contact.phone}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Mail className="w-4 h-4 text-gray-400" />
+              <span className="text-gray-400 text-sm w-12">邮箱</span>
+              <span className="text-white">{otherData.contact.email}</span>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <p className="text-sm text-gray-400 mb-3">社交媒体</p>
+            <div className="flex items-center gap-3">
+              {otherData.contact.social.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
+                  aria-label={link.name}
+                >
+                  {socialIcons[link.icon] ?? link.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </GlassCard>
       </div>
     </SectionLayout>
   )

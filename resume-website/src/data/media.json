@@ -6,35 +6,77 @@
     {
       "name": "哔哩哔哩",
       "nameEn": "Bilibili",
-      "followers": "12k+",
-      "videos": "50+",
-      "views": "10w+"
+      "followers": "12,000+",
+      "content": "技术教程、AI应用、视频修复",
+      "representative": "《钢铁是怎样炼成的》4K修复（10万+播放）"
     },
     {
       "name": "抖音",
       "nameEn": "Douyin",
-      "followers": "4.9k+",
-      "videos": "80+",
-      "views": "50w+"
+      "followers": "4,900+",
+      "content": "短视频技术分享、AI工具演示",
+      "representative": "平均播放5,000+"
     },
     {
       "name": "小红书",
       "nameEn": "Xiaohongshu",
-      "followers": "4.6k+",
-      "notes": "60+",
-      "likes": "10w+"
+      "followers": "4,600+",
+      "content": "AI工具使用攻略、学习心得",
+      "representative": "平均点赞200+"
     }
   ],
+  "contentStrategy": ["垂直领域：聚焦AI技术、能源动力、视频制作", "实用性：提供可操作的教程与工具", "时效性：紧跟技术热点（如Sora、GPT-4）", "互动性：积极回复评论，建立粉丝社群"],
   "projects": [
     {
-      "title": "OmniScraper Pro",
-      "description": "从0手搓的视频抓取工具，基于MediaCrawler实现'采集→下载→ASR转写→LLM分析→导出'完整链路，支持Electron桌面端。",
-      "tags": ["Python", "yt-dlp", "Whisper", "Electron", "React", "CI/CD"]
+      "id": "omniscraper",
+      "title": "OmniScraper Pro (video-tezhong)",
+      "period": "2026.03 - 2026.05",
+      "version": "video-claw（初版）→ video-tezhong（第二版）",
+      "keywords": "视频抓取、抖音分析、Whisper ASR、yt-dlp、Electron、MediaCrawler",
+      "summary": "从0开始手搓视频抓取工具，后基于MediaCrawler和omi项目进行AI能力扩展。实现「采集→下载→ASR转写→LLM分析→导出」完整链路，支持抖音等多平台，包含Electron桌面端与自动化测试。",
+      "tags": ["Python", "yt-dlp", "Whisper", "Electron", "React", "CI/CD"],
+      "highlights": [
+        "MVP Pipeline闭环：抓取detail→下载视频→Whisper转写→输出结构化结果",
+        "Desktop端53个测试文件，167个测试全部通过",
+        "MediaCrawler 46个测试全部通过",
+        "代理可用率从60%提升至90%",
+        "文档完整度100%，用户上手时间<10分钟",
+        "CI/CD从代码提交到安装包生成全流程自动化"
+      ]
     },
     {
+      "id": "video_claw",
+      "title": "视频特种技术初版 (video-claw)",
+      "period": "2026.03 - 2026.04",
+      "keywords": "视频抓取、Python、抖音爬虫、Whisper、从零开发",
+      "summary": "从0开始手搓的抖音视频抓取工具，实现了基础的爬虫、下载、ASR转写功能，虽然后来被第二版替代，但是重要的技术探索与实践。",
+      "tags": ["Python", "Flask", "Whisper", "requests"],
+      "outcomes": [
+        "实现了抖音detail抓取",
+        "实现了视频下载（支持断点续传）",
+        "实现了Whisper转写",
+        "输出结构化JSONL结果"
+      ],
+      "lessons": "从零开发耗时较长，部分功能重复造轮子，意识到应充分利用开源生态，为第二版打下技术基础"
+    },
+    {
+      "id": "steel_4k",
       "title": "《钢铁是怎样炼成的》4K修复",
-      "description": "独立完成经典影片4K修复，使用Topaz Video AI、DaVinci Resolve等工具，全网引发红色经典学习热潮。",
-      "tags": ["Topaz Video AI", "DaVinci Resolve", "RIFE", "4K修复"]
+      "period": "2025.04 - 2025.05",
+      "keywords": "视频修复、4K、AI增强、保尔·柯察金、内容发布",
+      "summary": "独立完成经典影片《钢铁是怎样炼成的》4K修复与发布，使用AI技术进行画质增强、分辨率提升、色彩校正，全网引发对保尔·柯察金精神的学习热潮。",
+      "tags": ["Topaz Video AI", "DaVinci Resolve", "RIFE", "4K修复"],
+      "workflow": ["素材收集→AI超分(Topaz Video AI)→去噪修复(Neat Video)→色彩校正(DaVinci Resolve)→帧率提升(25fps→60fps RIFE)→音频增强→发布推广"],
+      "impact": ["B站10万+播放，抖音50万+播放", "引发网友对红色经典的学习与讨论", "证明AI修复技术的有效性"]
+    },
+    {
+      "id": "qingcao_plan",
+      "title": "小红书「青草计划」",
+      "period": "2025.06 - 2025.07",
+      "keywords": "小红书运营、内容创作、青草计划、新媒体技能",
+      "summary": "参加小红书新媒体优秀人才职业技能大赛「青草计划」项目实践，学习并实践了小红书平台的内容创作、运营策略、数据分析等技能。",
+      "tags": ["小红书", "内容创作", "运营策略", "数据分析"],
+      "activities": ["账号定位：确定内容方向（技术分享/AI应用）", "内容创作：制作图文/视频笔记", "运营策略：标题优化、封面设计、话题选择", "数据分析：分析阅读量、点赞、收藏、转化数据"]
     }
   ]
 }

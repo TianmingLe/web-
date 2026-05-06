@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavState } from '@store/navActive'
-import { useDoorState } from '@store/doorState'
 import navData from '@data/nav.json'
 
 interface NavItem {
@@ -21,11 +20,7 @@ const navItems: NavItem[] = [
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const { activeId, setActiveId } = useNavState()
-  const { phase } = useDoorState()
 
-  const isVisible = phase === 'OPEN' || phase === 'NORMAL_SCROLL'
-
-  // nav.json 数据已加载，i18n 扩展预留
   void navData
 
   useEffect(() => {
@@ -64,8 +59,6 @@ export default function Nav() {
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
-  if (!isVisible) return null
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
@@ -87,7 +80,6 @@ export default function Nav() {
                   role="menuitem"
                   aria-current={isActive ? 'page' : undefined}
                 >
-                  {/* 状态光点 */}
                   <span
                     className={`w-1 h-1 rounded-full transition-all duration-300 ${
                       isActive
@@ -97,7 +89,6 @@ export default function Nav() {
                     aria-hidden="true"
                   />
 
-                  {/* 标签文字 */}
                   <span
                     className={`transition-all duration-300 ${
                       isActive
@@ -109,7 +100,6 @@ export default function Nav() {
                     <span className="md:hidden">{item.shortLabel}</span>
                   </span>
 
-                  {/* 悬停光条 */}
                   <span
                     className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
                       isActive
@@ -119,7 +109,6 @@ export default function Nav() {
                     aria-hidden="true"
                   />
 
-                  {/* 活跃发光 */}
                   {isActive && (
                     <span className="absolute inset-0 rounded-full bg-primary/5 border border-primary/10" aria-hidden="true" />
                   )}
