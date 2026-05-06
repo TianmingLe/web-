@@ -1,0 +1,40 @@
+{
+  "title": "自媒体特种技术",
+  "subtitle": "内容创作与平台运营",
+  "description": "具备完整的自媒体运营能力，从内容采集、视频修复到多平台分发，掌握数据驱动的内容策略与粉丝运营方法。",
+  "platforms": [
+    {
+      "name": "B站",
+      "nameEn": "Bilibili",
+      "followers": "12k+",
+      "videos": "50+",
+      "views": "500k+"
+    },
+    {
+      "name": "抖音",
+      "nameEn": "Douyin",
+      "followers": "4.9k+",
+      "videos": "80+",
+      "views": "300k+"
+    },
+    {
+      "name": "小红书",
+      "nameEn": "Xiaohongshu",
+      "followers": "4.6k+",
+      "notes": "60+",
+      "likes": "200k+"
+    }
+  ],
+  "projects": [
+    {
+      "title": "OmniScraper Pro",
+      "description": "全平台内容采集与数据抓取工具，支持B站、小红书、抖音等多平台视频、图文、评论数据的自动化抓取与结构化存储。",
+      "tags": ["Python", "Scrapy", "Selenium", "MongoDB"]
+    },
+    {
+      "title": "4K视频修复",
+      "description": "利用AI超分技术对低分辨率老视频进行4K修复，结合去噪与色彩增强，恢复影像细节。",
+      "tags": ["Real-ESRGAN", "FFmpeg", "OpenCV", "Python"]
+    }
+  ]
+}

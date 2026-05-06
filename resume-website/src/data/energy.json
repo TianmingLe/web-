@@ -1,0 +1,32 @@
+{
+  "title": "能动技术",
+  "subtitle": "能源与动力工程",
+  "description": "具备扎实的能源与动力工程基础，掌握热力学、流体力学、传热学等核心学科知识。在仿真建模、嵌入式开发、实验测试与工程管理方面形成完整技术栈，能够将AI技术与传统能源领域深度融合。",
+  "skills": [
+    {
+      "category": "仿真软件",
+      "icon": "monitor",
+      "items": ["ANSYS Fluent", "MATLAB/Simulink", "COMSOL", "Aspen Plus"]
+    },
+    {
+      "category": "编程开发",
+      "icon": "code",
+      "items": ["Python", "C/C++", "Fortran", "SQL"]
+    },
+    {
+      "category": "嵌入式",
+      "icon": "cpu",
+      "items": ["STM32", "Arduino", "ESP32", "传感器集成"]
+    },
+    {
+      "category": "实验测试",
+      "icon": "flask-conical",
+      "items": ["热工实验", "流场测试", "数据采集", "误差分析"]
+    },
+    {
+      "category": "工程管理",
+      "icon": "clipboard-list",
+      "items": ["项目管理", "技术文档", "成本控制", "风险评估"]
+    }
+  ]
+}

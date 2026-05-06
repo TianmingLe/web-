@@ -1,0 +1,38 @@
+{
+  "title": "AI特种技术",
+  "subtitle": "人工智能应用开发",
+  "description": "深入掌握大语言模型、计算机视觉与AIGC技术栈，具备从算法研究到工程落地的全链路能力。善于将前沿AI技术与实际业务场景结合，打造智能化解决方案。",
+  "projects": [
+    {
+      "title": "智能眼镜",
+      "description": "基于多模态大模型的智能AR眼镜系统，实现实时视觉理解与语音交互。",
+      "tags": ["多模态", "AR", "LLM", "边缘计算"]
+    },
+    {
+      "title": "知心AI",
+      "description": "情感陪伴型AI对话系统，支持长期记忆与个性化人设定制。",
+      "tags": ["情感计算", "RAG", "记忆系统", "角色扮演"]
+    },
+    {
+      "title": "Prompt工程",
+      "description": "系统化Prompt设计与优化框架，提升大模型输出质量与稳定性。",
+      "tags": ["Prompt设计", "Chain-of-Thought", "Few-Shot", "输出结构化"]
+    },
+    {
+      "title": "AIGC",
+      "description": "基于扩散模型与GAN的图像/视频生成 pipeline，支持风格迁移与内容创作。",
+      "tags": ["Stable Diffusion", "ComfyUI", "LoRA", "ControlNet"]
+    },
+    {
+      "title": "书生浦语",
+      "description": "基于InternLM大模型的行业知识库问答系统，支持私有化部署。",
+      "tags": ["InternLM", "RAG", "私有化部署", "知识图谱"]
+    }
+  ],
+  "skillTags": [
+    "PyTorch", "TensorFlow", "Transformers", "LangChain", "LlamaIndex",
+    "OpenAI API", "Claude API", "向量数据库", "RAG", "Agent",
+    "Fine-tuning", "LoRA", "QLoRA", "模型量化", "ONNX",
+    "Gradio", "Streamlit", "FastAPI", "Docker", "Linux"
+  ]
+}

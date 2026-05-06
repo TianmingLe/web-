@@ -1,0 +1,77 @@
+{
+  "title": "其他",
+  "subtitle": "获奖荣誉、证书资质与联系方式",
+  "description": "除专业技术能力外，在学术竞赛、职业资格、校园活动与实习实践等方面的综合积累。",
+  "awards": [
+    {
+      "name": "全国大学生节能减排大赛",
+      "level": "省级三等奖",
+      "year": 2023,
+      "description": "参与设计新型换热器结构，提交节能优化方案"
+    },
+    {
+      "name": "山西大学学业奖学金",
+      "level": "三等奖",
+      "year": 2022,
+      "description": "综合学业成绩排名前30%"
+    },
+    {
+      "name": "大学生创新创业训练计划",
+      "level": "校级立项",
+      "year": 2023,
+      "description": "主持智能监测方向创新项目，完成原型开发"
+    }
+  ],
+  "certificates": [
+    {
+      "name": "大学英语四级",
+      "issuer": "教育部考试中心",
+      "year": 2022,
+      "status": "已通过"
+    },
+    {
+      "name": "大学英语六级",
+      "issuer": "教育部考试中心",
+      "year": 2023,
+      "status": "已通过"
+    },
+    {
+      "name": "计算机二级",
+      "issuer": "教育部考试中心",
+      "year": 2022,
+      "status": "已通过"
+    },
+    {
+      "name": "普通话水平测试",
+      "issuer": "国家语言文字工作委员会",
+      "year": 2021,
+      "status": "二级甲等"
+    }
+  ],
+  "contact": {
+    "phone": "19935072544",
+    "email": "1767976037@qq.com",
+    "social": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/TianmingLe",
+        "icon": "github"
+      },
+      {
+        "name": "B站",
+        "url": "https://space.bilibili.com",
+        "icon": "bilibili"
+      },
+      {
+        "name": "小红书",
+        "url": "https://www.xiaohongshu.com",
+        "icon": "xiaohongshu"
+      },
+      {
+        "name": "抖音",
+        "url": "https://www.douyin.com",
+        "icon": "douyin"
+      }
+    ]
+  }
+}
