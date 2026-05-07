@@ -31,45 +31,80 @@ export default function ThoughtPage() {
             <h3 className="text-2xl font-semibold text-white">职业规划时间轴</h3>
           </div>
           <div className="relative">
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary/40 via-primary/20 to-transparent" />
-            <div className="space-y-8">
-              {thoughtData.career.map((item, index) => (
-                <div
-                  key={index}
-                  className={`relative flex flex-col md:flex-row gap-4 md:gap-8 ${
-                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                  }`}
-                >
-                  <div className="hidden md:block md:w-1/2" />
-                  <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-gradient-to-br from-primary to-primary-light shadow-[0_0_12px_rgba(0,122,255,0.4)] z-10" />
-                  <GlassCard
-                    className={`md:w-1/2 p-6 ml-10 md:ml-0 ${
-                      index % 2 === 0 ? 'md:text-right' : 'md:text-left'
+            <div 
+              className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px"
+              style={{
+                background: 'linear-gradient(180deg, rgba(0,122,255,0.4) 0%, rgba(52,199,89,0.3) 50%, rgba(175,82,222,0.2) 100%)'
+              }}
+            />
+            <div className="space-y-10 md:space-y-0">
+              {thoughtData.career.map((item, index) => {
+                const isLeft = index % 2 === 0
+                return (
+                  <div
+                    key={index}
+                    className={`relative flex flex-col md:flex-row gap-4 md:gap-12 md:py-8 ${
+                      isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
                     }`}
                   >
-                    <h4 className="text-lg font-semibold text-white mb-2">
-                      {item.phase}
-                    </h4>
-                    <p className="text-text-secondary text-sm leading-relaxed mb-3">
-                      {item.content}
-                    </p>
-                    <div
-                      className={`flex flex-wrap gap-2 ${
-                        index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
-                      }`}
-                    >
-                      {item.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="apple-tag text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                    <div className="hidden md:block md:w-1/2" />
+                    
+                    <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-6 h-6 rounded-full z-10 flex items-center justify-center">
+                      <div 
+                        className="w-full h-full rounded-full"
+                        style={{
+                          background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
+                          boxShadow: '0 0 20px rgba(0, 122, 255, 0.6), 0 0 40px rgba(52, 199, 89, 0.3)',
+                        }}
+                      />
+                      <div 
+                        className="absolute w-3 h-3 rounded-full"
+                        style={{
+                          background: '#0a0a0a',
+                        }}
+                      />
                     </div>
-                  </GlassCard>
-                </div>
-              ))}
+
+                    <div className={`md:w-1/2 ml-10 md:ml-0 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
+                      <div 
+                        className="relative p-6 rounded-2xl"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.03)',
+                          backdropFilter: 'blur(20px)',
+                          WebkitBackdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                      >
+                        <h4 className="text-lg font-semibold text-white mb-3">
+                          {item.phase}
+                        </h4>
+                        <p className="text-text-secondary text-sm leading-relaxed mb-4">
+                          {item.content}
+                        </p>
+                        <div
+                          className={`flex flex-wrap gap-2 ${
+                            isLeft ? 'md:justify-end' : 'md:justify-start'
+                          }`}
+                        >
+                          {item.tags.map((tag, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full"
+                              style={{
+                                background: 'rgba(0, 122, 255, 0.15)',
+                                color: '#007aff',
+                                border: '1px solid rgba(0, 122, 255, 0.3)',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>

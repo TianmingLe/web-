@@ -27,13 +27,13 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
     const ctx = gsap.context(() => {
       gsap.fromTo(
         el.querySelectorAll('.evo-step'),
-        { y: 40, opacity: 0 },
+        { y: 60, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 0.7,
-          stagger: 0.2,
-          ease: 'power2.out',
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
             start: 'top 70%',
@@ -60,48 +60,136 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
       </div>
 
       <div className="relative">
-        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary/50 via-primary-light/30 to-primary/20 -translate-x-1/2 hidden md:block" aria-hidden="true" />
+        <div 
+          className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 hidden md:block"
+          style={{
+            background: 'linear-gradient(180deg, rgba(0,122,255,0.4) 0%, rgba(52,199,89,0.3) 50%, rgba(175,82,222,0.3) 100%)'
+          }}
+          aria-hidden="true" 
+        />
 
-        <div className="space-y-10 md:space-y-0">
+        <div className="space-y-12 md:space-y-0">
           {steps.map((step, index) => {
             const isLeft = index % 2 === 0
             return (
-              <div key={index} className="evo-step relative md:flex md:items-center md:gap-8 md:py-4">
+              <div key={index} className="evo-step relative md:flex md:items-center md:gap-12 md:py-8">
                 <div className={`hidden md:block flex-1 ${isLeft ? 'text-right' : 'text-left'}`}>
-                  {isLeft && <StepContent step={step} align="right" />}
+                  <div className={`inline-block max-w-md ${isLeft ? 'ml-auto' : ''}`}>
+                    <div 
+                      className="relative p-6 rounded-2xl"
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                      }}
+                    >
+                      <span 
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full mb-4"
+                        style={{
+                          background: 'rgba(0, 122, 255, 0.15)',
+                          color: '#007aff',
+                          border: '1px solid rgba(0, 122, 255, 0.3)',
+                        }}
+                      >
+                        {step.icon}{step.label}
+                      </span>
+                      <h4 className="text-lg font-semibold text-white mb-3">{step.title}</h4>
+                      <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-gradient-to-br from-primary to-primary-light z-10 shadow-[0_0_16px_rgba(0,122,255,0.4)]">
-                  <div className="w-full h-full rounded-full bg-base/50 backdrop-blur-sm" />
+                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-6 h-6 rounded-full z-10 justify-center items-center">
+                  <div 
+                    className="w-full h-full rounded-full"
+                    style={{
+                      background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
+                      boxShadow: '0 0 20px rgba(0, 122, 255, 0.6), 0 0 40px rgba(52, 199, 89, 0.3)',
+                    }}
+                  />
+                  <div 
+                    className="absolute w-3 h-3 rounded-full"
+                    style={{
+                      background: '#0a0a0a',
+                      boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)',
+                    }}
+                  />
                 </div>
 
                 <div className={`hidden md:block flex-1 ${isLeft ? 'text-left' : 'text-right'}`}>
-                  {!isLeft && <StepContent step={step} align="left" />}
+                  {!isLeft && (
+                    <div className="inline-block max-w-md">
+                      <div 
+                        className="relative p-6 rounded-2xl"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.03)',
+                          backdropFilter: 'blur(20px)',
+                          WebkitBackdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                      >
+                        <span 
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full mb-4"
+                          style={{
+                            background: 'rgba(0, 122, 255, 0.15)',
+                            color: '#007aff',
+                            border: '1px solid rgba(0, 122, 255, 0.3)',
+                          }}
+                        >
+                          {step.icon}{step.label}
+                        </span>
+                        <h4 className="text-lg font-semibold text-white mb-3">{step.title}</h4>
+                        <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="md:hidden flex items-start gap-4">
-                  <div className="flex-shrink-0 w-5 h-5 mt-1 rounded-full bg-gradient-to-br from-primary to-primary-light z-10 shadow-[0_0_12px_rgba(0,122,255,0.4)]">
-                    <div className="w-full h-full rounded-full bg-base/50 backdrop-blur-sm" />
+                <div className="md:hidden flex items-start gap-4 p-4">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full z-10 flex items-center justify-center">
+                    <div 
+                      className="w-full h-full rounded-full"
+                      style={{
+                        background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
+                        boxShadow: '0 0 16px rgba(0, 122, 255, 0.5)',
+                      }}
+                    />
+                    <div 
+                      className="absolute w-3 h-3 rounded-full"
+                      style={{
+                        background: '#0a0a0a',
+                      }}
+                    />
                   </div>
-                  <StepContent step={step} align="left" />
+                  <div 
+                    className="flex-1 p-5 rounded-xl"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      backdropFilter: 'blur(16px)',
+                      WebkitBackdropFilter: 'blur(16px)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                    }}
+                  >
+                    <span 
+                      className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full mb-3"
+                      style={{
+                        background: 'rgba(0, 122, 255, 0.15)',
+                        color: '#007aff',
+                        border: '1px solid rgba(0, 122, 255, 0.3)',
+                      }}
+                    >
+                      {step.icon}{step.label}
+                    </span>
+                    <h4 className="text-base font-semibold text-white mb-2">{step.title}</h4>
+                    <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
+                  </div>
                 </div>
               </div>
             )
           })}
         </div>
       </div>
-    </div>
-  )
-}
-
-function StepContent({ step, align }: { step: EvolutionStep; align: 'left' | 'right' }) {
-  return (
-    <div className={`apple-card p-5 md:p-6 inline-block max-w-md ${align === 'right' ? 'ml-auto' : ''}`}>
-      <span className="apple-tag text-xs mb-3 inline-flex">
-        {step.icon}{step.label}
-      </span>
-      <h4 className="text-lg font-semibold text-white mb-2">{step.title}</h4>
-      <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
     </div>
   )
 }
