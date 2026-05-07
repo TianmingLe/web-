@@ -1,5 +1,6 @@
-import { Calendar, Layers, Zap, BookOpen, Sparkles, Tag, Hash, Brain, Cpu } from 'lucide-react'
+import { Layers, Zap, BookOpen, Sparkles, Tag, Hash, Brain, Cpu } from 'lucide-react'
 import aiData from '@data/ai.json'
+import ExpandableCard from '@components/ExpandableCard'
 
 interface Phase {
   name: string
@@ -28,36 +29,18 @@ interface Project {
 }
 
 const evoSteps = [
-  {
-    label: '基础探索',
-    icon: BookOpen,
-    title: '大模型入门',
-    description: '完成书生·浦语大模型实战营，在A100上训练基于InternLM的微调角色模型，掌握LoRA、DeepSpeed等核心技术。',
-  },
-  {
-    label: '能力进阶',
-    icon: Brain,
-    title: 'Prompt工程与智能体',
-    description: '精通CoT、Few-shot等Prompt框架，掌握Agent架构设计，熟悉ComfyUI/n8n工作流编排与MCP工具注册。',
-  },
-  {
-    label: '工程落地',
-    icon: Cpu,
-    title: '智能体全栈开发',
-    description: '独立完成知心AI（Spring AI + RAG + ReAct）与智能眼镜系统（ESP32 + Flutter + FastAPI），实现从算法到产品的完整闭环。',
-  },
-  {
-    label: '生态扩展',
-    icon: Sparkles,
-    title: 'AIGC与多模态',
-    description: '掌握数字人、语音克隆、AI音乐、Midjourney/SD绘画等AIGC技术，能独立完成从创意到成品的全流程。',
-  },
+  { label: '基础探索', icon: BookOpen },
+  { label: '能力进阶', icon: Brain },
+  { label: '工程落地', icon: Cpu },
+  { label: '生态扩展', icon: Sparkles },
 ]
+
+const MAJOR_IDS = ['smart_glasses', 'zhixin_ai']
 
 function EvolutionTimeline() {
   return (
     <div className="b-fade-up">
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-6">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-b-terracotta-dim">
           <Layers size={18} className="text-b-terracotta" />
         </div>
@@ -66,33 +49,16 @@ function EvolutionTimeline() {
           <p className="text-b-muted text-sm font-b-sans">AI技术能力的渐进式成长路径</p>
         </div>
       </div>
-
-      <div className="relative pl-10">
-        <div className="b-timeline-line" />
-
+      <div className="flex items-center gap-3 flex-wrap">
         {evoSteps.map((step, i) => {
           const Icon = step.icon
           return (
             <div
               key={step.label}
-              className={`relative pb-8 last:pb-0 b-fade-up b-stagger-${i + 1}`}
+              className={`flex items-center gap-1.5 b-tag b-tag-terracotta b-fade-up b-stagger-${i + 1}`}
             >
-              <div className="b-timeline-dot" style={{ top: '4px' }} />
-
-              <div className="b-card b-card-terracotta p-5 ml-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-b-terracotta-dim">
-                    <Icon size={15} className="text-b-terracotta" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="b-tag b-tag-terracotta text-[11px]">{step.label}</span>
-                    <span className="font-b-serif text-base text-b-ink">{step.title}</span>
-                  </div>
-                </div>
-                <p className="text-b-ink-light text-sm leading-relaxed font-b-sans pl-11">
-                  {step.description}
-                </p>
-              </div>
+              <Icon size={12} />
+              <span>{step.label}</span>
             </div>
           )
         })}
@@ -101,252 +67,147 @@ function EvolutionTimeline() {
   )
 }
 
-function MajorProjectCard({ project, index }: { project: Project; index: number }) {
+function MajorProjectExpanded({ project }: { project: Project }) {
   return (
-    <div className={`b-fade-up b-stagger-${index + 1}`}>
-      <div className="b-card b-card-slate p-7 md:p-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-5">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-b-slate-dim">
-                <Cpu size={16} className="text-b-slate" />
-              </div>
-              <h3 className="font-b-serif text-2xl md:text-[28px] text-b-ink leading-tight">
-                {project.title}
-              </h3>
-            </div>
-            {project.keywords && (
-              <div className="flex items-start gap-2 mt-2">
-                <Hash size={13} className="text-b-muted mt-0.5 shrink-0" />
-                <p className="text-b-muted text-xs leading-relaxed font-b-sans">
-                  {project.keywords}
-                </p>
-              </div>
-            )}
+    <div className="space-y-5">
+      <p className="text-b-ink-light text-sm leading-[1.8] font-b-sans max-w-3xl">
+        {project.summary}
+      </p>
+
+      {project.highlights && project.highlights.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Zap size={15} className="text-b-terracotta" />
+            <span className="font-b-serif text-sm text-b-ink">核心指标</span>
           </div>
-
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            {project.period && (
-              <div className="flex items-center gap-1.5 b-tag b-tag-slate">
-                <Calendar size={12} />
-                <span className="font-b-mono text-[11px]">{project.period}</span>
-              </div>
-            )}
-            {project.version && (
-              <span className="font-b-mono text-[11px] text-b-slate-light bg-b-slate-dim px-3 py-1 rounded-full">
-                {project.version}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <p className="text-b-ink-light text-sm leading-[1.8] font-b-sans mb-6 max-w-3xl">
-          {project.summary}
-        </p>
-
-        {project.highlights && project.highlights.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap size={15} className="text-b-terracotta" />
-              <span className="font-b-serif text-sm text-b-ink">核心指标</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {project.highlights.map((h, i) => (
-                <span key={i} className="b-tag b-tag-slate">
-                  <Zap size={10} className="shrink-0" />
-                  {h}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {project.phases && project.phases.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Layers size={15} className="text-b-slate" />
-              <span className="font-b-serif text-sm text-b-ink">开发阶段</span>
-              <span className="b-ornament" />
-              <span className="font-b-mono text-[11px] text-b-muted">
-                {project.phases.length} phases
-              </span>
-            </div>
-
-            <div className="relative pl-7">
-              <div className="b-timeline-line" />
-
-              {project.phases.map((phase, i) => (
-                <div key={i} className="relative pb-5 last:pb-0">
-                  <div className="b-timeline-dot" style={{ top: '4px' }} />
-                  <div className="ml-4">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="font-b-serif text-sm text-b-ink">{phase.name}</span>
-                      <span className="font-b-mono text-[11px] text-b-muted bg-b-cream-dark px-2 py-0.5 rounded">
-                        {phase.period}
-                      </span>
-                    </div>
-                    <p className="text-b-ink-light text-xs leading-relaxed font-b-sans">
-                      {phase.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="pt-4 border-t border-b-border">
           <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag, i) => (
-              <span key={i} className="b-tag b-tag-terracotta">
-                {tag}
+            {project.highlights.map((h, i) => (
+              <span key={i} className="b-tag b-tag-slate">
+                <Zap size={10} className="shrink-0" />
+                {h}
               </span>
             ))}
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
+      )}
 
-function MinorProjectCard({ project, index }: { project: Project; index: number }) {
-  return (
-    <div className={`b-fade-up b-stagger-${(index % 4) + 1}`}>
-      <div className="b-card b-card-sage p-6 flex flex-col h-full">
-        <div className="flex items-center gap-2.5 mb-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-b-sage-dim">
-            <Sparkles size={14} className="text-b-sage" />
+      {project.phases && project.phases.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Layers size={15} className="text-b-slate" />
+            <span className="font-b-serif text-sm text-b-ink">开发阶段</span>
+            <span className="b-ornament" />
+            <span className="font-b-mono text-[11px] text-b-muted">
+              {project.phases.length} phases
+            </span>
           </div>
-          <h4 className="font-b-serif text-lg text-b-ink leading-snug">{project.title}</h4>
-        </div>
-
-        {project.period && (
-          <div className="flex items-center gap-1.5 mb-3">
-            <Calendar size={12} className="text-b-muted" />
-            <span className="font-b-mono text-[11px] text-b-muted">{project.period}</span>
-          </div>
-        )}
-
-        <p className="text-b-ink-light text-sm leading-relaxed font-b-sans mb-4 flex-1">
-          {project.summary}
-        </p>
-
-        {project.highlights && project.highlights.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Zap size={13} className="text-b-terracotta" />
-              <span className="font-b-sans text-xs font-medium text-b-ink">核心成果</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {project.highlights.map((h, i) => (
-                <span key={i} className="b-tag b-tag-slate text-[11px]">
-                  {h}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {project.abilities && project.abilities.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-1.5 mb-3">
-              <BookOpen size={13} className="text-b-sage" />
-              <span className="font-b-sans text-xs font-medium text-b-ink">能力矩阵</span>
-            </div>
-            <div className="space-y-3">
-              {project.abilities.map((ability, i) => (
-                <div key={i}>
-                  <h5 className="font-b-serif text-sm text-b-sage mb-1.5">{ability.category}</h5>
-                  <ul className="space-y-1">
-                    {ability.items.map((item, j) => (
-                      <li
-                        key={j}
-                        className="text-b-ink-light text-xs flex items-start gap-2 font-b-sans"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-b-sage mt-1.5 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+          <div className="relative pl-7">
+            <div className="b-timeline-line" />
+            {project.phases.map((phase, i) => (
+              <div key={i} className="relative pb-5 last:pb-0">
+                <div className="b-timeline-dot" style={{ top: '4px' }} />
+                <div className="ml-4">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-b-serif text-sm text-b-ink">{phase.name}</span>
+                    <span className="font-b-mono text-[11px] text-b-muted bg-b-cream-dark px-2 py-0.5 rounded">
+                      {phase.period}
+                    </span>
+                  </div>
+                  <p className="text-b-ink-light text-xs leading-relaxed font-b-sans">
+                    {phase.desc}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {project.scenarios && project.scenarios.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Sparkles size={13} className="text-b-terracotta" />
-              <span className="font-b-sans text-xs font-medium text-b-ink">应用场景</span>
-            </div>
-            <ul className="space-y-1.5">
-              {project.scenarios.map((scenario, i) => (
-                <li
-                  key={i}
-                  className="text-b-ink-light text-xs flex items-start gap-2 font-b-sans"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 shrink-0" />
-                  {scenario}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {project.topics && project.topics.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Tag size={13} className="text-b-sage" />
-              <span className="font-b-sans text-xs font-medium text-b-ink">学习主题</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {project.topics.map((topic, i) => (
-                <span key={i} className="b-tag b-tag-sage text-[11px]">
-                  {topic}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="pt-3 mt-auto border-t border-b-border">
-          <div className="flex flex-wrap gap-1.5">
-            {project.tags.map((tag, i) => (
-              <span key={i} className="b-tag b-tag-terracotta text-[11px]">
-                {tag}
-              </span>
+              </div>
             ))}
           </div>
+        </div>
+      )}
+
+      <div className="pt-4 border-t border-b-border">
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag, i) => (
+            <span key={i} className="b-tag b-tag-slate">{tag}</span>
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-function SkillTagsSection() {
+function MinorProjectExpanded({ project }: { project: Project }) {
   return (
-    <div className="b-fade-up">
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center gap-3 mb-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-b-terracotta-dim">
-            <Brain size={18} className="text-b-terracotta" />
-          </div>
-          <h3 className="font-b-serif text-2xl text-b-ink">技术栈</h3>
-        </div>
-        <p className="text-b-muted text-sm font-b-sans">持续扩展中的AI技术能力图谱</p>
-      </div>
+    <div className="space-y-4">
+      <p className="text-b-ink-light text-sm leading-relaxed font-b-sans">
+        {project.summary}
+      </p>
 
-      <div className="flex flex-wrap justify-center gap-2.5 max-w-3xl mx-auto">
-        {aiData.skillTags.map((tag, index) => (
-          <span
-            key={index}
-            className={`b-tag b-tag-terracotta b-fade-up b-stagger-${(index % 8) + 1} cursor-default hover:shadow-sm transition-shadow`}
-          >
-            <Hash size={10} className="shrink-0 opacity-60" />
-            {tag}
-          </span>
-        ))}
+      {project.abilities && project.abilities.length > 0 && (
+        <div>
+          <div className="flex items-center gap-1.5 mb-3">
+            <BookOpen size={13} className="text-b-sage" />
+            <span className="font-b-sans text-xs font-medium text-b-ink">能力矩阵</span>
+          </div>
+          <div className="space-y-3">
+            {project.abilities.map((ability, i) => (
+              <div key={i}>
+                <h5 className="font-b-serif text-sm text-b-sage mb-1.5">{ability.category}</h5>
+                <ul className="space-y-1">
+                  {ability.items.map((item, j) => (
+                    <li
+                      key={j}
+                      className="text-b-ink-light text-xs flex items-start gap-2 font-b-sans"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-b-sage mt-1.5 shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {project.scenarios && project.scenarios.length > 0 && (
+        <div>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles size={13} className="text-b-terracotta" />
+            <span className="font-b-sans text-xs font-medium text-b-ink">应用场景</span>
+          </div>
+          <ul className="space-y-1.5">
+            {project.scenarios.map((scenario, i) => (
+              <li
+                key={i}
+                className="text-b-ink-light text-xs flex items-start gap-2 font-b-sans"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 shrink-0" />
+                {scenario}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {project.topics && project.topics.length > 0 && (
+        <div>
+          <div className="flex items-center gap-1.5 mb-2">
+            <Tag size={13} className="text-b-sage" />
+            <span className="font-b-sans text-xs font-medium text-b-ink">学习主题</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {project.topics.map((topic, i) => (
+              <span key={i} className="b-tag b-tag-sage text-[11px]">{topic}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="pt-3 border-t border-b-border">
+        <div className="flex flex-wrap gap-1.5">
+          {project.tags.map((tag, i) => (
+            <span key={i} className="b-tag b-tag-sage text-[11px]">{tag}</span>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -354,9 +215,8 @@ function SkillTagsSection() {
 
 export default function AIB() {
   const projects = aiData.projects as Project[]
-
-  const majorProjects = projects.filter((p) => p.phases && p.phases.length > 0)
-  const minorProjects = projects.filter((p) => !p.phases || p.phases.length === 0)
+  const majorProjects = projects.filter((p) => MAJOR_IDS.includes(p.id))
+  const minorProjects = projects.filter((p) => !MAJOR_IDS.includes(p.id))
 
   return (
     <section className="py-16 md:py-24 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
@@ -393,10 +253,20 @@ export default function AIB() {
             <p className="text-b-muted text-xs font-b-sans">从架构设计到工程交付的完整实践</p>
           </div>
         </div>
-
-        <div className="space-y-8">
+        <div className="space-y-5">
           {majorProjects.map((project, index) => (
-            <MajorProjectCard key={project.id} project={project} index={index} />
+            <div key={project.id} className={`b-fade-up b-stagger-${index + 1}`}>
+              <ExpandableCard
+                title={project.title}
+                icon={<Cpu size={16} />}
+                badge={project.period}
+                tags={project.tags.slice(0, 3)}
+                cardClass="b-card-slate"
+                tagClass="b-tag-slate"
+              >
+                <MajorProjectExpanded project={project} />
+              </ExpandableCard>
+            </div>
           ))}
         </div>
       </div>
@@ -413,17 +283,48 @@ export default function AIB() {
             <p className="text-b-muted text-xs font-b-sans">AI领域的多元能力拓展</p>
           </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {minorProjects.map((project, index) => (
-            <MinorProjectCard key={project.id} project={project} index={index} />
+            <div key={project.id} className={`b-fade-up b-stagger-${(index % 4) + 1}`}>
+              <ExpandableCard
+                title={project.title}
+                icon={<Sparkles size={14} />}
+                badge={project.period}
+                tags={project.tags.slice(0, 2)}
+                cardClass="b-card-sage"
+                tagClass="b-tag-sage"
+              >
+                <MinorProjectExpanded project={project} />
+              </ExpandableCard>
+            </div>
           ))}
         </div>
       </div>
 
       <div className="b-divider" />
 
-      <SkillTagsSection />
+      <div className="b-fade-up">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-b-terracotta-dim">
+              <Brain size={18} className="text-b-terracotta" />
+            </div>
+            <h3 className="font-b-serif text-2xl text-b-ink">技术栈</h3>
+          </div>
+          <p className="text-b-muted text-sm font-b-sans">持续扩展中的AI技术能力图谱</p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2.5 max-w-3xl mx-auto">
+          {aiData.skillTags.map((tag, index) => (
+            <span
+              key={index}
+              className={`b-tag b-tag-terracotta b-fade-up b-stagger-${(index % 8) + 1} cursor-default hover:shadow-sm transition-shadow`}
+            >
+              <Hash size={10} className="shrink-0 opacity-60" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }
