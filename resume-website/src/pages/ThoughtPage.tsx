@@ -30,69 +30,107 @@ export default function ThoughtPage() {
             <Target size={24} className="text-primary" />
             <h3 className="text-2xl md:text-4xl font-semibold text-white">职业规划时间轴</h3>
           </div>
-          
-          <div className="space-y-8 md:space-y-12">
-            {thoughtData.career.map((item, index) => (
-              <div key={index} className="flex items-start gap-6 md:gap-10">
-                <div className="flex flex-col items-center">
-                  <div 
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                    }}
+          <div className="relative">
+            <div 
+              className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px"
+              style={{
+                background: 'linear-gradient(180deg, #007aff 0%, #34c759 50%, #af52de 100%)',
+                opacity: 0.6,
+              }}
+            />
+            <div className="space-y-16 md:space-y-0">
+              {thoughtData.career.map((item, index) => {
+                const isLeft = index % 2 === 0
+                return (
+                  <div
+                    key={index}
+                    className={`relative flex flex-col md:flex-row gap-4 md:gap-0 md:py-0 ${
+                      isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
+                    }`}
                   >
-                    <span 
-                      className="text-base md:text-lg font-semibold"
-                      style={{ color: '#00d4ff' }}
-                    >
-                      {index + 1}
-                    </span>
-                  </div>
-                  {index < thoughtData.career.length - 1 && (
-                    <div 
-                      className="w-px flex-1 mt-2"
-                      style={{
-                        background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                      }}
-                    />
-                  )}
-                </div>
-                
-                <div className="flex-1 pt-1">
-                  <div className="mb-2 md:mb-3">
-                    <span 
-                      className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        color: 'rgba(255, 255, 255, 0.6)',
-                      }}
-                    >
-                      {item.phase}
-                    </span>
-                  </div>
-                  
-                  <h4 className="text-lg md:text-2xl font-semibold text-white mb-3">
-                    {item.content}
-                  </h4>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {item.tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full"
+                    <div className="hidden md:block md:w-1/2" />
+                    
+                    <div className="absolute left-4 md:left-1/2 -translate-x-1/2 w-12 h-12 rounded-full z-10 flex items-center justify-center">
+                      <div 
+                        className="w-full h-full rounded-full"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.04)',
-                          color: 'rgba(255, 255, 255, 0.6)',
+                          background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
+                          boxShadow: '0 0 30px rgba(0, 122, 255, 0.5), 0 0 60px rgba(52, 199, 89, 0.2)',
+                        }}
+                      />
+                      <div 
+                        className="absolute w-7 h-7 rounded-full flex items-center justify-center"
+                        style={{
+                          background: '#0a0a0a',
+                          boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
                         }}
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        <span className="text-xs font-bold text-primary">
+                          {index + 1}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={`md:w-1/2 ml-16 md:ml-0 ${isLeft ? 'md:pr-16 md:text-right' : 'md:pl-16 md:text-left'}`}>
+                      <div className="inline-block max-w-md">
+                        <div 
+                          className="relative group"
+                          style={{
+                            perspective: '1000px',
+                          }}
+                        >
+                          <div 
+                            className="relative p-8 rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.02)',
+                              backdropFilter: 'blur(24px)',
+                              WebkitBackdropFilter: 'blur(24px)',
+                              border: '1px solid rgba(255, 255, 255, 0.06)',
+                              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                            }}
+                          >
+                            <div 
+                              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(52, 199, 89, 0.05) 100%)',
+                              }}
+                            />
+                            
+                            <div className="relative z-10">
+                              <h4 className="text-xl font-semibold text-white mb-4 leading-tight">
+                                {item.phase}
+                              </h4>
+                              <p className="text-text-secondary text-base leading-relaxed mb-4">
+                                {item.content}
+                              </p>
+                              <div
+                                className={`flex flex-wrap gap-2 ${
+                                  isLeft ? 'md:justify-end' : 'md:justify-start'
+                                }`}
+                              >
+                                {item.tags.map((tag, i) => (
+                                  <span
+                                    key={i}
+                                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-full"
+                                    style={{
+                                      background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.2) 0%, rgba(52, 199, 89, 0.2) 100%)',
+                                      color: '#00d4ff',
+                                      border: '1px solid rgba(0, 122, 255, 0.3)',
+                                    }}
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                )
+              })}
+            </div>
           </div>
         </div>
 
