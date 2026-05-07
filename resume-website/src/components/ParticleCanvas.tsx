@@ -1,23 +1,25 @@
 import { useRef, useEffect } from 'react'
 import { prefersReducedMotion } from '@utils/reducedMotionCheck'
 
-interface Particle {
+interface Node {
   x: number
   y: number
-  vx: number
-  vy: number
-  size: number
-  opacity: number
   baseX: number
   baseY: number
+  vx: number
+  vy: number
+  connections: number[]
+  pulsePhase: number
+  pulseSpeed: number
 }
 
 export default function ParticleCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const particlesRef = useRef<Particle[]>([])
+  const nodesRef = useRef<Node[]>([])
   const mouseRef = useRef({ x: -1000, y: -1000 })
   const rafRef = useRef<number>(0)
   const frameCountRef = useRef(0)
+  const timeRef = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -28,33 +30,39 @@ export default function ParticleCanvas() {
 
     const reduced = prefersReducedMotion()
     const isMobile = window.innerWidth < 768
-    const maxParticles = reduced ? 20 : isMobile ? 40 : 100
+    const nodeCount = reduced ? 12 : isMobile ? 20 : 35
 
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      const dpr = Math.min(window.devicePixelRatio, 2)
+      canvas.width = window.innerWidth * dpr
+      canvas.height = window.innerHeight * dpr
+      ctx.scale(dpr, dpr)
+      canvas.style.width = window.innerWidth + 'px'
+      canvas.style.height = window.innerHeight + 'px'
     }
     resize()
     window.addEventListener('resize', resize)
 
-    // 初始化粒子
-    const initParticles = () => {
-      particlesRef.current = Array.from({ length: maxParticles }, () => {
-        const x = Math.random() * canvas.width
-        const y = Math.random() * canvas.height
+    const initNodes = () => {
+      const w = window.innerWidth
+      const h = window.innerHeight
+      nodesRef.current = Array.from({ length: nodeCount }, () => {
+        const x = Math.random() * w
+        const y = Math.random() * h
         return {
           x,
           y,
           baseX: x,
           baseY: y,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          size: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.4 + 0.1,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: (Math.random() - 0.5) * 0.15,
+          connections: [],
+          pulsePhase: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.3 + Math.random() * 0.5,
         }
       })
     }
-    initParticles()
+    initNodes()
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY }
@@ -62,87 +70,122 @@ export default function ParticleCanvas() {
     const handleMouseLeave = () => {
       mouseRef.current = { x: -1000, y: -1000 }
     }
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        mouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-      }
-    }
-    const handleTouchEnd = () => {
-      mouseRef.current = { x: -1000, y: -1000 }
-    }
 
     window.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
-    window.addEventListener('touchmove', handleTouchMove, { passive: true })
-    window.addEventListener('touchend', handleTouchEnd)
 
     const animate = () => {
       frameCountRef.current++
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      timeRef.current += 0.016
+      const w = window.innerWidth
+      const h = window.innerHeight
+
+      ctx.clearRect(0, 0, w, h)
 
       const mouse = mouseRef.current
-      const forceRadius = 120
-      const forceStrength = reduced ? 0 : 0.8
+      const forceRadius = 150
+      const forceStrength = reduced ? 0 : 0.6
 
-      particlesRef.current.forEach((p) => {
-        // 基础漂浮
-        p.x += p.vx
-        p.y += p.vy
+      const nodes = nodesRef.current
 
-        // 边界反弹
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1
+      // Update nodes
+      nodes.forEach((node) => {
+        // Gentle drift
+        node.x += node.vx
+        node.y += node.vy
 
-        // 鼠标斥力
+        // Boundary wrap (soft)
+        if (node.x < -50) node.x = w + 50
+        if (node.x > w + 50) node.x = -50
+        if (node.y < -50) node.y = h + 50
+        if (node.y > h + 50) node.y = -50
+
+        // Mouse repulsion
         if (!reduced) {
-          const dx = p.x - mouse.x
-          const dy = p.y - mouse.y
+          const dx = node.x - mouse.x
+          const dy = node.y - mouse.y
           const dist = Math.sqrt(dx * dx + dy * dy)
 
           if (dist < forceRadius && dist > 0) {
             const force = ((forceRadius - dist) / forceRadius) * forceStrength
-            p.vx += (dx / dist) * force * 0.02
-            p.vy += (dy / dist) * force * 0.02
+            node.vx += (dx / dist) * force * 0.015
+            node.vy += (dy / dist) * force * 0.015
           }
         }
 
-        // 速度衰减
-        p.vx *= 0.99
-        p.vy *= 0.99
+        // Damping
+        node.vx *= 0.995
+        node.vy *= 0.995
 
-        // 绘制粒子
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(0, 229, 255, ${p.opacity})`
-        ctx.fill()
+        // Gentle return to base drift
+        const returnForce = 0.0003
+        node.vx += (node.baseX - node.x) * returnForce * 0.1
+        node.vy += (node.baseY - node.y) * returnForce * 0.1
       })
 
-      // 连线（每2帧执行一次，优化性能）
-      if (!reduced && frameCountRef.current % 2 === 0) {
-        const connectDistance = 100
-        const maxConnections = 3
+      // Draw connections (circuit traces)
+      if (!reduced) {
+        const connectDistance = 180
+        const maxConnections = 2
 
-        particlesRef.current.forEach((p1, i) => {
+        nodes.forEach((n1, i) => {
           let connections = 0
-          for (let j = i + 1; j < particlesRef.current.length; j++) {
+          for (let j = i + 1; j < nodes.length; j++) {
             if (connections >= maxConnections) break
-            const p2 = particlesRef.current[j]
-            const dx = p1.x - p2.x
-            const dy = p1.y - p2.y
+            const n2 = nodes[j]
+            const dx = n1.x - n2.x
+            const dy = n1.y - n2.y
             const dist = Math.sqrt(dx * dx + dy * dy)
 
             if (dist < connectDistance) {
               connections++
+              const alpha = 0.04 * (1 - dist / connectDistance)
+
+              // Circuit trace style: dashed line with glow
               ctx.beginPath()
-              ctx.moveTo(p1.x, p1.y)
-              ctx.lineTo(p2.x, p2.y)
-              ctx.strokeStyle = `rgba(0, 229, 255, ${0.06 * (1 - dist / connectDistance)})`
+              ctx.moveTo(n1.x, n1.y)
+              ctx.lineTo(n2.x, n2.y)
+              ctx.strokeStyle = `rgba(192, 74, 26, ${alpha})`
               ctx.lineWidth = 0.5
+              ctx.setLineDash([4, 8])
               ctx.stroke()
+              ctx.setLineDash([])
+
+              // Occasional data packet traveling along the line
+              if (frameCountRef.current % 120 === (i + j) % 120) {
+                const packetT = ((frameCountRef.current % 120) / 120)
+                const px = n1.x + (n2.x - n1.x) * packetT
+                const py = n1.y + (n2.y - n1.y) * packetT
+                ctx.beginPath()
+                ctx.arc(px, py, 1.5, 0, Math.PI * 2)
+                ctx.fillStyle = `rgba(192, 74, 26, ${0.3 * (1 - Math.abs(packetT - 0.5) * 2)})`
+                ctx.fill()
+              }
             }
           }
         })
       }
+
+      // Draw nodes (circuit junctions)
+      nodes.forEach((node) => {
+        const pulse = Math.sin(timeRef.current * node.pulseSpeed + node.pulsePhase)
+        const baseSize = 1.5
+        const pulseSize = baseSize + pulse * 0.5
+
+        // Outer glow
+        if (!reduced) {
+          ctx.beginPath()
+          ctx.arc(node.x, node.y, pulseSize * 4, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(192, 74, 26, ${0.03 + pulse * 0.02})`
+          ctx.fill()
+        }
+
+        // Core node
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, Math.max(pulseSize, 0.8), 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(192, 74, 26, ${0.3 + pulse * 0.15})`
+        ctx.fill()
+      })
 
       rafRef.current = requestAnimationFrame(animate)
     }
@@ -153,8 +196,6 @@ export default function ParticleCanvas() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
-      window.removeEventListener('touchmove', handleTouchMove)
-      window.removeEventListener('touchend', handleTouchEnd)
       cancelAnimationFrame(rafRef.current)
     }
   }, [])
@@ -163,7 +204,7 @@ export default function ParticleCanvas() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.7 }}
+      style={{ opacity: 0.6 }}
       aria-hidden="true"
     />
   )

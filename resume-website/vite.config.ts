@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 4174,
+    port: 5173,
     host: '0.0.0.0',
   },
   resolve: {
@@ -20,6 +20,8 @@ export default defineConfig({
       '@data': path.resolve(__dirname, './src/data'),
       '@assets': path.resolve(__dirname, './src/assets'),
       '@pages': path.resolve(__dirname, './src/pages'),
+      '@pages-b': path.resolve(__dirname, './src/pages-b'),
+      '@sections-b': path.resolve(__dirname, './src/sections-b'),
     },
   },
   css: {

@@ -36,9 +36,9 @@ function ProjectHighlights({ highlights }: { highlights: string[] }) {
       {highlights.map((h, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans"
         >
-          <Zap size={12} className="text-primary/70" />
+          <Zap size={12} className="text-ai/70" />
           {h}
         </span>
       ))}
@@ -50,18 +50,18 @@ function ProjectPhases({ phases }: { phases: Phase[] }) {
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-3">
-        <Layers size={16} className="text-accent-light" />
-        <span className="text-sm font-semibold text-white">开发阶段</span>
+        <Layers size={16} className="text-ai-light" />
+        <span className="text-sm font-medium text-warm font-sans">开发阶段</span>
       </div>
-      <div className="relative pl-5 border-l border-white/8 space-y-3">
+      <div className="relative pl-5 border-l border-white/[0.08] space-y-3">
         {phases.map((phase, i) => (
           <div key={i} className="relative">
-            <div className="absolute -left-[1.35rem] top-1.5 w-2 h-2 rounded-full bg-accent-light" />
+            <div className="absolute -left-[1.35rem] top-1.5 w-2 h-2 rounded-full bg-ai-light" />
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <span className="text-sm font-semibold text-white">{phase.name}</span>
-              <span className="text-xs text-text-muted">{phase.period}</span>
+              <span className="text-sm font-medium text-warm font-sans">{phase.name}</span>
+              <span className="text-xs text-warm-faint font-mono">{phase.period}</span>
             </div>
-            <p className="text-text-secondary text-xs leading-relaxed">{phase.desc}</p>
+            <p className="text-warm-muted text-xs leading-relaxed font-sans">{phase.desc}</p>
           </div>
         ))}
       </div>
@@ -73,17 +73,17 @@ function ProjectAbilities({ abilities }: { abilities: Ability[] }) {
   return (
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-3">
-        <BookOpen size={16} className="text-primary" />
-        <span className="text-sm font-semibold text-white">能力矩阵</span>
+        <BookOpen size={16} className="text-ai" />
+        <span className="text-sm font-medium text-warm font-sans">能力矩阵</span>
       </div>
       <div className="space-y-4">
         {abilities.map((ability, i) => (
           <div key={i}>
-            <h4 className="text-sm font-semibold text-primary mb-2">{ability.category}</h4>
+            <h4 className="text-sm font-medium text-ai mb-2 font-sans">{ability.category}</h4>
             <ul className="space-y-1.5">
               {ability.items.map((item, j) => (
-                <li key={j} className="text-text-secondary text-xs flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary/50 mt-1.5 shrink-0" />
+                <li key={j} className="text-warm-muted text-xs flex items-start gap-2 font-sans">
+                  <span className="w-1.5 h-1.5 rounded-full bg-ai/50 mt-1.5 shrink-0" />
                   {item}
                 </li>
               ))}
@@ -125,16 +125,16 @@ export default function AIPage() {
   ]
 
   return (
-    <div className="relative py-28 md:py-40 px-4 md:px-6 section-divider">
+    <div className="relative py-28 md:py-40 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-16 md:mb-24 text-center">
-          <p className="text-primary/80 text-xs md:text-sm font-semibold tracking-[0.3em] uppercase mb-4">
+          <p className="text-ai-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">
             {aiData.subtitle}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-6 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-6 tracking-tight">
             {aiData.title}
           </h2>
-          <p className="text-text-secondary text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
             {aiData.description}
           </p>
         </div>
@@ -155,18 +155,18 @@ export default function AIPage() {
           >
             {project.keywords && (
               <div className="flex items-start gap-2 mb-3">
-                <Hash size={14} className="text-text-muted mt-0.5 shrink-0" />
-                <p className="text-text-muted text-xs leading-relaxed">{project.keywords}</p>
+                <Hash size={14} className="text-warm-faint mt-0.5 shrink-0" />
+                <p className="text-warm-faint text-xs leading-relaxed font-sans">{project.keywords}</p>
               </div>
             )}
             {project.version && (
-              <p className="text-primary/60 text-xs font-mono mb-3">{project.version}</p>
+              <p className="text-ai/60 text-xs font-mono mb-3">{project.version}</p>
             )}
             {project.highlights && <ProjectHighlights highlights={project.highlights} />}
             {project.phases && <ProjectPhases phases={project.phases} />}
             <div className="flex flex-wrap gap-2 mt-4">
               {project.tags.map((tag, i) => (
-                <span key={i} className="apple-tag text-xs">{tag}</span>
+                <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
               ))}
             </div>
           </FeatureSection>
@@ -174,15 +174,15 @@ export default function AIPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-16">
           {minorProjects.map((project) => (
-            <GlassCard key={project.id} className="p-6 flex flex-col h-full" glowColor={project.abilities ? 'blue' : project.scenarios ? 'purple' : 'green'}>
-              <h3 className="text-lg font-semibold text-white mb-2">{project.title}</h3>
+            <GlassCard key={project.id} className="flex flex-col h-full" glowColor={project.abilities ? 'ai' : project.scenarios ? 'ai' : 'energy'}>
+              <h3 className="text-lg font-serif text-warm mb-2">{project.title}</h3>
               {project.period && (
-                <div className="flex items-center gap-1.5 text-text-secondary text-xs mb-3">
+                <div className="flex items-center gap-1.5 text-warm-faint text-xs mb-3 font-mono">
                   <Calendar size={12} />
                   <span>{project.period}</span>
                 </div>
               )}
-              <p className="text-text-secondary text-sm leading-relaxed mb-4">{project.summary}</p>
+              <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">{project.summary}</p>
 
               {project.highlights && <ProjectHighlights highlights={project.highlights} />}
               {project.abilities && <ProjectAbilities abilities={project.abilities} />}
@@ -190,13 +190,13 @@ export default function AIPage() {
               {project.scenarios && (
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles size={16} className="text-accent-light" />
-                    <span className="text-sm font-semibold text-white">应用场景</span>
+                    <Sparkles size={16} className="text-ai-light" />
+                    <span className="text-sm font-medium text-warm font-sans">应用场景</span>
                   </div>
                   <ul className="space-y-2">
                     {project.scenarios.map((scenario, i) => (
-                      <li key={i} className="text-text-secondary text-xs flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-light/50 mt-1.5 shrink-0" />
+                      <li key={i} className="text-warm-muted text-xs flex items-start gap-2 font-sans">
+                        <span className="w-1.5 h-1.5 rounded-full bg-ai-light/50 mt-1.5 shrink-0" />
                         {scenario}
                       </li>
                     ))}
@@ -207,12 +207,12 @@ export default function AIPage() {
               {project.topics && (
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3">
-                    <Tag size={16} className="text-primary" />
-                    <span className="text-sm font-semibold text-white">学习主题</span>
+                    <Tag size={16} className="text-ai" />
+                    <span className="text-sm font-medium text-warm font-sans">学习主题</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {project.topics.map((topic, i) => (
-                      <span key={i} className="apple-tag text-xs">{topic}</span>
+                      <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{topic}</span>
                     ))}
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export default function AIPage() {
 
               <div className="flex flex-wrap gap-2 mt-auto pt-3">
                 {project.tags.map((tag, i) => (
-                  <span key={i} className="apple-tag">{tag}</span>
+                  <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
                 ))}
               </div>
             </GlassCard>
@@ -228,12 +228,12 @@ export default function AIPage() {
         </div>
 
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-semibold text-white mb-2">技术栈</h3>
-          <p className="text-text-secondary text-sm">持续扩展中的AI技术能力图谱</p>
+          <h3 className="text-2xl font-serif text-warm mb-2">技术栈</h3>
+          <p className="text-warm-muted text-sm font-sans">持续扩展中的AI技术能力图谱</p>
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           {aiData.skillTags.map((tag, index) => (
-            <span key={index} className="apple-tag hover:apple-tag-primary">
+            <span key={index} className="px-3 py-1.5 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans hover:bg-ai/20 transition-colors cursor-default">
               {tag}
             </span>
           ))}
