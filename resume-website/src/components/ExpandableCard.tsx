@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 interface ExpandableCardProps {
@@ -23,14 +23,6 @@ export default function ExpandableCard({
   className = '',
 }: ExpandableCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [contentHeight, setContentHeight] = useState(0)
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight)
-    }
-  }, [expanded, children])
 
   return (
     <div
@@ -91,12 +83,11 @@ export default function ExpandableCard({
         <div
           className="transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
-            maxHeight: expanded ? contentHeight : 0,
-            opacity: expanded ? 1 : 0,
-            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateRows: expanded ? '1fr' : '0fr',
           }}
         >
-          <div ref={contentRef}>
+          <div className="min-h-0 overflow-hidden">
             <div className="pt-5 mt-5 border-t border-b-border">
               {children}
             </div>

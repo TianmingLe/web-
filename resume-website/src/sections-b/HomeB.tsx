@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, ChevronDown } from 'lucide-react'
+import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, ChevronDown, Phone, Mail, ExternalLink } from 'lucide-react'
 import CoverLayout from '@layouts/CoverLayout'
+import otherData from '@data/other.json'
 
 const traits = [
   {
@@ -33,6 +34,42 @@ const traits = [
     tagClass: 'b-tag-terracotta',
   },
 ]
+
+function SocialIcon({ icon }: { icon: string }) {
+  switch (icon) {
+    case 'github':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+        </svg>
+      )
+    case 'bilibili':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="6" width="18" height="14" rx="3" />
+          <path d="M8 2l3 4" />
+          <path d="M16 2l-3 4" />
+          <circle cx="9.5" cy="13" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="14.5" cy="13" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+      )
+    case 'xiaohongshu':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16v16H4z" rx="2" />
+          <path d="M9 9l3 6 3-6" />
+        </svg>
+      )
+    case 'douyin':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+        </svg>
+      )
+    default:
+      return <ExternalLink size={18} />
+  }
+}
 
 export default function HomeB() {
   const contentRef = useRef<HTMLDivElement>(null)
@@ -91,6 +128,12 @@ export default function HomeB() {
         '.hb-quote',
         { y: 25, opacity: 0 },
         { y: 0, opacity: 1, duration: 1, ease: 'expo.out', delay: 2.0 }
+      )
+
+      gsap.fromTo(
+        '.hb-contact',
+        { y: 25, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'expo.out', delay: 2.2 }
       )
 
       gsap.fromTo(
@@ -196,7 +239,7 @@ export default function HomeB() {
           </div>
         </div>
 
-        <div className="hb-quote relative max-w-lg mx-auto mb-16 px-6">
+        <div className="hb-quote relative max-w-lg mx-auto mb-10 px-6">
           <span className="b-quote-mark" aria-hidden="true">"</span>
           <blockquote className="font-b-serif text-base md:text-lg text-b-ink-light leading-relaxed italic pl-4">
             在能源与智能的交汇处，寻找改变世界的支点
@@ -206,6 +249,73 @@ export default function HomeB() {
             <span className="font-b-mono text-[10px] text-b-muted tracking-widest uppercase">
               Hu Yawei
             </span>
+          </div>
+        </div>
+
+        <div className="hb-contact w-full max-w-2xl mx-auto mb-12">
+          <div className="b-card b-card-terracotta p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Mail size={20} className="text-b-terracotta" />
+              <h3 className="font-b-serif text-xl text-b-ink">联系方式</h3>
+              <span className="b-ornament" />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-b-terracotta-dim flex items-center justify-center shrink-0">
+                  <Phone size={16} className="text-b-terracotta" />
+                </div>
+                <div className="text-left">
+                  <p className="font-b-sans text-xs text-b-muted uppercase tracking-wider mb-0.5">电话</p>
+                  <a
+                    href={`tel:${otherData.contact.phone}`}
+                    className="font-b-sans text-sm text-b-ink b-underline-hover"
+                  >
+                    {otherData.contact.phone}
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-b-sage-dim flex items-center justify-center shrink-0">
+                  <Mail size={16} className="text-b-sage" />
+                </div>
+                <div className="text-left">
+                  <p className="font-b-sans text-xs text-b-muted uppercase tracking-wider mb-0.5">邮箱</p>
+                  <a
+                    href={`mailto:${otherData.contact.email}`}
+                    className="font-b-sans text-sm text-b-ink b-underline-hover break-all"
+                  >
+                    {otherData.contact.email}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-5 border-t border-b-border">
+              <p className="font-b-sans text-xs text-b-muted uppercase tracking-wider mb-4 text-left">
+                社交平台
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {otherData.contact.social.map((s, i) => (
+                  <a
+                    key={i}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-b-cream-dark border border-b-border hover:border-b-terracotta/30 hover:bg-b-terracotta/5 transition-all duration-300 group"
+                  >
+                    <span className="text-b-ink-light group-hover:text-b-terracotta transition-colors duration-300">
+                      <SocialIcon icon={s.icon} />
+                    </span>
+                    <span className="font-b-sans text-sm text-b-ink-light group-hover:text-b-ink transition-colors duration-300">
+                      {s.name}
+                    </span>
+                    <ExternalLink size={11} className="text-b-muted group-hover:text-b-terracotta transition-colors duration-300" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
