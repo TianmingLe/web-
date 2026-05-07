@@ -1,39 +1,33 @@
-import { useEffect } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Nav from '@components/Nav'
 import ParticleCanvas from '@components/ParticleCanvas'
 import MusicDock from '@components/MusicDock'
-import Home from '@sections/Home'
-import Energy from '@sections/Energy'
-import AI from '@sections/AI'
-import Media from '@sections/Media'
-import Thought from '@sections/Thought'
-import Other from '@sections/Other'
-
-gsap.registerPlugin(ScrollTrigger)
+import HomePage from '@pages/HomePage'
+import EnergyPage from '@pages/EnergyPage'
+import AIPage from '@pages/AIPage'
+import MediaPage from '@pages/MediaPage'
+import ThoughtPage from '@pages/ThoughtPage'
+import OtherPage from '@pages/OtherPage'
 
 function App() {
-  useEffect(() => {
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
-    }
-  }, [])
-
   return (
-    <div className="relative min-h-screen bg-base">
-      <ParticleCanvas />
-      <Nav />
-      <main className="relative z-10">
-        <Home />
-        <Energy />
-        <AI />
-        <Media />
-        <Thought />
-        <Other />
-      </main>
-      <MusicDock />
-    </div>
+    <BrowserRouter>
+      <div className="relative min-h-screen bg-base">
+        <ParticleCanvas />
+        <Nav />
+        <main className="relative z-10">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/energy" element={<EnergyPage />} />
+            <Route path="/ai" element={<AIPage />} />
+            <Route path="/media" element={<MediaPage />} />
+            <Route path="/thought" element={<ThoughtPage />} />
+            <Route path="/other" element={<OtherPage />} />
+          </Routes>
+        </main>
+        <MusicDock />
+      </div>
+    </BrowserRouter>
   )
 }
 

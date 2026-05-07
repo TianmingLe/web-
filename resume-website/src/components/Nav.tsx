@@ -1,25 +1,26 @@
 import { useState, useEffect } from 'react'
-import { useNavState } from '@store/navActive'
+import { NavLink, useLocation } from 'react-router-dom'
 import navData from '@data/nav.json'
 
 interface NavItem {
   id: string
   label: string
   shortLabel: string
+  path: string
 }
 
 const navItems: NavItem[] = [
-  { id: 'home', label: '首页', shortLabel: '首页' },
-  { id: 'energy', label: '能动技术', shortLabel: '能源' },
-  { id: 'ai', label: 'AI特种技术', shortLabel: 'AI' },
-  { id: 'media', label: '自媒体特种技术', shortLabel: '媒体' },
-  { id: 'thought', label: '思想领域高度技术', shortLabel: '思想' },
-  { id: 'other', label: '其他', shortLabel: '其他' },
+  { id: 'home', label: '首页', shortLabel: '首页', path: '/' },
+  { id: 'energy', label: '能动技术', shortLabel: '能源', path: '/energy' },
+  { id: 'ai', label: 'AI特种技术', shortLabel: 'AI', path: '/ai' },
+  { id: 'media', label: '自媒体特种技术', shortLabel: '媒体', path: '/media' },
+  { id: 'thought', label: '思想领域高度技术', shortLabel: '思想', path: '/thought' },
+  { id: 'other', label: '其他', shortLabel: '其他', path: '/other' },
 ]
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
-  const { activeId, setActiveId } = useNavState()
+  const location = useLocation()
 
   void navData
 
@@ -32,32 +33,8 @@ export default function Nav() {
   }, [])
 
   useEffect(() => {
-    const sections = navItems.map((item) => document.getElementById(item.id))
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
-          }
-        })
-      },
-      { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
-    )
-
-    sections.forEach((section) => {
-      if (section) observer.observe(section)
-    })
-
-    return () => observer.disconnect()
-  }, [setActiveId])
-
-  const handleNavigate = (id: string) => {
-    const element = document.getElementById(id)
-    if (!element) return
-    const top = element.getBoundingClientRect().top + window.scrollY - 80
-    window.scrollTo({ top, behavior: 'smooth' })
-  }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [location.pathname])
 
   return (
     <nav
@@ -70,43 +47,37 @@ export default function Nav() {
     >
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4">
         <ul className="flex items-center justify-center gap-1 md:gap-2" role="menubar">
-          {navItems.map((item) => {
-            const isActive = activeId === item.id
-            return (
-              <li key={item.id} role="none">
-                <button
-                  onClick={() => handleNavigate(item.id)}
-                  className="group relative flex items-center gap-1.5 px-3 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-350"
-                  role="menuitem"
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-350 ${
-                      isActive
-                        ? 'bg-primary shadow-[0_0_8px_#007aff] scale-100'
-                        : 'bg-white/30 scale-75 group-hover:bg-white/50'
-                    }`}
-                    aria-hidden="true"
-                  />
-
-                  <span
-                    className={`transition-all duration-350 ${
-                      isActive
-                        ? 'text-white font-semibold'
-                        : 'text-white/60 group-hover:text-white/90'
-                    }`}
-                  >
+          {navItems.map((item) => (
+            <li key={item.id} role="none">
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `group relative flex items-center gap-1.5 px-3 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-350 ${
+                    isActive ? 'text-white font-semibold' : 'text-white/60 hover:text-white/90'
+                  }`
+                }
+                role="menuitem"
+              >
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full transition-all duration-350 ${
+                        isActive
+                          ? 'bg-primary shadow-[0_0_8px_#007aff] scale-100'
+                          : 'bg-white/30 scale-75 group-hover:bg-white/50'
+                      }`}
+                      aria-hidden="true"
+                    />
                     <span className="hidden md:inline">{item.label}</span>
                     <span className="md:hidden">{item.shortLabel}</span>
-                  </span>
-
-                  {isActive && (
-                    <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-primary-light/10 border border-primary/20" aria-hidden="true" />
-                  )}
-                </button>
-              </li>
-            )
-          })}
+                    {isActive && (
+                      <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-primary-light/10 border border-primary/20" aria-hidden="true" />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </div>
     </nav>
