@@ -11,6 +11,8 @@ interface SectionLayoutProps {
   title?: string
   subtitle?: string
   description?: string
+  label?: string
+  glowColor?: 'energy' | 'ai'
 }
 
 export default function SectionLayout({
@@ -20,6 +22,8 @@ export default function SectionLayout({
   title,
   subtitle,
   description,
+  label,
+  glowColor = 'energy',
 }: SectionLayoutProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -32,16 +36,16 @@ export default function SectionLayout({
     const ctx = gsap.context(() => {
       gsap.fromTo(
         content.children,
-        { y: 40, opacity: 0 },
+        { y: 30, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.8,
-          stagger: 0.1,
-          ease: 'power2.out',
+          stagger: 0.08,
+          ease: 'expo.out',
           scrollTrigger: {
             trigger: section,
-            start: 'top 75%',
+            start: 'top 80%',
             toggleActions: 'play none none none',
           },
         }
@@ -57,23 +61,32 @@ export default function SectionLayout({
     <section
       ref={sectionRef}
       id={id}
-      className={`relative py-28 md:py-40 px-4 md:px-6 section-divider ${className}`}
+      className={`relative py-24 md:py-32 px-4 md:px-6 ${className}`}
     >
+      {/* Section divider line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-warm-ghost/20 to-transparent" />
+
       <div className="max-w-6xl mx-auto">
-        {(title || subtitle || description) && (
-          <div className="mb-16 md:mb-24 text-center">
+        {(label || title || subtitle || description) && (
+          <div className="mb-14 md:mb-20">
+            {label && (
+              <div className="flex items-center gap-2 mb-4">
+                <span className={`w-1.5 h-1.5 rounded-full ${glowColor === 'energy' ? 'bg-energy' : 'bg-ai'}`} />
+                <span className="section-label">{label}</span>
+              </div>
+            )}
             {subtitle && (
-              <p className="text-primary/80 text-xs md:text-sm font-semibold tracking-[0.3em] uppercase mb-4">
+              <p className="text-energy-light/80 text-[11px] md:text-xs font-mono font-medium tracking-[0.2em] uppercase mb-3">
                 {subtitle}
               </p>
             )}
             {title && (
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-6 tracking-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-normal text-warm mb-5 tracking-tight">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-text-secondary text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+              <p className="text-warm-muted text-base md:text-lg max-w-2xl leading-relaxed font-sans">
                 {description}
               </p>
             )}

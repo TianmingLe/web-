@@ -1,184 +1,97 @@
-import { Play, FileText, Target, Lightbulb, Clock, MessageCircle, CheckCircle, Wrench, TrendingUp, BookOpen, ListChecks } from 'lucide-react'
+import { Video, MessageSquare, TrendingUp } from 'lucide-react'
 import SectionLayout from '@layouts/SectionLayout'
 import GlassCard from '@components/GlassCard'
-import FeatureSection from '@components/FeatureSection'
 import mediaData from '@data/media.json'
 
-const platformIcons: Record<string, React.ReactNode> = {
-  '哔哩哔哩': <Play size={20} />,
-  '抖音': <Play size={20} />,
-  '小红书': <FileText size={20} />,
-}
-
-const strategyIcons = [Target, Lightbulb, Clock, MessageCircle]
-
-type Project = typeof mediaData.projects[number]
-
-function ProjectDetails({ project }: { project: Project }) {
-  switch (project.id) {
-    case 'omniscraper':
-      return (
-        <div className="space-y-2">
-          <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">核心指标</p>
-          <div className="flex flex-wrap gap-2">
-            {project.highlights!.map((h, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
-              >
-                <CheckCircle size={12} />
-                {h}
-              </span>
-            ))}
-          </div>
-        </div>
-      )
-    case 'video_claw':
-      return (
-        <>
-          <div className="space-y-2 mb-4">
-            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">成果</p>
-            {project.outcomes!.map((o, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <CheckCircle size={14} className="text-primary mt-0.5 shrink-0" />
-                <p className="text-sm text-text-secondary">{o}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-4 py-3 rounded-xl bg-yellow-500/8 border border-yellow-500/15">
-            <div className="flex items-start gap-2">
-              <BookOpen size={14} className="text-yellow-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-text-secondary">{project.lessons}</p>
-            </div>
-          </div>
-        </>
-      )
-    case 'steel_4k':
-      return (
-        <>
-          <div className="mb-4">
-            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider mb-2">工作流</p>
-            {project.workflow!.map((step, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <Wrench size={14} className="text-primary mt-0.5 shrink-0" />
-                <p className="text-sm text-text-secondary">{step}</p>
-              </div>
-            ))}
-          </div>
-          <div>
-            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider mb-2">影响力</p>
-            {project.impact!.map((imp, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <TrendingUp size={14} className="text-primary-light mt-0.5 shrink-0" />
-                <p className="text-sm text-text-secondary">{imp}</p>
-              </div>
-            ))}
-          </div>
-        </>
-      )
-    case 'qingcao_plan':
-      return (
-        <div className="space-y-2">
-          <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">实践活动</p>
-          {project.activities!.map((a, i) => (
-            <div key={i} className="flex items-start gap-2">
-              <ListChecks size={14} className="text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-text-secondary">{a}</p>
-            </div>
-          ))}
-        </div>
-      )
-    default:
-      return null
-  }
-}
-
 export default function Media() {
-  const majorProjects = mediaData.projects.filter((p) => p.id === 'omniscraper' || p.id === 'steel_4k')
-  const minorProjects = mediaData.projects.filter((p) => p.id !== 'omniscraper' && p.id !== 'steel_4k')
-
   return (
     <SectionLayout
       id="media"
       title={mediaData.title}
       subtitle={mediaData.subtitle}
       description={mediaData.description}
+      label="自媒体"
+      glowColor="energy"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mb-16">
         {mediaData.platforms.map((platform, index) => (
-          <GlassCard key={index} className="p-6" glowColor="blue" hoverEffect>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-primary/70">{platformIcons[platform.name]}</span>
-              <div>
-                <h3 className="text-lg font-semibold text-white">{platform.name}</h3>
-                <p className="text-xs text-text-muted">{platform.nameEn}</p>
-              </div>
+          <GlassCard key={index} className="flex flex-col" glowColor="energy">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-serif text-warm">
+                {platform.name}
+              </h3>
+              <span className="text-warm-faint text-xs font-mono">{platform.nameEn}</span>
             </div>
-            <p className="text-3xl font-semibold text-primary mb-1">{platform.followers}</p>
-            <p className="text-xs text-text-muted mb-4">粉丝</p>
-            <p className="text-sm text-text-secondary mb-3">{platform.content}</p>
-            <div className="pt-4 border-t border-white/6">
-              <p className="text-xs text-text-muted mb-1">代表作品</p>
-              <p className="text-sm text-accent-light">{platform.representative}</p>
+            <p className="text-3xl font-serif text-energy-light mb-1">{platform.followers}</p>
+            <p className="text-xs text-warm-faint mb-4 font-mono">粉丝</p>
+            <p className="text-sm text-warm-muted mb-3 font-sans">{platform.content}</p>
+            <div className="pt-4 border-t border-white/[0.06] mt-auto">
+              <p className="text-xs text-warm-faint mb-1 font-mono">代表作品</p>
+              <p className="text-sm text-ai-light font-sans">{platform.representative}</p>
             </div>
           </GlassCard>
         ))}
       </div>
 
-      <GlassCard className="p-6 mb-16" glowColor="purple">
-        <h3 className="text-lg font-semibold text-white mb-4">内容策略</h3>
-        <div className="flex flex-wrap gap-x-8 gap-y-4">
-          {mediaData.contentStrategy.map((strategy, index) => {
-            const Icon = strategyIcons[index]
-            const colonIdx = strategy.indexOf('：')
-            const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
-            const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
-            return (
-              <div key={index} className="flex items-start gap-3 min-w-[220px]">
-                <span className="text-primary/70 mt-0.5"><Icon size={18} /></span>
-                <div>
-                  <p className="text-sm font-medium text-white">{label}</p>
-                  {desc && <p className="text-xs text-text-muted mt-1">{desc}</p>}
-                </div>
-              </div>
-            )
-          })}
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <TrendingUp size={24} className="text-energy-light" />
+          <h3 className="text-2xl font-serif text-warm">内容策略</h3>
         </div>
-      </GlassCard>
-
-      {majorProjects.map((project, index) => (
-        <FeatureSection
-          key={project.id}
-          title={project.title}
-          description={project.summary}
-          badge={project.period}
-          reverse={index % 2 !== 0}
-        >
-          <div className="flex flex-wrap gap-2 mb-4">
-            {project.tags.map((tag, i) => (
-              <span key={i} className="apple-tag text-xs">{tag}</span>
-            ))}
+        <GlassCard className="mb-8" glowColor="ai">
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            {mediaData.contentStrategy.map((strategy, index) => {
+              const colonIdx = strategy.indexOf('：')
+              const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
+              const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
+              return (
+                <div key={index} className="flex items-start gap-3 min-w-[220px]">
+                  <div>
+                    <p className="text-sm font-medium text-warm font-sans">{label}</p>
+                    {desc && <p className="text-xs text-warm-faint mt-1 font-sans">{desc}</p>}
+                  </div>
+                </div>
+              )
+            })}
           </div>
-          <ProjectDetails project={project} />
-        </FeatureSection>
-      ))}
+        </GlassCard>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-        {minorProjects.map((project, index) => (
-          <GlassCard key={index} className="p-6" glowColor={project.id === 'video_claw' ? 'blue' : 'purple'}>
-            <h3 className="text-xl font-semibold text-white mb-1">{project.title}</h3>
-            {project.period && (
-              <p className="text-xs text-text-muted mb-3">{project.period}</p>
-            )}
-            <p className="text-text-secondary text-sm leading-relaxed mb-4">{project.summary}</p>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {project.tags.map((tag, i) => (
-                <span key={i} className="apple-tag text-xs">{tag}</span>
-              ))}
-            </div>
-            <ProjectDetails project={project} />
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <Video size={24} className="text-ai" />
+          <h3 className="text-2xl font-serif text-warm">项目作品</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+          {mediaData.projects.map((project, index) => (
+            <GlassCard key={index} glowColor={project.id === 'steel_4k' ? 'energy' : 'ai'}>
+              <h4 className="text-base font-medium text-warm mb-2 font-sans">
+                {project.title}
+              </h4>
+              {'period' in project && project.period && (
+                <p className="text-xs text-warm-faint mb-2 font-mono">{project.period}</p>
+              )}
+              <p className="text-warm-muted text-sm leading-relaxed font-sans">{project.summary}</p>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center gap-3 mb-4">
+          <MessageSquare size={24} className="text-ai" />
+          <h3 className="text-2xl font-serif text-warm">数据分析</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <GlassCard glowColor="energy">
+            <h4 className="text-base font-medium text-warm mb-2 font-sans">内容表现</h4>
+            <p className="text-warm-muted text-sm leading-relaxed font-sans">通过数据驱动优化内容策略，持续提升各平台粉丝增长与互动率。</p>
           </GlassCard>
-        ))}
+          <GlassCard glowColor="ai">
+            <h4 className="text-base font-medium text-warm mb-2 font-sans">用户画像</h4>
+            <p className="text-warm-muted text-sm leading-relaxed font-sans">精准定位技术爱好者与学习者群体，提供高价值内容输出。</p>
+          </GlassCard>
+        </div>
       </div>
     </SectionLayout>
   )

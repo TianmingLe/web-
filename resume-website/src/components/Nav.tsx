@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import navData from '@data/nav.json'
 
 interface NavItem {
   id: string
@@ -22,8 +21,6 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
 
-  void navData
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
@@ -40,45 +37,61 @@ export default function Nav() {
     <nav
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
         scrolled
-          ? 'bg-base/80 backdrop-blur-2xl border-b border-white/8'
+          ? 'bg-base/90 backdrop-blur-2xl border-b border-white/[0.06]'
           : 'bg-transparent'
       }`}
       aria-label="主导航"
     >
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-3 md:py-4">
-        <ul className="flex items-center justify-center gap-1 md:gap-2" role="menubar">
-          {navItems.map((item) => (
-            <li key={item.id} role="none">
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `group relative flex items-center gap-1.5 px-3 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-350 ${
-                    isActive ? 'text-white font-semibold' : 'text-white/60 hover:text-white/90'
-                  }`
-                }
-                role="menuitem"
-              >
-                {({ isActive }) => (
-                  <>
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full transition-all duration-350 ${
-                        isActive
-                          ? 'bg-primary shadow-[0_0_8px_#007aff] scale-100'
-                          : 'bg-white/30 scale-75 group-hover:bg-white/50'
-                      }`}
-                      aria-hidden="true"
-                    />
-                    <span className="hidden md:inline">{item.label}</span>
-                    <span className="md:hidden">{item.shortLabel}</span>
-                    {isActive && (
-                      <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-primary-light/10 border border-primary/20" aria-hidden="true" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between h-14 md:h-16">
+          {/* Brand */}
+          <NavLink
+            to="/"
+            className="font-serif text-lg md:text-xl text-warm tracking-tight hover:text-energy-light transition-colors duration-300"
+          >
+            胡亚伟
+          </NavLink>
+
+          {/* Nav Items */}
+          <ul className="flex items-center gap-0.5 md:gap-1" role="menubar">
+            {navItems.map((item) => (
+              <li key={item.id} role="none">
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `group relative flex items-center gap-1.5 px-2.5 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-all duration-300 ${
+                      isActive
+                        ? 'text-warm'
+                        : 'text-warm-faint hover:text-warm-muted'
+                    }`
+                  }
+                  role="menuitem"
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                          isActive
+                            ? 'bg-energy shadow-[0_0_6px_rgba(192,74,26,0.5)]'
+                            : 'bg-warm-ghost group-hover:bg-warm-faint'
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <span className="hidden md:inline font-sans">{item.label}</span>
+                      <span className="md:hidden font-sans">{item.shortLabel}</span>
+                      {isActive && (
+                        <span
+                          className="absolute inset-0 rounded-md bg-energy-dim border border-energy/20"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </nav>
   )
