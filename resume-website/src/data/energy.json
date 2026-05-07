@@ -1,0 +1,87 @@
+{
+  "title": "能动技术",
+  "subtitle": "能源与动力工程专业核心",
+  "description": "掌握能源动力领域核心仿真工具链与工程实践能力，包括热力系统建模、CFD仿真、三维设计、嵌入式开发与工程管理。",
+  "skills": [
+    {
+      "category": "专业仿真与设计软件",
+      "icon": "monitor",
+      "keywords": "电厂热力系统建模、CFD仿真、化工流程模拟、三维设计",
+      "summary": "掌握能源动力领域核心仿真工具链，包括EBSILON Professional用于电厂热力系统建模与性能分析，ANSYS Fluent/Mechanical用于流动传热燃烧及结构热应力仿真，ASPEN Plus用于化工流程模拟，以及AutoCAD和SolidWorks进行三维设计与建模。",
+      "items": [
+        { "name": "EBSILON Professional", "desc": "电厂热力系统建模与性能分析" },
+        { "name": "ANSYS Fluent", "desc": "流动/传热/燃烧CFD仿真" },
+        { "name": "ANSYS Mechanical", "desc": "结构/热应力仿真" },
+        { "name": "ASPEN Plus", "desc": "碳捕集等化工流程模拟" },
+        { "name": "COMSOL", "desc": "多物理场耦合仿真" },
+        { "name": "AutoCAD", "desc": "二维工程制图" },
+        { "name": "SolidWorks", "desc": "三维建模与装配设计" }
+      ],
+      "scenarios": [
+        "电厂性能分析：建立完整热力系统模型，进行效率评估与优化",
+        "设备仿真：对核心设备进行流动、传热、燃烧等多物理场耦合仿真",
+        "碳捕集系统设计：使用ASPEN Plus模拟碳捕集化工流程",
+        "机械设计：完成零部件三维建模与装配设计"
+      ]
+    },
+    {
+      "category": "编程与数据分析",
+      "icon": "code",
+      "keywords": "Python数据分析、C/C++、SQL数据库、任务自动化",
+      "summary": "具备多语言编程能力，能利用Python进行数据分析、科学计算及任务自动化；掌握C/C++语言底层原理；熟练使用SQL进行数据库操作，并能在AI辅助下完成复杂开发任务。",
+      "items": [
+        { "name": "Python", "desc": "数据分析、科学计算、任务自动化" },
+        { "name": "C/C++", "desc": "底层系统开发、嵌入式编程" },
+        { "name": "SQL", "desc": "数据库操作与查询优化" },
+        { "name": "Java/HTTP", "desc": "Web系统开发" }
+      ],
+      "practices": [
+        "与AI协作完成多种数据分析任务",
+        "在AI辅助下完成复杂数据库操作",
+        "开发自动化脚本提升工作效率"
+      ]
+    },
+    {
+      "category": "控制与嵌入式系统",
+      "icon": "cpu",
+      "keywords": "PLC控制、STM32单片机、智能硬件开发、物联网",
+      "summary": "了解PLC原理及应用；精通51、STM32等单片机的使用，完成智能门锁、智能小车以及写字机等项目实践，具备完整的嵌入式系统开发能力。",
+      "items": [
+        { "name": "PLC", "desc": "可编程逻辑控制器" },
+        { "name": "51单片机", "desc": "基础嵌入式开发" },
+        { "name": "STM32", "desc": "ARM Cortex-M开发" },
+        { "name": "Keil/STM32CubeIDE", "desc": "嵌入式开发环境" },
+        { "name": "UART/I2C/SPI/CAN", "desc": "通信协议" }
+      ],
+      "projects": [
+        { "name": "智能门锁", "desc": "实现密码/指纹/RFID多种开锁方式" },
+        { "name": "智能小车", "desc": "完成避障、循迹、遥控等功能" },
+        { "name": "写字机", "desc": "实现G代码解析与步进电机精确控制" }
+      ]
+    },
+    {
+      "category": "实验与实操能力",
+      "icon": "flask-conical",
+      "keywords": "热工测试、数据采集、实验设计、仪器操作",
+      "summary": "熟悉热电偶、流量计、数据采集系统等热工测试仪器的使用，具备设计和完成完整实验的能力，能有效完成各种热电工程师任务。",
+      "items": [
+        { "name": "温度测量", "desc": "热电偶、热电阻标定与使用" },
+        { "name": "流量测量", "desc": "各类流量计原理与应用" },
+        { "name": "NI DAQ", "desc": "数据采集系统配置与编程" },
+        { "name": "实验设计", "desc": "完整实验方案设计、执行与数据分析" }
+      ]
+    },
+    {
+      "category": "工程管理与经济",
+      "icon": "clipboard-list",
+      "keywords": "项目管理、PERT、甘特图、工程经济学、投资评估",
+      "summary": "了解项目管理知识（PERT/甘特图）和工程经济学概念（投资回报率、净现值），能对技改项目进行经济性评估，具备项目全生命周期管理能力。",
+      "items": [
+        { "name": "PERT/甘特图", "desc": "项目进度管理" },
+        { "name": "ROI/NPV评估", "desc": "投资回报率与净现值计算" },
+        { "name": "成本控制", "desc": "成本效益分析与优化" },
+        { "name": "风险评估", "desc": "识别并管理项目风险" }
+      ]
+    }
+  ]
+}

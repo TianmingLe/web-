@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "Neon Horizon",
+    "artist": "Synthwave Boy",
+    "duration": 184,
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "cover": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200&h=200&fit=crop"
+  },
+  {
+    "id": 2,
+    "title": "Digital Rain",
+    "artist": "Cyber Dreams",
+    "duration": 210,
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "cover": "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop"
+  },
+  {
+    "id": 3,
+    "title": "Quantum Echo",
+    "artist": "Future Logic",
+    "duration": 195,
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "cover": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop"
+  },
+  {
+    "id": 4,
+    "title": "Stellar Drift",
+    "artist": "Void Walker",
+    "duration": 228,
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    "cover": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=200&h=200&fit=crop"
+  },
+  {
+    "id": 5,
+    "title": "Circuit Heart",
+    "artist": "Binary Soul",
+    "duration": 176,
+    "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3",
+    "cover": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop"
+  }
+]

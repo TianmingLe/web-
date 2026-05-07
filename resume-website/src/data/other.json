@@ -1,0 +1,84 @@
+{
+  "title": "其他",
+  "subtitle": "获奖荣誉、证书资质与联系方式",
+  "description": "除专业技术能力外，在学术竞赛、职业资格、校园活动与实习实践等方面的综合积累。",
+  "awards": [
+    {
+      "name": "市场调查与分析大赛",
+      "level": "省级一等奖",
+      "year": 2026,
+      "project": "《康养五寨，药韵文旅——山西五寨中医药康养旅游游客体验及文旅提升路径研究》",
+      "role": "核心成员（5人团队）"
+    },
+    {
+      "name": "数学建模竞赛",
+      "level": "省级一等奖",
+      "year": 2025,
+      "project": "《烟幕干扰弹的投放策略》",
+      "role": "核心成员（3人团队，负责模型构建与数据分析）"
+    },
+
+    {
+      "name": "市场调查与分析大赛",
+      "level": "校级二等奖",
+      "year": 2025,
+      "project": "《2024年LLM的市场应用及发展前景调研》",
+      "role": "核心成员（3人团队）"
+    },
+    {
+      "name": "英语高教杯英语视频制作比赛",
+      "level": "校级二等奖",
+      "year": 2024,
+      "project": "英语视频创意与制作",
+      "role": "核心成员（3人团队，负责视频创意与制作）"
+    }
+  ],
+  "certificates": [
+    { "name": "大学英语四级证书（CET-4）", "desc": "证明英语读写能力" },
+    { "name": "机动车驾驶证（C1）", "desc": "便于工程现场调研与出差" },
+    { "name": "轻型无人机驾驶证", "desc": "应用于电力巡检、航拍测绘等场景" }
+  ],
+  "campus": [
+    {
+      "role": "军训负责人",
+      "period": "2023.09",
+      "desc": "协助教官组织军训活动，管理连队纪律与考勤，协调后勤保障",
+      "achievement": "连队获得「优秀连队」称号"
+    },
+    {
+      "role": "彩虹志愿者协会网宣部部长",
+      "period": "2024.10-至今",
+      "desc": "负责协会新媒体运营（公众号、视频号），策划并执行志愿活动宣传，培训活动部员",
+      "achievement": "参与志愿活动20+次，累计志愿时长200+小时，获「优秀志愿者」称号"
+    }
+  ],
+  "internship": {
+    "company": "百度网盘",
+    "role": "校园大使 & 小红书宣传大使",
+    "period": "2024.03 - 至今",
+    "work": [
+      "线下：组织「网盘使用技巧」讲座、设立宣传展台、发放宣传物料",
+      "线上：在校园群、论坛分享使用经验，邀请同学注册使用",
+      "小红书：制作网盘使用攻略笔记（每周2篇），分享学习资源整理技巧",
+      "社群：建立「学习资源分享群」（200+人），定期分享优质资源"
+    ],
+    "achievements": ["累计拉新50+人", "举办活动10+场", "笔记总阅读量10万+", "单篇最高点赞500+"]
+  },
+  "skills": {
+    "professional": { "level": "★★★★☆", "items": ["ANSYS Fluent: 熟练", "AutoCAD: 熟练", "SolidWorks: 熟练"] },
+    "programming": { "level": "★★★★★", "items": ["Python: 精通", "Java: 精通", "JavaScript/TypeScript: 熟练", "C/C++: 掌握", "SQL: 熟练"] },
+    "ai": { "level": "★★★★★", "items": ["Prompt工程: 精通", "Agent开发: 熟练", "Spring AI: 熟练", "RAG: 熟练", "ComfyUI: 熟练", "AI绘画/视频/音乐: 熟练"] },
+    "media": { "level": "★★★★☆", "items": ["视频剪辑: 熟练（剪映、AE）", "图像处理: 熟练（Photoshop）", "内容运营: 熟练（B站、抖音、小红书、公众号）"] },
+    "tools": { "level": "★★★★☆", "items": ["Git: 熟练", "Docker: 掌握", "Linux: 掌握", "Office: 精通"] }
+  },
+  "contact": {
+    "phone": "19935072544",
+    "email": "1767976037@qq.com",
+    "social": [
+      { "name": "GitHub", "url": "https://github.com/TianmingLe", "icon": "github" },
+      { "name": "B站", "url": "https://b23.tv/NPxHvW4", "icon": "bilibili" },
+      { "name": "小红书", "url": "https://xhslink.com/m/5h3GEynfA7n", "icon": "xiaohongshu" },
+      { "name": "抖音", "url": "https://v.douyin.com/mMECQWKw-Vs/", "icon": "douyin" }
+    ]
+  }
+}

@@ -1,0 +1,338 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base: #0a0a0a;
+  --color-base-light: #141414;
+  --color-base-dark: #000000;
+  --color-card: rgba(255, 255, 255, 0.03);
+  --color-card-hover: rgba(255, 255, 255, 0.06);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-primary: #007aff;
+  --color-primary-light: #34c759;
+  --color-accent: #af52de;
+  --color-accent-light: #ff9500;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-muted: rgba(255, 255, 255, 0.4);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 40px rgba(0, 122, 255, 0.15);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-base);
+    color: var(--color-text-primary);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background-color: rgba(0, 122, 255, 0.3);
+    color: var(--color-text-primary);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-base);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
+}
+
+@layer components {
+  .apple-card {
+    background: var(--color-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .apple-card:hover {
+    background: var(--color-card-hover);
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .apple-card-interactive {
+    background: var(--color-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .apple-card-interactive:hover {
+    background: var(--color-card-hover);
+    border-color: rgba(0, 122, 255, 0.3);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 
+      var(--shadow-lg),
+      var(--shadow-glow);
+  }
+
+  .apple-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+  }
+
+  .text-gradient-apple {
+    background: linear-gradient(135deg, #007aff 0%, #34c759 50%, #af52de 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #007aff 40%, #34c759 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .apple-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(52, 199, 89, 0.15) 100%);
+    border: 1px solid rgba(0, 122, 255, 0.3);
+    border-radius: var(--radius-full);
+    color: var(--color-primary);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .apple-button:hover {
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.25) 0%, rgba(52, 199, 89, 0.25) 100%);
+    border-color: rgba(0, 122, 255, 0.5);
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.2);
+  }
+
+  .apple-button-primary {
+    background: linear-gradient(135deg, #007aff 0%, #34c759 100%);
+    border-color: transparent;
+    color: #ffffff;
+  }
+
+  .apple-button-primary:hover {
+    background: linear-gradient(135deg, #0066cc 0%, #30d158 100%);
+    box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+  }
+
+  .apple-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-text-secondary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .apple-tag:hover {
+    background: rgba(0, 122, 255, 0.1);
+    border-color: rgba(0, 122, 255, 0.3);
+    color: var(--color-primary);
+  }
+
+  .apple-tag-primary {
+    background: rgba(0, 122, 255, 0.15);
+    border-color: rgba(0, 122, 255, 0.4);
+    color: var(--color-primary);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    filter: blur(160px);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+
+  .hero-glow-blue {
+    background: radial-gradient(circle, #007aff 0%, transparent 70%);
+  }
+
+  .hero-glow-green {
+    background: radial-gradient(circle, #34c759 0%, transparent 70%);
+  }
+
+  .hero-glow-purple {
+    background: radial-gradient(circle, #af52de 0%, transparent 70%);
+  }
+
+  .section-divider {
+    position: relative;
+  }
+
+  .section-divider::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  .feature-frame {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-border);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .feature-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(180deg, transparent 50%, rgba(10, 10, 10, 0.9) 100%);
+    pointer-events: none;
+  }
+
+  .feature-frame:hover {
+    border-color: rgba(0, 122, 255, 0.2);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .evolution-line {
+    position: relative;
+  }
+
+  .evolution-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(0, 122, 255, 0.3), rgba(52, 199, 89, 0.3));
+    transform: translateX(-50%);
+    border-radius: 1px;
+  }
+
+  .timeline-node {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007aff 0%, #34c759 100%);
+    box-shadow: 0 0 20px rgba(0, 122, 255, 0.5);
+  }
+
+  .animate-fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    opacity: 0;
+    transform: scale(0.95);
+    animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes scaleIn {
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .font-apple {
+    font-family: var(--font-sans);
+  }
+
+  .letter-spacing-tight {
+    letter-spacing: -0.02em;
+  }
+
+  .letter-spacing-normal {
+    letter-spacing: -0.01em;
+  }
+}

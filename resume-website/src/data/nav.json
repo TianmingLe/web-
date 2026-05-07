@@ -1,0 +1,136 @@
+{
+  "i18n": {
+    "zh": {
+      "brand": "胡亚伟",
+      "brandSubtitle": "AI NATIVE GRADUATE",
+      "menuLabel": "菜单",
+      "closeLabel": "关闭"
+    },
+    "en": {
+      "brand": "Hu Yawei",
+      "brandSubtitle": "AI NATIVE GRADUATE",
+      "menuLabel": "Menu",
+      "closeLabel": "Close"
+    }
+  },
+  "sections": [
+    {
+      "id": "home",
+      "label": "首页",
+      "labelEn": "Home",
+      "icon": "user",
+      "href": "#home",
+      "order": 1
+    },
+    {
+      "id": "energy",
+      "label": "能动技术",
+      "labelEn": "Energy Tech",
+      "icon": "zap",
+      "href": "#energy",
+      "order": 2
+    },
+    {
+      "id": "ai",
+      "label": "AI特种技术",
+      "labelEn": "AI Tech",
+      "icon": "cpu",
+      "href": "#ai",
+      "order": 3
+    },
+    {
+      "id": "media",
+      "label": "自媒体特种技术",
+      "labelEn": "Self-Media",
+      "icon": "video",
+      "href": "#media",
+      "order": 4
+    },
+    {
+      "id": "thought",
+      "label": "思想领域高度技术",
+      "labelEn": "Thought",
+      "icon": "lightbulb",
+      "href": "#thought",
+      "order": 5
+    },
+    {
+      "id": "other",
+      "label": "其他",
+      "labelEn": "Others",
+      "icon": "more-horizontal",
+      "href": "#other",
+      "order": 6
+    }
+  ],
+  "actions": [
+    {
+      "id": "contact",
+      "label": "联系我",
+      "labelEn": "Contact",
+      "icon": "mail",
+      "type": "button",
+      "action": "scroll-to-footer"
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "labelEn": "GitHub",
+      "icon": "github",
+      "type": "link",
+      "href": "https://github.com/TianmingLe",
+      "external": true
+    }
+  ],
+  "footer": {
+    "socialLinks": [
+      {
+        "id": "github",
+        "name": "GitHub",
+        "url": "https://github.com/TianmingLe",
+        "icon": "github"
+      },
+      {
+        "id": "bilibili",
+        "name": "B站",
+        "nameEn": "Bilibili",
+        "url": "https://b23.tv/NPxHvW4",
+        "icon": "bilibili"
+      },
+      {
+        "id": "xiaohongshu",
+        "name": "小红书",
+        "nameEn": "Xiaohongshu",
+        "url": "https://xhslink.com/m/5h3GEynfA7n",
+        "icon": "xiaohongshu"
+      },
+      {
+        "id": "douyin",
+        "name": "抖音",
+        "nameEn": "Douyin",
+        "url": "https://v.douyin.com/mMECQWKw-Vs/",
+        "icon": "douyin"
+      }
+    ],
+    "contactInfo": [
+      {
+        "type": "phone",
+        "label": "电话",
+        "labelEn": "Phone",
+        "value": "19935072544",
+        "display": "199-3507-2544"
+      },
+      {
+        "type": "email",
+        "label": "邮箱",
+        "labelEn": "Email",
+        "value": "1767976037@qq.com",
+        "display": "1767976037@qq.com"
+      }
+    ],
+    "copyright": {
+      "text": "© 2026 胡亚伟. All rights reserved.",
+      "textEn": "© 2026 Hu Yawei. All rights reserved."
+    }
+  }
+}
