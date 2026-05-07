@@ -28,7 +28,7 @@ const socialIcons: Record<string, React.ReactNode> = {
 
 const levelBadge: Record<string, string> = {
   '省级一等奖': 'bg-primary/10 text-primary border-primary/20',
-  '省级三等奖': 'bg-electric/10 text-electric border-electric/20',
+  '省级三等奖': 'bg-primary-light/10 text-primary-light border-primary-light/20',
   '校级二等奖': 'bg-accent/10 text-accent border-accent/20',
 }
 
@@ -48,8 +48,8 @@ export default function Other() {
       subtitle={otherData.subtitle}
       description={otherData.description}
     >
-      <div className="max-w-4xl mx-auto space-y-8">
-        <GlassCard glowColor="cyan">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <GlassCard glowColor="blue">
           <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
             <Award className="w-5 h-5 text-primary" />
             获奖情况
@@ -58,14 +58,14 @@ export default function Other() {
             {otherData.awards.map((award, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:border-primary/20 transition-colors"
+                className="flex items-center justify-between p-3 rounded-xl bg-white/3 border border-white/6 hover:border-primary/20 transition-colors"
               >
                 <div className="min-w-0 flex-1 mr-4">
                   <p className="text-white font-medium">{award.name}</p>
-                  <p className="text-sm text-gray-400 mt-0.5">{award.year}年 · {award.project}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{award.role}</p>
+                  <p className="text-sm text-text-secondary mt-0.5">{award.year}年 · {award.project}</p>
+                  <p className="text-sm text-text-muted mt-0.5">{award.role}</p>
                 </div>
-                <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${levelBadge[award.level] ?? 'bg-white/10 text-gray-300 border-white/20'}`}>
+                <span className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium border ${levelBadge[award.level] ?? 'bg-white/10 text-text-secondary border-white/15'}`}>
                   {award.level}
                 </span>
               </div>
@@ -73,7 +73,7 @@ export default function Other() {
           </div>
         </GlassCard>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-5">
           <GlassCard glowColor="purple">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
               <BadgeCheck className="w-5 h-5 text-accent" />
@@ -83,10 +83,10 @@ export default function Other() {
               {otherData.certificates.map((cert, index) => (
                 <div
                   key={index}
-                  className="p-3 rounded-lg bg-white/5 border border-white/5"
+                  className="p-3 rounded-xl bg-white/3 border border-white/6"
                 >
                   <p className="text-white font-medium">{cert.name}</p>
-                  <p className="text-sm text-gray-400 mt-0.5">{cert.desc}</p>
+                  <p className="text-sm text-text-secondary mt-0.5">{cert.desc}</p>
                 </div>
               ))}
             </div>
@@ -94,20 +94,20 @@ export default function Other() {
 
           <GlassCard glowColor="blue">
             <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-electric" />
+              <GraduationCap className="w-5 h-5 text-primary" />
               校园经历
             </h3>
             <div className="space-y-3">
               {otherData.campus.map((item, index) => (
                 <div
                   key={index}
-                  className="p-3 rounded-lg bg-white/5 border border-white/5"
+                  className="p-3 rounded-xl bg-white/3 border border-white/6"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-white font-medium">{item.role}</p>
-                    <span className="text-xs text-gray-500">{item.period}</span>
+                    <span className="text-xs text-text-muted">{item.period}</span>
                   </div>
-                  <p className="text-sm text-gray-400 mt-1">{item.desc}</p>
+                  <p className="text-sm text-text-secondary mt-1">{item.desc}</p>
                   <p className="text-sm text-primary/80 mt-1">{item.achievement}</p>
                 </div>
               ))}
@@ -115,39 +115,39 @@ export default function Other() {
           </GlassCard>
         </div>
 
-        <GlassCard glowColor="cyan">
+        <GlassCard glowColor="blue">
           <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-primary" />
             实习经历
           </h3>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/5">
+          <div className="p-4 rounded-xl bg-white/3 border border-white/6">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-white font-semibold text-lg">{otherData.internship.company}</p>
-                <p className="text-sm text-gray-400">{otherData.internship.role}</p>
+                <p className="text-sm text-text-secondary">{otherData.internship.role}</p>
               </div>
-              <span className="text-xs text-gray-500 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+              <span className="text-xs text-text-muted px-3 py-1 rounded-full bg-white/5 border border-white/10">
                 {otherData.internship.period}
               </span>
             </div>
             <div className="mb-4">
-              <p className="text-sm text-gray-300 font-medium mb-2">工作内容</p>
+              <p className="text-sm text-text-secondary font-medium mb-2">工作内容</p>
               <ul className="space-y-1.5">
                 {otherData.internship.work.map((item, index) => (
-                  <li key={index} className="text-sm text-gray-400 flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mt-1.5 shrink-0" />
+                  <li key={index} className="text-sm text-text-secondary flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/50 mt-1.5 shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="text-sm text-gray-300 font-medium mb-2">成果</p>
+              <p className="text-sm text-text-secondary font-medium mb-2">成果</p>
               <div className="flex flex-wrap gap-2">
                 {otherData.internship.achievements.map((item, index) => (
                   <span
                     key={index}
-                    className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+                    className="apple-tag"
                   >
                     {item}
                   </span>
@@ -166,7 +166,7 @@ export default function Other() {
             {(Object.entries(otherData.skills) as [string, { level: string; items: string[] }][]).map(([key, skill]) => (
               <div
                 key={key}
-                className="p-4 rounded-lg bg-white/5 border border-white/5"
+                className="p-4 rounded-xl bg-white/3 border border-white/6"
               >
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-white font-medium">{skillLabels[key] ?? key}</p>
@@ -176,7 +176,7 @@ export default function Other() {
                   {skill.items.map((item, index) => (
                     <span
                       key={index}
-                      className="px-2 py-0.5 rounded text-xs bg-white/5 text-gray-300 border border-white/5"
+                      className="px-2 py-0.5 rounded-full text-xs bg-white/5 text-text-secondary border border-white/6"
                     >
                       {item}
                     </span>
@@ -189,24 +189,24 @@ export default function Other() {
 
         <GlassCard glowColor="blue">
           <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Phone className="w-5 h-5 text-electric" />
+            <Phone className="w-5 h-5 text-primary" />
             联系方式
           </h3>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Phone className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 text-sm w-12">电话</span>
+              <Phone className="w-4 h-4 text-text-muted" />
+              <span className="text-text-muted text-sm w-12">电话</span>
               <span className="text-white">{otherData.contact.phone}</span>
             </div>
             <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 text-sm w-12">邮箱</span>
+              <Mail className="w-4 h-4 text-text-muted" />
+              <span className="text-text-muted text-sm w-12">邮箱</span>
               <span className="text-white">{otherData.contact.email}</span>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/10">
-            <p className="text-sm text-gray-400 mb-3">社交媒体</p>
+          <div className="mt-6 pt-4 border-t border-white/6">
+            <p className="text-sm text-text-secondary mb-3">社交媒体</p>
             <div className="flex items-center gap-3">
               {otherData.contact.social.map((link) => (
                 <a
@@ -214,7 +214,7 @@ export default function Other() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
+                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-text-muted hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all"
                   aria-label={link.name}
                 >
                   {socialIcons[link.icon] ?? link.name}

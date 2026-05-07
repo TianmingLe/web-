@@ -68,58 +68,60 @@ export default function Home() {
   useEffect(() => {
     if (!scrollHintRef.current) return
     const tl = gsap.timeline({ repeat: -1 })
-    tl.to(scrollHintRef.current, { y: 10, duration: 1, ease: 'power1.inOut' })
-      .to(scrollHintRef.current, { y: 0, duration: 1, ease: 'power1.inOut' })
+    tl.to(scrollHintRef.current, { y: 10, duration: 1.5, ease: 'power1.inOut' })
+      .to(scrollHintRef.current, { y: 0, duration: 1.5, ease: 'power1.inOut' })
 
     return () => { tl.kill() }
   }, [])
 
   return (
     <CoverLayout id="home" aria-label="首页封面">
-      <div className="hero-glow hero-glow-cyan" style={{ top: '-10%', left: '20%' }} aria-hidden="true" />
-      <div className="hero-glow hero-glow-purple" style={{ bottom: '-5%', right: '15%' }} aria-hidden="true" />
-      <div className="hero-glow hero-glow-blue" style={{ top: '30%', right: '30%', width: '400px', height: '400px', opacity: 0.08 }} aria-hidden="true" />
+      <div className="hero-glow hero-glow-blue" style={{ top: '-15%', left: '15%' }} aria-hidden="true" />
+      <div className="hero-glow hero-glow-green" style={{ bottom: '-10%', right: '10%' }} aria-hidden="true" />
+      <div className="hero-glow hero-glow-purple" style={{ top: '40%', right: '40%', width: '500px', height: '500px', opacity: 0.06 }} aria-hidden="true" />
 
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center px-6 min-h-screen"
+        className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-6 min-h-screen"
       >
-        <p className="home-title text-sm md:text-base text-primary/80 font-medium tracking-[0.3em] uppercase mb-6">
+        <p className="home-title text-xs md:text-sm text-primary/70 font-semibold tracking-[0.4em] uppercase mb-6">
           {profile.title}
         </p>
 
-        <h1 className="home-name text-6xl md:text-8xl lg:text-9xl font-bold text-white mb-6 tracking-tight leading-none">
+        <h1 className="home-name text-5xl md:text-7xl lg:text-8xl font-semibold text-white mb-6 tracking-tight leading-[0.9]">
           <span className="text-gradient-hero">{profile.name}</span>
         </h1>
 
-        <p className="home-subtitle text-lg md:text-xl text-gray-300 max-w-2xl mb-3 leading-relaxed">
+        <p className="home-subtitle text-base md:text-lg lg:text-xl text-white/80 max-w-2xl mb-4 leading-relaxed">
           {profile.subtitle}
         </p>
 
-        <p className="home-tagline text-sm md:text-base text-gray-500 max-w-xl mb-4">
+        <p className="home-tagline text-sm md:text-base text-text-muted max-w-xl mb-6">
           {profile.tagline}
         </p>
 
-        <div className="home-school flex items-center gap-2 text-gray-400 text-sm mb-12">
-          <GraduationCap size={16} />
-          <span>{profile.school}</span>
+        <div className="home-school flex flex-wrap items-center justify-center gap-3 text-text-secondary text-sm mb-16">
+          <span className="flex items-center gap-2">
+            <GraduationCap size={16} />
+            {profile.school}
+          </span>
           <span className="text-white/20">|</span>
-          <span className="text-accent-light">MBTI: {profile.mbti}</span>
+          <span className="text-accent">{profile.mbti}</span>
         </div>
 
-        <div className="home-traits flex flex-wrap justify-center gap-3 md:gap-4 mb-16">
+        <div className="home-traits flex flex-wrap justify-center gap-3 md:gap-4 mb-20">
           {traits.map((trait, index) => (
             <div
               key={index}
-              className="group flex items-center gap-3 px-5 py-3 glass-card glass-card-hover cursor-default"
+              className="group flex items-center gap-3 px-5 py-3.5 apple-glass cursor-default"
               role="listitem"
             >
-              <span className="text-primary/70 group-hover:text-primary transition-colors" aria-hidden="true">{trait.icon}</span>
+              <span className="text-primary/60 group-hover:text-primary transition-colors duration-300" aria-hidden="true">{trait.icon}</span>
               <div className="text-left">
                 <span className="text-sm text-white font-medium block leading-tight">
                   {trait.label}
                 </span>
-                <span className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                <span className="text-xs text-text-muted group-hover:text-text-secondary transition-colors duration-300">
                   {trait.desc}
                 </span>
               </div>
@@ -127,10 +129,10 @@ export default function Home() {
           ))}
         </div>
 
-        <div ref={scrollHintRef} className="home-scroll absolute bottom-12">
-          <div className="flex flex-col items-center gap-2 text-gray-500">
-            <span className="text-xs tracking-[0.2em] uppercase">探索我的世界</span>
-            <ChevronDown size={18} className="text-primary/60" aria-hidden="true" />
+        <div ref={scrollHintRef} className="home-scroll absolute bottom-16">
+          <div className="flex flex-col items-center gap-3 text-text-muted">
+            <span className="text-xs tracking-[0.25em] uppercase">探索更多</span>
+            <ChevronDown size={20} className="text-primary/50" aria-hidden="true" />
           </div>
         </div>
       </div>

@@ -50,31 +50,31 @@ export default function FeatureSection({
   }, [])
 
   return (
-    <div ref={ref} className={`flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-12 items-center mb-20 md:mb-28`}>
+    <div ref={ref} className={`flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-16 items-center mb-24 md:mb-32`}>
       <div className="flex-1 feature-animate">
         {badge && (
-          <span className="tag-pill tag-pill-active mb-4 inline-flex">
+          <span className="apple-tag apple-tag-primary mb-5 inline-flex">
             {badge}
           </span>
         )}
-        <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight">
+        <h3 className="text-2xl md:text-4xl font-semibold text-white mb-5 leading-tight tracking-tight">
           {title}
         </h3>
-        <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-4">
+        <p className="text-text-secondary text-base md:text-lg leading-relaxed mb-6">
           {description}
         </p>
         {children}
       </div>
       <div className="flex-1 w-full feature-animate">
         {image ? (
-          <div className="feature-image-frame">
+          <div className="feature-frame">
             {image}
           </div>
         ) : (
-          <div className="feature-image-frame aspect-video flex items-center justify-center">
-            <div className="text-gray-600 text-sm">
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-white/5 flex items-center justify-center">
-                <div className="w-3 h-3 rounded-full bg-primary/30" />
+          <div className="feature-frame aspect-video flex items-center justify-center">
+            <div className="text-text-muted text-sm">
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
+                <div className="w-4 h-4 rounded-full bg-primary/40" />
               </div>
               项目展示
             </div>

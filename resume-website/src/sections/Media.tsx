@@ -19,12 +19,12 @@ function ProjectDetails({ project }: { project: Project }) {
     case 'omniscraper':
       return (
         <div className="space-y-2">
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">核心指标</p>
+          <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">核心指标</p>
           <div className="flex flex-wrap gap-2">
             {project.highlights!.map((h, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary/10 text-primary border border-primary/20"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
               >
                 <CheckCircle size={12} />
                 {h}
@@ -37,18 +37,18 @@ function ProjectDetails({ project }: { project: Project }) {
       return (
         <>
           <div className="space-y-2 mb-4">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">成果</p>
+            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">成果</p>
             {project.outcomes!.map((o, i) => (
               <div key={i} className="flex items-start gap-2">
                 <CheckCircle size={14} className="text-primary mt-0.5 shrink-0" />
-                <p className="text-sm text-gray-300">{o}</p>
+                <p className="text-sm text-text-secondary">{o}</p>
               </div>
             ))}
           </div>
-          <div className="px-3 py-2.5 rounded-lg bg-yellow-500/5 border border-yellow-500/10">
+          <div className="px-4 py-3 rounded-xl bg-yellow-500/8 border border-yellow-500/15">
             <div className="flex items-start gap-2">
               <BookOpen size={14} className="text-yellow-400 mt-0.5 shrink-0" />
-              <p className="text-sm text-gray-300">{project.lessons}</p>
+              <p className="text-sm text-text-secondary">{project.lessons}</p>
             </div>
           </div>
         </>
@@ -57,20 +57,20 @@ function ProjectDetails({ project }: { project: Project }) {
       return (
         <>
           <div className="mb-4">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-2">工作流</p>
+            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider mb-2">工作流</p>
             {project.workflow!.map((step, i) => (
               <div key={i} className="flex items-start gap-2 mb-1.5">
                 <Wrench size={14} className="text-primary mt-0.5 shrink-0" />
-                <p className="text-sm text-gray-300">{step}</p>
+                <p className="text-sm text-text-secondary">{step}</p>
               </div>
             ))}
           </div>
           <div>
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-2">影响力</p>
+            <p className="text-xs text-text-muted font-semibold uppercase tracking-wider mb-2">影响力</p>
             {project.impact!.map((imp, i) => (
               <div key={i} className="flex items-start gap-2 mb-1.5">
-                <TrendingUp size={14} className="text-green-400 mt-0.5 shrink-0" />
-                <p className="text-sm text-gray-300">{imp}</p>
+                <TrendingUp size={14} className="text-primary-light mt-0.5 shrink-0" />
+                <p className="text-sm text-text-secondary">{imp}</p>
               </div>
             ))}
           </div>
@@ -79,11 +79,11 @@ function ProjectDetails({ project }: { project: Project }) {
     case 'qingcao_plan':
       return (
         <div className="space-y-2">
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">实践活动</p>
+          <p className="text-xs text-text-muted font-semibold uppercase tracking-wider">实践活动</p>
           {project.activities!.map((a, i) => (
             <div key={i} className="flex items-start gap-2">
               <ListChecks size={14} className="text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-gray-300">{a}</p>
+              <p className="text-sm text-text-secondary">{a}</p>
             </div>
           ))}
         </div>
@@ -104,21 +104,21 @@ export default function Media() {
       subtitle={mediaData.subtitle}
       description={mediaData.description}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mb-16">
         {mediaData.platforms.map((platform, index) => (
-          <GlassCard key={index} className="p-6" glowColor="cyan" hoverEffect>
+          <GlassCard key={index} className="p-6" glowColor="blue" hoverEffect>
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-primary">{platformIcons[platform.name]}</span>
+              <span className="text-primary/70">{platformIcons[platform.name]}</span>
               <div>
                 <h3 className="text-lg font-semibold text-white">{platform.name}</h3>
-                <p className="text-xs text-gray-500">{platform.nameEn}</p>
+                <p className="text-xs text-text-muted">{platform.nameEn}</p>
               </div>
             </div>
-            <p className="text-3xl font-bold text-primary mb-1">{platform.followers}</p>
-            <p className="text-xs text-gray-500 mb-4">粉丝</p>
-            <p className="text-sm text-gray-400 mb-3">{platform.content}</p>
-            <div className="pt-3 border-t border-white/5">
-              <p className="text-xs text-gray-500 mb-1">代表作品</p>
+            <p className="text-3xl font-semibold text-primary mb-1">{platform.followers}</p>
+            <p className="text-xs text-text-muted mb-4">粉丝</p>
+            <p className="text-sm text-text-secondary mb-3">{platform.content}</p>
+            <div className="pt-4 border-t border-white/6">
+              <p className="text-xs text-text-muted mb-1">代表作品</p>
               <p className="text-sm text-accent-light">{platform.representative}</p>
             </div>
           </GlassCard>
@@ -135,10 +135,10 @@ export default function Media() {
             const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
             return (
               <div key={index} className="flex items-start gap-3 min-w-[220px]">
-                <span className="text-primary mt-0.5"><Icon size={18} /></span>
+                <span className="text-primary/70 mt-0.5"><Icon size={18} /></span>
                 <div>
                   <p className="text-sm font-medium text-white">{label}</p>
-                  {desc && <p className="text-xs text-gray-400 mt-1">{desc}</p>}
+                  {desc && <p className="text-xs text-text-muted mt-1">{desc}</p>}
                 </div>
               </div>
             )
@@ -156,24 +156,24 @@ export default function Media() {
         >
           <div className="flex flex-wrap gap-2 mb-4">
             {project.tags.map((tag, i) => (
-              <span key={i} className="tag-pill text-xs">{tag}</span>
+              <span key={i} className="apple-tag text-xs">{tag}</span>
             ))}
           </div>
           <ProjectDetails project={project} />
         </FeatureSection>
       ))}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
         {minorProjects.map((project, index) => (
           <GlassCard key={index} className="p-6" glowColor={project.id === 'video_claw' ? 'blue' : 'purple'}>
             <h3 className="text-xl font-semibold text-white mb-1">{project.title}</h3>
             {project.period && (
-              <p className="text-xs text-gray-500 mb-3">{project.period}</p>
+              <p className="text-xs text-text-muted mb-3">{project.period}</p>
             )}
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">{project.summary}</p>
+            <p className="text-text-secondary text-sm leading-relaxed mb-4">{project.summary}</p>
             <div className="flex flex-wrap gap-2 mb-4">
               {project.tags.map((tag, i) => (
-                <span key={i} className="tag-pill text-xs">{tag}</span>
+                <span key={i} className="apple-tag text-xs">{tag}</span>
               ))}
             </div>
             <ProjectDetails project={project} />

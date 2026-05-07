@@ -63,7 +63,7 @@ export default function Nav() {
     <nav
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
         scrolled
-          ? 'bg-base/70 backdrop-blur-xl border-b border-white/10'
+          ? 'bg-base/80 backdrop-blur-2xl border-b border-white/8'
           : 'bg-transparent'
       }`}
       aria-label="主导航"
@@ -76,21 +76,21 @@ export default function Nav() {
               <li key={item.id} role="none">
                 <button
                   onClick={() => handleNavigate(item.id)}
-                  className="group relative flex items-center gap-1.5 px-2 md:px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300"
+                  className="group relative flex items-center gap-1.5 px-3 md:px-5 py-2.5 rounded-full text-xs md:text-sm font-medium transition-all duration-350"
                   role="menuitem"
                   aria-current={isActive ? 'page' : undefined}
                 >
                   <span
-                    className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-350 ${
                       isActive
-                        ? 'bg-primary shadow-[0_0_6px_#38bdf8] scale-100'
-                        : 'bg-white/20 scale-75 group-hover:bg-white/40'
+                        ? 'bg-primary shadow-[0_0_8px_#007aff] scale-100'
+                        : 'bg-white/30 scale-75 group-hover:bg-white/50'
                     }`}
                     aria-hidden="true"
                   />
 
                   <span
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-350 ${
                       isActive
                         ? 'text-white font-semibold'
                         : 'text-white/60 group-hover:text-white/90'
@@ -100,17 +100,8 @@ export default function Nav() {
                     <span className="md:hidden">{item.shortLabel}</span>
                   </span>
 
-                  <span
-                    className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-300 ${
-                      isActive
-                        ? 'w-full opacity-100'
-                        : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-60'
-                    }`}
-                    aria-hidden="true"
-                  />
-
                   {isActive && (
-                    <span className="absolute inset-0 rounded-full bg-primary/5 border border-primary/10" aria-hidden="true" />
+                    <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/10 to-primary-light/10 border border-primary/20" aria-hidden="true" />
                   )}
                 </button>
               </li>

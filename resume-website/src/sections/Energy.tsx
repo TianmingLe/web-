@@ -19,35 +19,35 @@ export default function Energy() {
       subtitle={energyData.subtitle}
       description={energyData.description}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
         {energyData.skills.map((skill, index) => (
-          <GlassCard key={index} className="p-6 flex flex-col">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-primary">{iconMap[skill.icon]}</span>
+          <GlassCard key={index} className="p-6 flex flex-col" glowColor="blue">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-primary/70">{iconMap[skill.icon]}</span>
               <h3 className="text-lg font-semibold text-white">
                 {skill.category}
               </h3>
             </div>
-            <p className="text-primary/60 text-xs mb-3">{skill.keywords}</p>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+            <p className="text-primary/60 text-xs mb-4">{skill.keywords}</p>
+            <p className="text-text-secondary text-sm leading-relaxed mb-4">
               {skill.summary}
             </p>
             <ul className="space-y-2 mb-4">
               {skill.items.map((item, i) => (
                 <li
                   key={i}
-                  className="text-gray-300 text-sm flex items-start gap-2"
+                  className="text-text-secondary text-sm flex items-start gap-2"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary/60 mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary/50 mt-1.5 shrink-0" />
                   <span>
                     <span className="font-medium text-white">{item.name}</span>
-                    <span className="text-gray-400"> — {item.desc}</span>
+                    <span className="text-text-muted"> — {item.desc}</span>
                   </span>
                 </li>
               ))}
             </ul>
             {skill.scenarios && (
-              <div className="border-t border-white/5 pt-4 mt-auto">
+              <div className="border-t border-white/8 pt-4 mt-auto">
                 <h4 className="text-sm font-semibold text-primary mb-2">
                   应用场景
                 </h4>
@@ -55,9 +55,9 @@ export default function Energy() {
                   {skill.scenarios.map((s, i) => (
                     <li
                       key={i}
-                      className="text-gray-400 text-xs flex items-start gap-2"
+                      className="text-text-muted text-xs flex items-start gap-2"
                     >
-                      <span className="w-1 h-1 rounded-full bg-accent/60 mt-1.5 shrink-0" />
+                      <span className="w-1 h-1 rounded-full bg-accent/50 mt-1.5 shrink-0" />
                       {s}
                     </li>
                   ))}
@@ -65,7 +65,7 @@ export default function Energy() {
               </div>
             )}
             {skill.practices && (
-              <div className="border-t border-white/5 pt-4 mt-auto">
+              <div className="border-t border-white/8 pt-4 mt-auto">
                 <h4 className="text-sm font-semibold text-primary mb-2">
                   项目实践
                 </h4>
@@ -73,9 +73,9 @@ export default function Energy() {
                   {skill.practices.map((p, i) => (
                     <li
                       key={i}
-                      className="text-gray-400 text-xs flex items-start gap-2"
+                      className="text-text-muted text-xs flex items-start gap-2"
                     >
-                      <span className="w-1 h-1 rounded-full bg-accent/60 mt-1.5 shrink-0" />
+                      <span className="w-1 h-1 rounded-full bg-accent/50 mt-1.5 shrink-0" />
                       {p}
                     </li>
                   ))}
@@ -83,7 +83,7 @@ export default function Energy() {
               </div>
             )}
             {skill.projects && (
-              <div className="border-t border-white/5 pt-4 mt-auto">
+              <div className="border-t border-white/8 pt-4 mt-auto">
                 <h4 className="text-sm font-semibold text-primary mb-3">
                   项目作品
                 </h4>
@@ -91,12 +91,12 @@ export default function Energy() {
                   {skill.projects.map((proj, i) => (
                     <div
                       key={i}
-                      className="rounded-lg bg-white/5 border border-white/5 px-3 py-2"
+                      className="rounded-xl bg-white/3 border border-white/6 px-3 py-2"
                     >
                       <p className="text-white text-sm font-medium">
                         {proj.name}
                       </p>
-                      <p className="text-gray-400 text-xs mt-0.5">
+                      <p className="text-text-muted text-xs mt-0.5">
                         {proj.desc}
                       </p>
                     </div>
