@@ -1,7 +1,12 @@
 import { Video, MessageSquare, TrendingUp, Play, Eye, Users } from 'lucide-react'
 import mediaData from '@data/media.json'
+import ExpandableCard from '@components/ExpandableCard'
 
 const platformIcons = [Play, Video, Eye]
+
+function truncate(str: string, max: number) {
+  return str.length > max ? str.slice(0, max) + '…' : str
+}
 
 export default function MediaB() {
   return (
@@ -18,42 +23,31 @@ export default function MediaB() {
         </p>
       </div>
 
-      <div className="b-horizontal-scroll md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
         {mediaData.platforms.map((platform, index) => {
           const Icon = platformIcons[index % platformIcons.length]
           return (
             <div
               key={index}
-              className={`b-card b-card-terracotta p-6 md:p-8 min-w-[280px] md:min-w-0 b-fade-up b-stagger-${index + 1}`}
+              className={`b-card b-card-terracotta p-4 b-fade-up b-stagger-${index + 1}`}
             >
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-b-terracotta-dim flex items-center justify-center">
-                    <Icon size={18} className="text-b-terracotta" />
-                  </div>
-                  <div>
-                    <h3 className="font-b-serif text-lg text-b-ink">{platform.name}</h3>
-                    <p className="font-b-mono text-[11px] text-b-muted tracking-wide">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-b-terracotta-dim flex items-center justify-center flex-shrink-0">
+                  <Icon size={14} className="text-b-terracotta" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="font-b-serif text-base text-b-ink">{platform.name}</h3>
+                    <span className="font-b-mono text-[11px] text-b-muted tracking-wide">
                       {platform.nameEn}
-                    </p>
+                    </span>
                   </div>
                 </div>
+                <span className="b-number-accent text-lg">{platform.followers}</span>
               </div>
-
-              <div className="mb-1">
-                <span className="b-number-accent">{platform.followers}</span>
-              </div>
-              <p className="font-b-sans text-xs text-b-muted mb-5 tracking-wide">粉丝关注</p>
-
-              <div className="pt-4 border-t border-b-border">
-                <p className="font-b-sans text-sm text-b-ink-light mb-3">{platform.content}</p>
-                <div className="flex items-start gap-2">
-                  <TrendingUp size={13} className="text-b-terracotta mt-0.5 flex-shrink-0" />
-                  <p className="font-b-sans text-xs text-b-muted leading-relaxed">
-                    {platform.representative}
-                  </p>
-                </div>
-              </div>
+              <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                {platform.content}
+              </p>
             </div>
           )
         })}
@@ -62,14 +56,26 @@ export default function MediaB() {
       <div className="b-divider" />
 
       <div className="b-fade-up b-stagger-4">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-full bg-b-sage-dim flex items-center justify-center">
-            <Users size={15} className="text-b-sage" />
-          </div>
-          <h3 className="font-b-serif text-2xl text-b-ink">内容策略</h3>
-        </div>
-
-        <div className="b-card b-card-sage p-6 md:p-8">
+        <ExpandableCard
+          title={
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-b-sage-dim flex items-center justify-center">
+                <Users size={15} className="text-b-sage" />
+              </div>
+              <h3 className="font-b-serif text-2xl text-b-ink">内容策略</h3>
+            </div>
+          }
+          keywords={mediaData.contentStrategy.map((strategy) => {
+            const colonIdx = strategy.indexOf('：')
+            const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
+            return (
+              <span key={label} className="b-tag b-tag-sage">
+                {label}
+              </span>
+            )
+          })}
+          cardClass="b-card b-card-sage"
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {mediaData.contentStrategy.map((strategy, index) => {
               const colonIdx = strategy.indexOf('：')
@@ -94,7 +100,7 @@ export default function MediaB() {
               )
             })}
           </div>
-        </div>
+        </ExpandableCard>
       </div>
 
       <div className="b-divider" />
@@ -109,28 +115,28 @@ export default function MediaB() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {mediaData.projects.map((project, index) => (
-            <div
+            <ExpandableCard
               key={project.id}
-              className={`b-card b-card-slate p-6 md:p-8 b-fade-up b-stagger-${index + 5}`}
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <h4 className="font-b-serif text-lg text-b-ink leading-snug">
-                  {project.title}
-                </h4>
+              title={project.title}
+              badges={
                 <span className="b-tag b-tag-terracotta flex-shrink-0 text-[11px]">
-                  {project.period.split(' - ')[0]}
+                  {project.period}
                 </span>
-              </div>
-
-              <p className="font-b-mono text-xs text-b-muted mb-4 tracking-wide">
-                {project.period}
-              </p>
-
-              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-5">
+              }
+              subtitle={truncate(project.summary, 50)}
+              keywords={project.tags?.slice(0, 3).map((tag) => (
+                <span key={tag} className="b-tag b-tag-terracotta">
+                  {tag}
+                </span>
+              ))}
+              cardClass="b-card b-card-slate"
+              className={`b-fade-up b-stagger-${index + 5}`}
+            >
+              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-4">
                 {project.summary}
               </p>
 
-              {project.tags && (
+              {project.tags && project.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag) => (
                     <span key={tag} className="b-tag b-tag-terracotta">
@@ -236,7 +242,7 @@ export default function MediaB() {
                   </p>
                 </div>
               )}
-            </div>
+            </ExpandableCard>
           ))}
         </div>
       </div>

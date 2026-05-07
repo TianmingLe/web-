@@ -49,11 +49,11 @@ export default function Nav() {
       }`}
       aria-label="主导航"
     >
-      <div className="max-w-6xl mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-14 md:h-16">
+      <div className="max-w-7xl mx-auto px-5 md:px-8">
+        <div className="flex items-center justify-between h-16 md:h-[72px]">
           <NavLink
             to="/"
-            className={`font-serif text-lg md:text-xl tracking-tight transition-colors duration-300 ${
+            className={`font-serif text-xl md:text-2xl tracking-tight transition-colors duration-300 ${
               isVersionB
                 ? 'text-b-ink hover:text-b-terracotta'
                 : 'text-warm hover:text-energy-light'
@@ -62,14 +62,14 @@ export default function Nav() {
             胡亚伟
           </NavLink>
 
-          <div className="flex items-center gap-2">
-            <ul className="flex items-center gap-0.5 md:gap-1" role="menubar">
+          <div className="flex items-center gap-3 md:gap-4">
+            <ul className="flex items-center gap-1 md:gap-2" role="menubar">
               {navItems.map((item) => (
                 <li key={item.id} role="none">
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `group relative flex items-center gap-1.5 px-2.5 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-all duration-300 ${
+                      `group relative flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-lg text-sm md:text-[15px] font-medium transition-all duration-300 ${
                         isActive
                           ? isVersionB ? 'text-b-ink' : 'text-warm'
                           : isVersionB
@@ -82,11 +82,11 @@ export default function Nav() {
                     {({ isActive }) => (
                       <>
                         <span
-                          className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                             isActive
                               ? isVersionB
-                                ? 'bg-b-terracotta shadow-[0_0_6px_rgba(181,101,78,0.4)]'
-                                : 'bg-energy shadow-[0_0_6px_rgba(192,74,26,0.5)]'
+                                ? 'bg-b-terracotta shadow-[0_0_8px_rgba(181,101,78,0.5)]'
+                                : 'bg-energy shadow-[0_0_8px_rgba(192,74,26,0.6)]'
                               : isVersionB
                                 ? 'bg-b-sand group-hover:bg-b-muted'
                                 : 'bg-warm-ghost group-hover:bg-warm-faint'
@@ -97,7 +97,7 @@ export default function Nav() {
                         <span className={`md:hidden ${isVersionB ? 'font-b-serif' : 'font-sans'}`}>{item.shortLabel}</span>
                         {isActive && (
                           <span
-                            className={`absolute inset-0 rounded-md ${
+                            className={`absolute inset-0 rounded-lg ${
                               isVersionB
                                 ? 'bg-b-cream-dark border border-b-sand'
                                 : 'bg-energy-dim border border-energy/20'
@@ -112,9 +112,11 @@ export default function Nav() {
               ))}
             </ul>
 
+            <div className="w-px h-5 bg-current opacity-10" aria-hidden="true" />
+
             <button
               onClick={toggleVersion}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 cursor-pointer ${
                 isVersionB
                   ? 'bg-b-ink text-b-cream hover:bg-b-ink/85'
                   : 'bg-warm/10 text-warm border border-white/[0.08] hover:bg-warm/15'
@@ -122,7 +124,7 @@ export default function Nav() {
               aria-label={`切换到版本${isVersionB ? 'A' : 'B'}`}
               title={`切换到版本${isVersionB ? 'A' : 'B'}`}
             >
-              <ArrowLeftRight size={12} />
+              <ArrowLeftRight size={13} />
               <span>{isVersionB ? '暗黑版' : '杂志版'}</span>
             </button>
           </div>

@@ -1,5 +1,6 @@
 import { Award, BadgeCheck, Building2, GraduationCap, Phone, Mail, ExternalLink, MapPin } from 'lucide-react'
 import otherData from '@data/other.json'
+import ExpandableCard from '@components/ExpandableCard'
 
 const SKILL_LABELS: Record<string, string> = {
   professional: '专业技能',
@@ -78,210 +79,248 @@ export default function OtherB() {
         </p>
       </div>
 
-      <div className="b-fade-up b-stagger-1">
-        <div className="flex items-center gap-3 mb-6">
-          <Award size={22} className="text-b-terracotta" />
-          <h3 className="font-b-serif text-2xl text-b-ink">获奖荣誉</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {otherData.awards.map((award, i) => (
-            <div
-              key={i}
-              className="b-card b-card-terracotta p-5 md:p-6 b-fade-up"
-              style={{ animationDelay: `${0.1 + i * 0.1}s` }}
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <span className="b-tag b-tag-terracotta">{award.level}</span>
-                <span className="font-b-mono text-xs text-b-muted whitespace-nowrap">
-                  {award.year}
-                </span>
-              </div>
-              <h4 className="font-b-serif text-lg text-b-ink mb-2 leading-snug">
-                {award.name}
-              </h4>
-              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-2">
-                {award.project}
-              </p>
-              <p className="font-b-sans text-xs text-b-muted">
-                {award.role}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="b-divider" />
-
-      <div className="b-fade-up b-stagger-2">
-        <div className="flex items-center gap-3 mb-6">
-          <BadgeCheck size={22} className="text-b-sage" />
-          <h3 className="font-b-serif text-2xl text-b-ink">证书资质</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {otherData.certificates.map((cert, i) => (
-            <div
-              key={i}
-              className="b-card b-card-sage p-5 b-fade-up"
-              style={{ animationDelay: `${0.2 + i * 0.1}s` }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-b-sage-dim flex items-center justify-center">
-                  <BadgeCheck size={16} className="text-b-sage" />
-                </div>
-                <h4 className="font-b-serif text-base text-b-ink leading-snug">
-                  {cert.name}
-                </h4>
-              </div>
-              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
-                {cert.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="b-divider" />
-
-      <div className="b-fade-up b-stagger-3">
-        <div className="flex items-center gap-3 mb-6">
-          <GraduationCap size={22} className="text-b-slate" />
-          <h3 className="font-b-serif text-2xl text-b-ink">校园经历</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="relative pl-10">
-          <div className="b-timeline-line" />
-          {otherData.campus.map((item, i) => (
-            <div
-              key={i}
-              className="relative mb-6 last:mb-0 b-fade-up"
-              style={{ animationDelay: `${0.3 + i * 0.15}s` }}
-            >
-              <div className="b-timeline-dot" />
-              <div className="b-card b-card-slate p-5 md:p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-b-serif text-lg text-b-ink">
-                    {item.role}
-                  </h4>
-                  <span className="font-b-mono text-xs text-b-muted">
-                    {item.period}
+      <div className="space-y-5 mt-10">
+        <ExpandableCard
+          title={
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
+              <Award size={20} className="text-b-terracotta" />
+              获奖荣誉
+            </h3>
+          }
+          keywords={
+            <>
+              {[...new Set(otherData.awards.map(a => a.level))].map(level => (
+                <span key={level} className="b-tag b-tag-terracotta">{level}</span>
+              ))}
+            </>
+          }
+          cardClass="b-card b-card-terracotta"
+          className="b-fade-up b-stagger-1"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {otherData.awards.map((award, i) => (
+              <div
+                key={i}
+                className="bg-b-cream-dark/50 rounded-xl p-5 border border-b-border"
+              >
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <span className="b-tag b-tag-terracotta">{award.level}</span>
+                  <span className="font-b-mono text-xs text-b-muted whitespace-nowrap">
+                    {award.year}
                   </span>
                 </div>
-                <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-3">
-                  {item.desc}
+                <h4 className="font-b-serif text-lg text-b-ink mb-2 leading-snug">
+                  {award.name}
+                </h4>
+                <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-2">
+                  {award.project}
                 </p>
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta shrink-0" />
-                  <p className="font-b-sans text-sm text-b-terracotta font-medium">
-                    {item.achievement}
+                <p className="font-b-sans text-xs text-b-muted">
+                  {award.role}
+                </p>
+              </div>
+            ))}
+          </div>
+        </ExpandableCard>
+
+        <ExpandableCard
+          title={
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
+              <BadgeCheck size={20} className="text-b-sage" />
+              证书资质
+            </h3>
+          }
+          keywords={
+            <>
+              {otherData.certificates.map(cert => (
+                <span key={cert.name} className="b-tag b-tag-sage">{cert.name.replace(/（.+?）/, '')}</span>
+              ))}
+            </>
+          }
+          cardClass="b-card b-card-sage"
+          className="b-fade-up b-stagger-2"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {otherData.certificates.map((cert, i) => (
+              <div
+                key={i}
+                className="bg-b-cream-dark/50 rounded-xl p-5 border border-b-border"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-full bg-b-sage-dim flex items-center justify-center">
+                    <BadgeCheck size={16} className="text-b-sage" />
+                  </div>
+                  <h4 className="font-b-serif text-base text-b-ink leading-snug">
+                    {cert.name}
+                  </h4>
+                </div>
+                <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
+                  {cert.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </ExpandableCard>
+
+        <ExpandableCard
+          title={
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
+              <GraduationCap size={20} className="text-b-slate" />
+              校园经历
+            </h3>
+          }
+          keywords={
+            <>
+              {otherData.campus.map(item => (
+                <span key={item.role} className="b-tag b-tag-slate">{item.role}</span>
+              ))}
+            </>
+          }
+          cardClass="b-card b-card-slate"
+          className="b-fade-up b-stagger-3"
+        >
+          <div className="relative pl-10">
+            <div className="b-timeline-line" />
+            {otherData.campus.map((item, i) => (
+              <div
+                key={i}
+                className="relative mb-6 last:mb-0"
+              >
+                <div className="b-timeline-dot" />
+                <div className="bg-b-cream-dark/50 rounded-xl p-5 md:p-6 border border-b-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-b-serif text-lg text-b-ink">
+                      {item.role}
+                    </h4>
+                    <span className="font-b-mono text-xs text-b-muted">
+                      {item.period}
+                    </span>
+                  </div>
+                  <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-3">
+                    {item.desc}
                   </p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta shrink-0" />
+                    <p className="font-b-sans text-sm text-b-terracotta font-medium">
+                      {item.achievement}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        </ExpandableCard>
 
-      <div className="b-divider" />
-
-      <div className="b-fade-up b-stagger-4">
-        <div className="flex items-center gap-3 mb-6">
-          <Building2 size={22} className="text-b-terracotta" />
-          <h3 className="font-b-serif text-2xl text-b-ink">实习经历</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="b-card b-card-terracotta p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-5">
-            <div>
-              <h4 className="font-b-serif text-xl md:text-2xl text-b-ink">
-                {otherData.internship.company}
-              </h4>
-              <p className="font-b-sans text-sm text-b-ink-light mt-1">
-                {otherData.internship.role}
-              </p>
-            </div>
-            <span className="font-b-mono text-xs text-b-muted bg-b-cream-dark px-3 py-1.5 rounded-full self-start">
+        <ExpandableCard
+          title={
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
+              <Building2 size={20} className="text-b-terracotta" />
+              实习经历 · {otherData.internship.company}
+            </h3>
+          }
+          badges={
+            <span className="font-b-mono text-xs text-b-muted bg-b-cream-dark px-3 py-1.5 rounded-full">
               {otherData.internship.period}
             </span>
-          </div>
-
-          <div className="mb-6">
-            <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
-              工作内容
-            </p>
-            <div className="space-y-3">
-              {otherData.internship.work.map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-2 shrink-0" />
-                  <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
-                    {item}
-                  </p>
-                </div>
+          }
+          keywords={
+            <>
+              {otherData.internship.achievements.slice(0, 2).map(item => (
+                <span key={item} className="b-tag b-tag-terracotta">{item}</span>
               ))}
-            </div>
-          </div>
-
+            </>
+          }
+          cardClass="b-card b-card-terracotta"
+          className="b-fade-up b-stagger-4"
+        >
           <div>
-            <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
-              核心成果
+            <p className="font-b-sans text-sm text-b-ink-light mt-1 mb-5">
+              {otherData.internship.role}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {otherData.internship.achievements.map((item, i) => (
-                <span key={i} className="b-tag b-tag-terracotta">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="b-divider" />
-
-      <div className="b-fade-up b-stagger-5">
-        <div className="flex items-center gap-3 mb-6">
-          <MapPin size={22} className="text-b-terracotta" />
-          <h3 className="font-b-serif text-2xl text-b-ink">技能概览</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {Object.entries(otherData.skills).map(([key, skill], i) => (
-            <div
-              key={key}
-              className="b-card p-5 b-fade-up"
-              style={{ animationDelay: `${0.4 + i * 0.08}s` }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-b-serif text-lg text-b-ink">
-                  {SKILL_LABELS[key] || key}
-                </h4>
-                <SkillMeter level={skill.level} />
+            <div className="mb-6">
+              <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
+                工作内容
+              </p>
+              <div className="space-y-3">
+                {otherData.internship.work.map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-2 shrink-0" />
+                    <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
+                      {item}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {skill.items.map((item, j) => (
-                  <span
-                    key={j}
-                    className="font-b-sans text-xs px-2.5 py-1 rounded-full bg-b-cream-dark text-b-ink-light border border-b-border"
-                  >
+            </div>
+
+            <div>
+              <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
+                核心成果
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {otherData.internship.achievements.map((item, i) => (
+                  <span key={i} className="b-tag b-tag-terracotta">
                     {item}
                   </span>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </ExpandableCard>
 
-      <div className="b-divider" />
+        <ExpandableCard
+          title={
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
+              <MapPin size={20} className="text-b-terracotta" />
+              技能概览
+            </h3>
+          }
+          keywords={
+            <>
+              {Object.entries(otherData.skills).map(([key, skill]) => (
+                <span key={key} className="b-tag">
+                  {SKILL_LABELS[key] || key} {skill.level}
+                </span>
+              ))}
+            </>
+          }
+          cardClass="b-card"
+          className="b-fade-up b-stagger-5"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Object.entries(otherData.skills).map(([key, skill]) => (
+              <div
+                key={key}
+                className="bg-b-cream-dark/50 rounded-xl p-5 border border-b-border"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-b-serif text-lg text-b-ink">
+                    {SKILL_LABELS[key] || key}
+                  </h4>
+                  <SkillMeter level={skill.level} />
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {skill.items.map((item, j) => (
+                    <span
+                      key={j}
+                      className="font-b-sans text-xs px-2.5 py-1 rounded-full bg-b-cream-dark text-b-ink-light border border-b-border"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </ExpandableCard>
 
-      <div className="b-fade-up b-stagger-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Mail size={22} className="text-b-terracotta" />
-          <h3 className="font-b-serif text-2xl text-b-ink">联系方式</h3>
-          <span className="b-ornament" />
-        </div>
-        <div className="b-card p-6 md:p-8">
+        <div className="b-card p-6 md:p-8 b-fade-up b-stagger-6">
+          <div className="flex items-center gap-3 mb-5">
+            <Mail size={22} className="text-b-terracotta" />
+            <h3 className="font-b-serif text-2xl text-b-ink">联系方式</h3>
+            <span className="b-ornament" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 rounded-full bg-b-terracotta-dim flex items-center justify-center shrink-0">

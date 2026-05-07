@@ -1,4 +1,5 @@
 import { Monitor, Code, Cpu, FlaskConical, ClipboardList } from 'lucide-react'
+import ExpandableCard from '@components/ExpandableCard'
 import energyData from '@data/energy.json'
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -57,151 +58,8 @@ function SkillMeter({ level }: { level: number }) {
   )
 }
 
-function CategoryCard({
-  skill,
-  index,
-}: {
-  skill: (typeof energyData.skills)[number]
-  index: number
-}) {
-  const categoryLevel = proficiencyMap[skill.category] ?? 3
-
-  return (
-    <div className={`b-card b-card-terracotta p-6 md:p-8 b-fade-up b-stagger-${index + 1}`}>
-      <div className="flex items-start justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-b-terracotta-dim text-b-terracotta">
-            {iconMap[skill.icon]}
-          </span>
-          <div>
-            <h3 className="font-b-serif text-xl text-b-ink leading-tight">
-              {skill.category}
-            </h3>
-            <SkillMeter level={categoryLevel} />
-          </div>
-        </div>
-        <span className="font-b-mono text-xs text-b-muted tracking-wider uppercase">
-          {String(index + 1).padStart(2, '0')}
-        </span>
-      </div>
-
-      <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-5">
-        {skill.summary}
-      </p>
-
-      <div className="flex flex-wrap gap-2 mb-6">
-        {skill.keywords.split('、').map((kw, i) => (
-          <span key={i} className="b-tag b-tag-terracotta">
-            {kw}
-          </span>
-        ))}
-      </div>
-
-      <div className="space-y-3 mb-6">
-        {skill.items.map((item, i) => {
-          const level = itemProficiency[item.name] ?? 3
-          return (
-            <div key={i} className="group">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-b-sans text-sm font-medium text-b-ink b-underline-hover cursor-default">
-                  {item.name}
-                </span>
-                <SkillMeter level={level} />
-              </div>
-              <p className="font-b-sans text-xs text-b-muted leading-relaxed pl-0">
-                {item.desc}
-              </p>
-              <div className="b-progress-bar mt-2">
-                <div
-                  className="b-progress-fill"
-                  style={{ width: `${(level / 5) * 100}%` }}
-                />
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {skill.scenarios && skill.scenarios.length > 0 && (
-        <div className="border-t border-b-border pt-5 mt-2">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="b-ornament" />
-            <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-              应用场景
-            </h4>
-          </div>
-          <div className="space-y-2">
-            {skill.scenarios.map((s, i) => (
-              <div
-                key={i}
-                className="b-card p-3 border-l-2 border-l-b-terracotta/30"
-              >
-                <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                  {s}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {skill.practices && skill.practices.length > 0 && (
-        <div className="border-t border-b-border pt-5 mt-2">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="b-ornament" />
-            <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-              实践经验
-            </h4>
-          </div>
-          <div className="space-y-2">
-            {skill.practices.map((p, i) => (
-              <div
-                key={i}
-                className="b-card p-3 border-l-2 border-l-b-terracotta/30"
-              >
-                <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                  {p}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {skill.projects && skill.projects.length > 0 && (
-        <div className="border-t border-b-border pt-5 mt-2">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="b-ornament" />
-            <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-              项目作品
-            </h4>
-          </div>
-          <div className="grid grid-cols-1 gap-2">
-            {skill.projects.map((proj, i) => (
-              <div
-                key={i}
-                className="b-card b-card-terracotta p-4 group"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="b-number-accent text-2xl leading-none mt-0.5">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <h5 className="font-b-serif text-sm font-medium text-b-ink mb-1">
-                      {proj.name}
-                    </h5>
-                    <p className="font-b-sans text-xs text-b-muted leading-relaxed">
-                      {proj.desc}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  )
+function truncate(str: string, max: number) {
+  return str.length > max ? str.slice(0, max) + '…' : str
 }
 
 export default function EnergyB() {
@@ -225,9 +83,158 @@ export default function EnergyB() {
       <div className="b-divider b-fade-in b-stagger-1" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-        {energyData.skills.map((skill, index) => (
-          <CategoryCard key={index} skill={skill} index={index} />
-        ))}
+        {energyData.skills.map((skill, index) => {
+          const categoryLevel = proficiencyMap[skill.category] ?? 3
+          const keywordList = skill.keywords.split('、')
+          const displayKeywords = keywordList.slice(0, 4)
+
+          return (
+            <ExpandableCard
+              key={index}
+              cardClass="b-card b-card-terracotta"
+              className={`b-fade-up b-stagger-${index + 1}`}
+              title={
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-b-terracotta-dim text-b-terracotta">
+                    {iconMap[skill.icon]}
+                  </span>
+                  <div>
+                    <h3 className="font-b-serif text-xl text-b-ink leading-tight">
+                      {skill.category}
+                    </h3>
+                    <SkillMeter level={categoryLevel} />
+                  </div>
+                </div>
+              }
+              subtitle={truncate(skill.summary, 60)}
+              keywords={
+                <>
+                  {displayKeywords.map((kw, i) => (
+                    <span key={i} className="b-tag b-tag-terracotta">
+                      {kw}
+                    </span>
+                  ))}
+                </>
+              }
+            >
+              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-5">
+                {skill.summary}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                {keywordList.map((kw, i) => (
+                  <span key={i} className="b-tag b-tag-terracotta">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {skill.items.map((item, i) => {
+                  const level = itemProficiency[item.name] ?? 3
+                  return (
+                    <div key={i} className="group">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-b-sans text-sm font-medium text-b-ink b-underline-hover cursor-default">
+                          {item.name}
+                        </span>
+                        <SkillMeter level={level} />
+                      </div>
+                      <p className="font-b-sans text-xs text-b-muted leading-relaxed pl-0">
+                        {item.desc}
+                      </p>
+                      <div className="b-progress-bar mt-2">
+                        <div
+                          className="b-progress-fill"
+                          style={{ width: `${(level / 5) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {skill.scenarios && skill.scenarios.length > 0 && (
+                <div className="border-t border-b-border pt-5 mt-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="b-ornament" />
+                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                      应用场景
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {skill.scenarios.map((s, i) => (
+                      <div
+                        key={i}
+                        className="b-card p-3 border-l-2 border-l-b-terracotta/30"
+                      >
+                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                          {s}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {skill.practices && skill.practices.length > 0 && (
+                <div className="border-t border-b-border pt-5 mt-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="b-ornament" />
+                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                      实践经验
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {skill.practices.map((p, i) => (
+                      <div
+                        key={i}
+                        className="b-card p-3 border-l-2 border-l-b-terracotta/30"
+                      >
+                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                          {p}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {skill.projects && skill.projects.length > 0 && (
+                <div className="border-t border-b-border pt-5 mt-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="b-ornament" />
+                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                      项目作品
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    {skill.projects.map((proj, i) => (
+                      <div
+                        key={i}
+                        className="b-card b-card-terracotta p-4 group"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="b-number-accent text-2xl leading-none mt-0.5">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <h5 className="font-b-serif text-sm font-medium text-b-ink mb-1">
+                              {proj.name}
+                            </h5>
+                            <p className="font-b-sans text-xs text-b-muted leading-relaxed">
+                              {proj.desc}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </ExpandableCard>
+          )
+        })}
       </div>
 
       <div className="b-divider b-fade-in" />

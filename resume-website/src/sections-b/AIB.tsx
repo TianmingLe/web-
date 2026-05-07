@@ -1,5 +1,6 @@
 import { Calendar, Layers, Zap, BookOpen, Sparkles, Tag, Hash, Brain, Cpu } from 'lucide-react'
 import aiData from '@data/ai.json'
+import ExpandableCard from '@components/ExpandableCard'
 
 interface Phase {
   name: string
@@ -104,33 +105,24 @@ function EvolutionTimeline() {
 function MajorProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <div className={`b-fade-up b-stagger-${index + 1}`}>
-      <div className="b-card b-card-slate p-7 md:p-8">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-5">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-b-slate-dim">
-                <Cpu size={16} className="text-b-slate" />
-              </div>
-              <h3 className="font-b-serif text-2xl md:text-[28px] text-b-ink leading-tight">
-                {project.title}
-              </h3>
+      <ExpandableCard
+        title={
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-b-slate-dim">
+              <Cpu size={15} className="text-b-slate" />
             </div>
-            {project.keywords && (
-              <div className="flex items-start gap-2 mt-2">
-                <Hash size={13} className="text-b-muted mt-0.5 shrink-0" />
-                <p className="text-b-muted text-xs leading-relaxed font-b-sans">
-                  {project.keywords}
-                </p>
-              </div>
-            )}
+            <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug">
+              {project.title}
+            </h3>
           </div>
-
-          <div className="flex flex-col items-end gap-2 shrink-0">
+        }
+        badges={
+          <div className="flex flex-wrap items-center gap-2">
             {project.period && (
-              <div className="flex items-center gap-1.5 b-tag b-tag-slate">
+              <span className="b-tag b-tag-slate">
                 <Calendar size={12} />
                 <span className="font-b-mono text-[11px]">{project.period}</span>
-              </div>
+              </span>
             )}
             {project.version && (
               <span className="font-b-mono text-[11px] text-b-slate-light bg-b-slate-dim px-3 py-1 rounded-full">
@@ -138,14 +130,23 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
               </span>
             )}
           </div>
-        </div>
-
-        <p className="text-b-ink-light text-sm leading-[1.8] font-b-sans mb-6 max-w-3xl">
+        }
+        keywords={
+          <>
+            {project.tags.slice(0, 4).map((tag, i) => (
+              <span key={i} className="b-tag b-tag-terracotta">{tag}</span>
+            ))}
+          </>
+        }
+        subtitle={project.summary.length > 80 ? project.summary.slice(0, 80) + '…' : project.summary}
+        cardClass="b-card b-card-slate"
+      >
+        <p className="text-b-ink-light text-sm leading-[1.8] font-b-sans mb-5 max-w-3xl">
           {project.summary}
         </p>
 
         {project.highlights && project.highlights.length > 0 && (
-          <div className="mb-6">
+          <div className="mb-5">
             <div className="flex items-center gap-2 mb-3">
               <Zap size={15} className="text-b-terracotta" />
               <span className="font-b-serif text-sm text-b-ink">核心指标</span>
@@ -162,7 +163,7 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
         )}
 
         {project.phases && project.phases.length > 0 && (
-          <div className="mb-6">
+          <div className="mb-5">
             <div className="flex items-center gap-2 mb-4">
               <Layers size={15} className="text-b-slate" />
               <span className="font-b-serif text-sm text-b-ink">开发阶段</span>
@@ -204,7 +205,7 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
             ))}
           </div>
         </div>
-      </div>
+      </ExpandableCard>
     </div>
   )
 }
@@ -212,14 +213,25 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
 function MinorProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <div className={`b-fade-up b-stagger-${(index % 4) + 1}`}>
-      <div className="b-card b-card-sage p-6 flex flex-col h-full">
-        <div className="flex items-center gap-2.5 mb-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-b-sage-dim">
-            <Sparkles size={14} className="text-b-sage" />
+      <ExpandableCard
+        title={
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-b-sage-dim">
+              <Sparkles size={13} className="text-b-sage" />
+            </div>
+            <h4 className="font-b-serif text-lg text-b-ink leading-snug">{project.title}</h4>
           </div>
-          <h4 className="font-b-serif text-lg text-b-ink leading-snug">{project.title}</h4>
-        </div>
-
+        }
+        keywords={
+          <>
+            {project.tags.slice(0, 3).map((tag, i) => (
+              <span key={i} className="b-tag b-tag-sage">{tag}</span>
+            ))}
+          </>
+        }
+        subtitle={project.summary.length > 80 ? project.summary.slice(0, 80) + '…' : project.summary}
+        cardClass="b-card b-card-sage"
+      >
         {project.period && (
           <div className="flex items-center gap-1.5 mb-3">
             <Calendar size={12} className="text-b-muted" />
@@ -227,7 +239,7 @@ function MinorProjectCard({ project, index }: { project: Project; index: number 
           </div>
         )}
 
-        <p className="text-b-ink-light text-sm leading-relaxed font-b-sans mb-4 flex-1">
+        <p className="text-b-ink-light text-sm leading-relaxed font-b-sans mb-4">
           {project.summary}
         </p>
 
@@ -310,7 +322,7 @@ function MinorProjectCard({ project, index }: { project: Project; index: number 
           </div>
         )}
 
-        <div className="pt-3 mt-auto border-t border-b-border">
+        <div className="pt-3 border-t border-b-border">
           <div className="flex flex-wrap gap-1.5">
             {project.tags.map((tag, i) => (
               <span key={i} className="b-tag b-tag-terracotta text-[11px]">
@@ -319,7 +331,7 @@ function MinorProjectCard({ project, index }: { project: Project; index: number 
             ))}
           </div>
         </div>
-      </div>
+      </ExpandableCard>
     </div>
   )
 }
