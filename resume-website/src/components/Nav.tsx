@@ -87,8 +87,18 @@ export default function Nav() {
                     >
                       {({ isActive }) => (
                         <>
+                          {isActive && (
+                            <span
+                              className={`absolute inset-0 rounded-lg -z-10 ${
+                                isVersionB
+                                  ? 'bg-b-cream-dark border border-b-sand'
+                                  : 'bg-energy-dim border border-energy/20'
+                              }`}
+                              aria-hidden="true"
+                            />
+                          )}
                           <span
-                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                            className={`relative z-10 w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                               isActive
                                 ? isVersionB
                                   ? 'bg-b-terracotta shadow-[0_0_8px_rgba(181,101,78,0.5)]'
@@ -99,17 +109,7 @@ export default function Nav() {
                             }`}
                             aria-hidden="true"
                           />
-                          <span className={isVersionB ? 'font-b-serif' : 'font-sans'}>{item.label}</span>
-                          {isActive && (
-                            <span
-                              className={`absolute inset-0 rounded-lg ${
-                                isVersionB
-                                  ? 'bg-b-cream-dark border border-b-sand'
-                                  : 'bg-energy-dim border border-energy/20'
-                              }`}
-                              aria-hidden="true"
-                            />
-                          )}
+                          <span className={`relative z-10 ${isVersionB ? 'font-b-serif' : 'font-sans'}`}>{item.label}</span>
                         </>
                       )}
                     </NavLink>
