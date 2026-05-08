@@ -77,7 +77,7 @@ export default function Home() {
 
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-6 min-h-screen w-full max-w-5xl mx-auto"
+        className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-6 min-h-screen w-full max-w-5xl mx-auto pt-20 md:pt-24"
       >
         <p className="home-title text-[11px] md:text-xs text-energy-light font-mono font-medium tracking-[0.3em] uppercase mb-8">
           {profile.title}
