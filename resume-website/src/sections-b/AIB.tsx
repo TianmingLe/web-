@@ -371,7 +371,7 @@ export default function AIB() {
   const minorProjects = projects.filter((p) => !p.phases || p.phases.length === 0)
 
   return (
-    <section className="py-16 md:py-24 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
+    <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
       <div className="b-section-header b-fade-up">
         <div className="flex items-center gap-3 mb-2">
           <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-b-terracotta-dim">

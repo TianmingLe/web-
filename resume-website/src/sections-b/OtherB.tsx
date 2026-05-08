@@ -66,7 +66,7 @@ function SocialIcon({ icon }: { icon: string }) {
 
 export default function OtherB() {
   return (
-    <section className="py-16 md:py-24 px-6 md:px-12 max-w-5xl mx-auto">
+    <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 max-w-5xl mx-auto">
       <div className="b-section-header b-fade-up">
         <p className="font-b-sans text-sm tracking-widest uppercase text-b-muted mb-2">
           {otherData.subtitle}

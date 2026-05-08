@@ -64,7 +64,7 @@ function truncate(str: string, max: number) {
 
 export default function EnergyB() {
   return (
-    <section className="relative px-6 md:px-12 lg:px-20 py-16 md:py-24 max-w-7xl mx-auto">
+    <section className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
       <div className="b-section-header b-fade-up">
         <p className="font-b-mono text-xs text-b-terracotta tracking-[0.2em] uppercase mb-3">
           Core Competencies

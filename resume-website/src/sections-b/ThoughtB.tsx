@@ -6,7 +6,7 @@ const advantageIcons = [Lightbulb, Compass, Code2, BookOpen, Users]
 
 export default function ThoughtB() {
   return (
-    <section className="px-6 md:px-12 lg:px-20 py-20 max-w-6xl mx-auto">
+    <section className="px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-20 max-w-6xl mx-auto">
       <div className="b-section-header b-fade-up">
         <p className="font-b-mono text-xs tracking-[0.2em] uppercase text-b-terracotta mb-3">
           思想领域

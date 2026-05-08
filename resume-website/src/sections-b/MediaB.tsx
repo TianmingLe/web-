@@ -10,7 +10,7 @@ function truncate(str: string, max: number) {
 
 export default function MediaB() {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
+    <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
       <div className="b-section-header b-fade-up">
         <p className="font-b-mono text-xs tracking-[0.2em] uppercase text-b-terracotta mb-3">
           {mediaData.subtitle}

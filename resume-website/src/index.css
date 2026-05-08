@@ -524,12 +524,20 @@
   }
 
   .b-fade-up {
-    opacity: 0;
-    transform: translateY(24px);
-    animation: bFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: bFadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .b-fade-up {
+      animation: none;
+    }
   }
 
   @keyframes bFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
     to {
       opacity: 1;
       transform: translateY(0);
@@ -537,11 +545,19 @@
   }
 
   .b-fade-in {
-    opacity: 0;
-    animation: bFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: bFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .b-fade-in {
+      animation: none;
+    }
   }
 
   @keyframes bFadeIn {
+    from {
+      opacity: 0;
+    }
     to {
       opacity: 1;
     }
