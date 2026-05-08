@@ -69,7 +69,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
           {heading}
         </h3>
         {subheading && (
-          <p className="text-text-secondary text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-[#c8b99a] text-base md:text-lg max-w-2xl mx-auto">
             {subheading}
           </p>
         )}
@@ -132,7 +132,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
                             {step.title}
                           </h4>
                           
-                          <p className="text-text-secondary text-base leading-relaxed">
+                          <p className="text-[#c8b99a] text-base leading-relaxed">
                             {step.description}
                           </p>
                         </div>
@@ -205,7 +205,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
                               {step.title}
                             </h4>
                             
-                            <p className="text-text-secondary text-base leading-relaxed">
+                            <p className="text-[#c8b99a] text-base leading-relaxed">
                               {step.description}
                             </p>
                           </div>
@@ -256,7 +256,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
                         {step.icon}{step.label}
                       </span>
                       <h4 className="text-lg font-semibold text-white mb-2">{step.title}</h4>
-                      <p className="text-text-secondary text-sm leading-relaxed">{step.description}</p>
+                      <p className="text-[#c8b99a] text-sm leading-relaxed">{step.description}</p>
                     </div>
                   </div>
                 </div>

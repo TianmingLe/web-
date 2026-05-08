@@ -60,7 +60,7 @@ export default function FeatureSection({
         <h3 className="text-2xl md:text-4xl font-semibold text-white mb-5 leading-tight tracking-tight">
           {title}
         </h3>
-        <p className="text-text-secondary text-base md:text-lg leading-relaxed mb-6">
+        <p className="text-[#c8b99a] text-base md:text-lg leading-relaxed mb-6">
           {description}
         </p>
         {children}
