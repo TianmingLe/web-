@@ -97,15 +97,20 @@ export default function MediaPage() {
   const minorProjects = mediaData.projects.filter((p) => p.id !== 'omniscraper' && p.id !== 'steel_4k')
 
   return (
-    <div className="relative pt-20 pb-12 md:py-40 px-4 md:px-6">
+    <div className="relative pt-24 pb-16 md:pt-32 md:pb-20 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-16 md:mb-24 text-center">
-          <p className="text-energy-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">
+          <p className="text-energy-light/80 text-[10px] md:text-xs font-mono font-medium tracking-[0.4em] uppercase mb-5">
             {mediaData.subtitle}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-6 tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-serif text-warm mb-5 tracking-tight">
             {mediaData.title}
           </h2>
+          <div className="flex items-center justify-center gap-3 mb-5">
+            <span className="block w-8 h-px bg-energy/30" />
+            <span className="w-1.5 h-1.5 rounded-full bg-energy/50" />
+            <span className="block w-8 h-px bg-energy/30" />
+          </div>
           <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
             {mediaData.description}
           </p>

@@ -30,7 +30,7 @@ export default function ThoughtB() {
         </div>
       </div>
 
-      <div className="b-divider" />
+      <div className="b-divider-center" />
 
       <div className="mb-16">
         <div className="flex items-center gap-3 mb-10 b-fade-up">
@@ -39,7 +39,7 @@ export default function ThoughtB() {
         </div>
 
         <div className="relative ml-2">
-          <div className="b-timeline-line" />
+          <div className="b-timeline-line-dashed" />
           <div className="space-y-10">
             {thoughtData.career.map((item, index) => (
               <div key={index} className={`relative pl-10 b-fade-up b-stagger-${index + 1}`}>
@@ -76,7 +76,7 @@ export default function ThoughtB() {
         </div>
       </div>
 
-      <div className="b-divider" />
+      <div className="b-divider-center" />
 
       <div className="mb-16 b-fade-up b-stagger-1">
         <ExpandableCard
@@ -95,7 +95,7 @@ export default function ThoughtB() {
             </>
           }
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {thoughtData.coreAdvantages.map((adv, index) => {
               const IconComponent = advantageIcons[index]
               return (
@@ -215,7 +215,7 @@ export default function ThoughtB() {
         </ExpandableCard>
       </div>
 
-      <div className="b-divider" />
+      <div className="b-divider-center" />
 
       <div className="mb-16 b-fade-up b-stagger-1">
         <ExpandableCard

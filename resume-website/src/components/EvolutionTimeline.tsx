@@ -19,13 +19,13 @@ interface EvolutionTimelineProps {
 
 function StepCard({ step }: { step: EvolutionStep }) {
   return (
-    <div className="inline-block max-w-md w-full">
+    <div className="w-full">
       <div
         className="relative group"
         style={{ perspective: '1000px' }}
       >
         <div
-          className="relative p-8 rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
+          className="relative p-6 md:p-8 rounded-2xl transition-all duration-500 group-hover:scale-[1.02]"
           style={{
             background: 'rgba(255, 255, 255, 0.02)',
             backdropFilter: 'blur(24px)',
@@ -42,7 +42,7 @@ function StepCard({ step }: { step: EvolutionStep }) {
           />
           <div className="relative z-10">
             <span
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full mb-5"
+              className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 text-xs font-semibold rounded-full mb-4"
               style={{
                 background: 'linear-gradient(135deg, rgba(0, 122, 255, 0.2) 0%, rgba(52, 199, 89, 0.2) 100%)',
                 color: '#00d4ff',
@@ -52,10 +52,10 @@ function StepCard({ step }: { step: EvolutionStep }) {
               {step.icon}
               <span className="tracking-wider">{step.label}</span>
             </span>
-            <h4 className="text-xl font-semibold mb-4 leading-tight" style={{ color: '#ffffff' }}>
+            <h4 className="text-lg md:text-xl font-semibold mb-3 leading-tight" style={{ color: '#ffffff' }}>
               {step.title}
             </h4>
-            <p className="text-base leading-relaxed" style={{ color: '#c8b99a' }}>
+            <p className="text-sm md:text-base leading-relaxed" style={{ color: '#c8b99a' }}>
               {step.description}
             </p>
           </div>
@@ -123,9 +123,9 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
         )}
       </div>
 
-      <div className="relative">
+      <div className="relative pl-8 md:pl-14">
         <div
-          className="evo-line absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 hidden md:block origin-top"
+          className="evo-line absolute left-3 md:left-5 top-0 bottom-0 w-px origin-top"
           style={{
             background: 'linear-gradient(180deg, #007aff 0%, #34c759 50%, #af52de 100%)',
             opacity: 0.6,
@@ -133,86 +133,35 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
           aria-hidden="true"
         />
 
-        <div className="space-y-16 md:space-y-0">
-          {steps.map((step, index) => {
-            const isLeft = index % 2 === 0
-            return (
-              <div key={index} className="evo-step relative md:flex md:items-center md:py-8">
-                <div className={`hidden md:block flex-1 ${isLeft ? 'pr-16 text-right' : 'pl-16 text-left'}`}>
-                  {isLeft && <StepCard step={step} />}
-                </div>
-
-                <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-12 h-12 rounded-full z-10 justify-center items-center">
-                  <div
-                    className="w-full h-full rounded-full"
-                    style={{
-                      background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
-                      boxShadow: '0 0 30px rgba(0, 122, 255, 0.5), 0 0 60px rgba(52, 199, 89, 0.2)',
-                    }}
-                  />
-                  <div
-                    className="absolute w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{
-                      background: '#0a0a0a',
-                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
-                    }}
-                  >
-                    <span className="text-xs font-bold" style={{ color: '#00d4ff' }}>
-                      {index + 1}
-                    </span>
-                  </div>
-                </div>
-
-                <div className={`hidden md:block flex-1 ${isLeft ? 'pl-16 text-left' : 'pr-16 text-right'}`}>
-                  {!isLeft && <StepCard step={step} />}
-                </div>
-
-                <div className="md:hidden flex items-start gap-5 p-4">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full z-10 flex items-center justify-center relative">
-                    <div
-                      className="w-full h-full rounded-full"
-                      style={{
-                        background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
-                        boxShadow: '0 0 20px rgba(0, 122, 255, 0.5)',
-                      }}
-                    />
-                    <div
-                      className="absolute w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{ background: '#0a0a0a' }}
-                    >
-                      <span className="text-xs font-bold" style={{ color: '#00d4ff' }}>
-                        {index + 1}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div
-                      className="relative p-5 rounded-xl"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                      }}
-                    >
-                      <span
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full mb-3"
-                        style={{
-                          background: 'rgba(0, 122, 255, 0.15)',
-                          color: '#007aff',
-                          border: '1px solid rgba(0, 122, 255, 0.3)',
-                        }}
-                      >
-                        {step.icon}{step.label}
-                      </span>
-                      <h4 className="text-lg font-semibold mb-2" style={{ color: '#ffffff' }}>{step.title}</h4>
-                      <p className="text-sm leading-relaxed" style={{ color: '#c8b99a' }}>{step.description}</p>
-                    </div>
-                  </div>
+        <div className="space-y-10 md:space-y-12">
+          {steps.map((step, index) => (
+            <div key={index} className="evo-step relative flex items-start gap-5 md:gap-6">
+              <div className="absolute -left-8 md:-left-14 top-6 flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-full z-10 flex items-center justify-center">
+                <div
+                  className="w-full h-full rounded-full"
+                  style={{
+                    background: 'linear-gradient(135deg, #007aff 0%, #34c759 100%)',
+                    boxShadow: '0 0 20px rgba(0, 122, 255, 0.5), 0 0 40px rgba(52, 199, 89, 0.2)',
+                  }}
+                />
+                <div
+                  className="absolute w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center"
+                  style={{
+                    background: '#0a0a0a',
+                    boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
+                  }}
+                >
+                  <span className="text-[10px] md:text-xs font-bold" style={{ color: '#00d4ff' }}>
+                    {index + 1}
+                  </span>
                 </div>
               </div>
-            )
-          })}
+
+              <div className="flex-1 pt-3">
+                <StepCard step={step} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

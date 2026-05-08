@@ -41,16 +41,16 @@ const skillLabels: Record<string, string> = {
 
 export default function OtherPage() {
   return (
-    <div className="relative pt-20 pb-12 md:py-40 px-4 md:px-6">
+    <div className="relative pt-24 pb-16 md:pt-32 md:pb-20 px-4 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-16 md:mb-24 text-center">
-          <p className="text-energy-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">
+        <div className="mb-12 md:mb-16 text-center">
+          <p className="text-energy-light/80 text-xs font-mono font-medium tracking-[0.3em] uppercase mb-3">
             {otherData.subtitle}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-6 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-serif text-warm mb-4 tracking-tight">
             {otherData.title}
           </h2>
-          <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
+          <p className="text-warm-muted text-sm max-w-lg mx-auto leading-relaxed font-sans">
             {otherData.description}
           </p>
         </div>

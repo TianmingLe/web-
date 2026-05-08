@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Monitor, Code, Cpu, FlaskConical, ClipboardList } from 'lucide-react'
 import ExpandableCard from '@components/ExpandableCard'
 import energyData from '@data/energy.json'
@@ -63,8 +64,31 @@ function truncate(str: string, max: number) {
 }
 
 export default function EnergyB() {
+  const sectionRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll('.b-progress-fill-animated').forEach((el) => {
+              const htmlEl = el as HTMLElement
+              const targetWidth = htmlEl.style.width
+              htmlEl.style.width = '0'
+              requestAnimationFrame(() => {
+                htmlEl.style.width = targetWidth
+              })
+            })
+          }
+        })
+      },
+      { threshold: 0.2 }
+    )
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
+    <section ref={sectionRef} className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
       <div className="b-section-header b-fade-up">
         <p className="font-b-mono text-xs text-b-terracotta tracking-[0.2em] uppercase mb-3">
           Core Competencies
@@ -86,7 +110,7 @@ export default function EnergyB() {
         {energyData.skills.map((skill, index) => {
           const categoryLevel = proficiencyMap[skill.category] ?? 3
           const keywordList = skill.keywords.split('、')
-          const displayKeywords = keywordList.slice(0, 4)
+          const displayKeywords = keywordList.slice(0, 3)
 
           return (
             <ExpandableCard
@@ -145,7 +169,7 @@ export default function EnergyB() {
                       </p>
                       <div className="b-progress-bar mt-2">
                         <div
-                          className="b-progress-fill"
+                          className="b-progress-fill-animated"
                           style={{ width: `${(level / 5) * 100}%` }}
                         />
                       </div>

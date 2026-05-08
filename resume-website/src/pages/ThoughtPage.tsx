@@ -4,16 +4,16 @@ import thoughtData from '@data/thought.json'
 
 export default function ThoughtPage() {
   return (
-    <div className="relative pt-20 pb-12 md:py-40 px-4 md:px-6">
+    <div className="relative pt-24 pb-16 md:pt-32 md:pb-20 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-16 md:mb-24 text-center">
-          <p className="text-ai-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">
+        <div className="mb-20 md:mb-28 text-center">
+          <p className="text-ai-light/60 text-[10px] md:text-xs font-mono font-medium tracking-[0.5em] uppercase mb-8">
             {thoughtData.subtitle}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-6 tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-8 tracking-tight">
             {thoughtData.title}
           </h2>
-          <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
+          <p className="text-warm-muted text-sm md:text-base max-w-xl mx-auto leading-[1.8] font-sans">
             {thoughtData.description}
           </p>
         </div>

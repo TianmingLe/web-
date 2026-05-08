@@ -73,7 +73,7 @@ export default function ExpandableCard({
             className={`shrink-0 mt-1 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
               expanded
                 ? 'bg-b-terracotta-dim text-b-terracotta rotate-180'
-                : 'bg-b-cream-dark text-b-muted group-hover:bg-b-sand/50 group-hover:text-b-ink-light'
+                : 'bg-b-cream-dark text-b-muted group-hover:bg-b-sand/50 group-hover:text-b-ink-light group-hover:scale-110'
             }`}
           >
             <ChevronDown size={14} strokeWidth={2} />

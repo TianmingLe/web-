@@ -3,18 +3,19 @@ import energyData from '@data/energy.json'
 
 export default function EnergyPage() {
   return (
-    <div className="relative pt-20 pb-12 md:py-40 px-4 md:px-6">
+    <div className="relative pt-24 pb-16 md:pt-32 md:pb-20 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-16 md:mb-24 text-center">
+        <div className="mb-16 md:mb-24">
           <p className="text-energy-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">
             {energyData.subtitle}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-warm mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-warm mb-4 tracking-tight">
             {energyData.title}
           </h2>
-          <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
+          <p className="text-warm-muted text-base md:text-lg max-w-2xl leading-relaxed font-sans">
             {energyData.description}
           </p>
+          <div className="mt-6 w-16 h-0.5 bg-energy/40 rounded-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">

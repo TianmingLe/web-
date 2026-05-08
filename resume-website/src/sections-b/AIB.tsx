@@ -413,7 +413,7 @@ export default function AIB() {
         </div>
       </div>
 
-      <div className="b-divider" />
+      <div className="b-divider-center" />
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-6 b-fade-up">

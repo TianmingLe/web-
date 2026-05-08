@@ -34,8 +34,8 @@ function AppContent() {
   }, [isVersionB])
 
   return (
-    <div className={`relative min-h-screen transition-colors duration-500 ${isVersionB ? 'bg-b-cream' : 'bg-base'}`}>
-      {!isVersionB && <ParticleCanvas />}
+    <div className={`relative min-h-screen transition-colors duration-500 ${isVersionB ? 'bg-b-cream' : location.pathname === '/' ? 'bg-base' : 'bg-base dark-atmosphere'}`}>
+      {!isVersionB && location.pathname === '/' && <ParticleCanvas />}
       <Nav />
       <main className="relative z-10" key={`${isVersionB ? 'b' : 'a'}-${location.pathname}`}>
         {isVersionB ? (

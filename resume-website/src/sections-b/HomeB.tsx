@@ -174,7 +174,7 @@ export default function HomeB() {
           Energy & AI Cross-Discipline Explorer
         </p>
 
-        <h1 className="hb-name font-b-serif text-6xl md:text-8xl lg:text-9xl text-b-ink leading-[0.9] tracking-tight mb-5">
+        <h1 className="hb-name font-b-serif text-6xl md:text-8xl lg:text-9xl text-b-ink leading-[1.05] tracking-tight mb-5">
           <span className="block">胡亚伟</span>
         </h1>
 
@@ -209,11 +209,11 @@ export default function HomeB() {
         </p>
 
         <div className="hb-traits w-full max-w-3xl mb-12">
-          <div className="b-horizontal-scroll px-1">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-1">
             {traits.map((trait, index) => (
               <div
                 key={index}
-                className={`hb-trait-card b-card ${trait.cardClass} p-5 md:p-6 min-w-[200px] md:min-w-[220px] text-left cursor-default group`}
+                className={`hb-trait-card b-card ${trait.cardClass} p-5 md:p-6 text-left cursor-default group`}
               >
                 <div className="flex items-center gap-3 mb-3">
                   <span className={`b-tag ${trait.tagClass} text-sm`}>

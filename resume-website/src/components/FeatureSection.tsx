@@ -51,7 +51,7 @@ export default function FeatureSection({
 
   return (
     <div ref={ref} className={`flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-16 items-center mb-24 md:mb-32`}>
-      <div className="flex-1 feature-animate">
+      <div className={`flex-1 feature-animate border-l-2 md:border-l-0 ${reverse ? 'border-l-ai/20' : 'border-l-energy/20'}`}>
         {badge && (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 mb-5">
             {badge}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity, Phone, Mail } from 'lucide-react'
 import otherData from '@data/other.json'
@@ -25,14 +25,46 @@ const hudMetrics = [
   { label: '核心领域', value: '能动 / AI / 自媒体', status: 'ai' as const },
 ]
 
+function SocialIcon({ icon }: { icon: string }) {
+  switch (icon) {
+    case 'github':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+        </svg>
+      )
+    case 'bilibili':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="6" width="18" height="14" rx="3" />
+          <path d="M8 2l3 4" />
+          <path d="M16 2l-3 4" />
+          <circle cx="9.5" cy="13" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="14.5" cy="13" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+      )
+    case 'xiaohongshu':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16v16H4z" rx="2" />
+          <path d="M9 9l3 6 3-6" />
+        </svg>
+      )
+    case 'douyin':
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+        </svg>
+      )
+    default:
+      return <span className="text-xs font-sans font-medium">{icon.slice(0, 2)}</span>
+  }
+}
+
 export default function HomePage() {
   const contentRef = useRef<HTMLDivElement>(null)
-  const [circuitReady, setCircuitReady] = useState(false)
 
   useEffect(() => {
-    // Circuit animation trigger
-    const timer = setTimeout(() => setCircuitReady(true), 300)
-
     const ctx = gsap.context(() => {
       // Hero text staggered entrance with expoOut
       gsap.fromTo(
@@ -74,7 +106,6 @@ export default function HomePage() {
 
     return () => {
       ctx.revert()
-      clearTimeout(timer)
     }
   }, [])
 
@@ -82,30 +113,6 @@ export default function HomePage() {
     <div className="relative min-h-screen overflow-hidden">
       <div className="hero-glow hero-glow-energy hidden md:block" style={{ top: '-20%', left: '10%' }} aria-hidden="true" />
       <div className="hero-glow hero-glow-ai hidden md:block" style={{ bottom: '-15%', right: '5%', opacity: 0.06 }} aria-hidden="true" />
-
-      {/* Circuit SVG decoration */}
-      <svg
-        className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
-        preserveAspectRatio="none"
-        viewBox="0 0 100 100"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="circuit-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(192, 74, 26, 0.1)" />
-            <stop offset="100%" stopColor="rgba(74, 124, 155, 0.08)" />
-          </linearGradient>
-        </defs>
-        {/* Horizontal traces */}
-        <line x1="0" y1="30" x2="100" y2="30" stroke="url(#circuit-grad)" strokeWidth="0.05" className={circuitReady ? 'animate-circuit-draw' : ''} style={{ animationDelay: '0.5s' }} />
-        <line x1="0" y1="70" x2="100" y2="70" stroke="url(#circuit-grad)" strokeWidth="0.05" className={circuitReady ? 'animate-circuit-draw' : ''} style={{ animationDelay: '1s' }} />
-        {/* Vertical traces */}
-        <line x1="20" y1="0" x2="20" y2="100" stroke="url(#circuit-grad)" strokeWidth="0.05" className={circuitReady ? 'animate-circuit-draw' : ''} style={{ animationDelay: '0.8s' }} />
-        <line x1="80" y1="0" x2="80" y2="100" stroke="url(#circuit-grad)" strokeWidth="0.05" className={circuitReady ? 'animate-circuit-draw' : ''} style={{ animationDelay: '1.2s' }} />
-        {/* Nodes */}
-        <circle cx="20" cy="30" r="0.3" fill="rgba(192, 74, 26, 0.3)" className={circuitReady ? 'animate-fade-in' : ''} style={{ animationDelay: '1.5s' }} />
-        <circle cx="80" cy="70" r="0.3" fill="rgba(74, 124, 155, 0.3)" className={circuitReady ? 'animate-fade-in' : ''} style={{ animationDelay: '1.8s' }} />
-      </svg>
 
       <div
         ref={contentRef}
@@ -208,7 +215,7 @@ export default function HomePage() {
         </div>
 
         <div className="w-full max-w-2xl mt-10 md:mt-16">
-          <div className="hud-panel p-5 md:p-6">
+          <div className="p-5 md:p-6 rounded-xl bg-surface/50 border border-border">
             <div className="flex items-center gap-2 mb-4">
               <Phone size={14} className="text-energy" />
               <span className="section-label">联系方式</span>
@@ -233,7 +240,7 @@ export default function HomePage() {
                   className="w-9 h-9 rounded-full bg-warm-ghost/5 border border-white/[0.06] flex items-center justify-center text-warm-faint hover:text-energy hover:border-energy/30 hover:bg-energy/5 transition-all"
                   aria-label={link.name}
                 >
-                  <span className="text-xs font-sans font-medium">{link.name.slice(0, 2)}</span>
+                  <SocialIcon icon={link.icon} />
                 </a>
               ))}
             </div>
