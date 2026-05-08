@@ -79,7 +79,7 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Ambient glows */}
       <div className="hero-glow hero-glow-energy" style={{ top: '-20%', left: '10%' }} aria-hidden="true" />
       <div className="hero-glow hero-glow-ai" style={{ bottom: '-15%', right: '5%', opacity: 0.06 }} aria-hidden="true" />
@@ -110,7 +110,7 @@ export default function HomePage() {
 
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-6 min-h-screen w-full max-w-5xl mx-auto"
+        className="relative z-10 flex flex-col items-center text-center px-4 md:px-6 w-full max-w-5xl mx-auto py-28 md:py-36"
       >
         {/* Title badge */}
         <p className="home-title text-[11px] md:text-xs text-energy-light font-mono font-medium tracking-[0.3em] uppercase mb-8">
