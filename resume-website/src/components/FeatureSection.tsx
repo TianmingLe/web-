@@ -60,7 +60,7 @@ export default function FeatureSection({
         <h3 className="text-2xl md:text-4xl font-semibold text-white mb-5 leading-tight tracking-tight">
           {title}
         </h3>
-        <p className="text-[#c8b99a] text-base md:text-lg leading-relaxed mb-6">
+        <p className="text-base md:text-lg leading-relaxed mb-6" style={{ color: '#c8b99a' }}>
           {description}
         </p>
         {children}
@@ -72,7 +72,7 @@ export default function FeatureSection({
           </div>
         ) : (
           <div className="feature-frame aspect-video flex items-center justify-center">
-            <div className="text-[#c8b99a] text-sm">
+            <div className="text-sm" style={{ color: '#c8b99a' }}>
               <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
                 <div className="w-4 h-4 rounded-full bg-energy/40" />
               </div>
