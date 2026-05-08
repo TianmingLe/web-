@@ -26,7 +26,7 @@ export default function ExpandableCard({
 
   return (
     <div
-      className={`${cardClass} ${className} overflow-hidden transition-all duration-500 cursor-pointer group`}
+      className={`${cardClass} ${className} overflow-hidden cursor-pointer group`}
       onClick={() => setExpanded(!expanded)}
       role="button"
       tabIndex={0}
@@ -81,7 +81,7 @@ export default function ExpandableCard({
         </div>
 
         <div
-          className="transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          className="transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
           style={{
             display: 'grid',
             gridTemplateRows: expanded ? '1fr' : '0fr',
