@@ -53,7 +53,7 @@ export default function FeatureSection({
     <div ref={ref} className={`flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-16 items-center mb-24 md:mb-32`}>
       <div className="flex-1 feature-animate">
         {badge && (
-          <span className="apple-tag apple-tag-primary mb-5 inline-flex">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 mb-5">
             {badge}
           </span>
         )}
@@ -72,9 +72,9 @@ export default function FeatureSection({
           </div>
         ) : (
           <div className="feature-frame aspect-video flex items-center justify-center">
-            <div className="text-text-muted text-sm">
+            <div className="text-[#c8b99a] text-sm">
               <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
-                <div className="w-4 h-4 rounded-full bg-primary/40" />
+                <div className="w-4 h-4 rounded-full bg-energy/40" />
               </div>
               项目展示
             </div>

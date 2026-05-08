@@ -156,7 +156,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
                       boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
                     }}
                   >
-                    <span className="text-xs font-bold text-primary">
+                    <span className="text-xs font-bold text-[#00d4ff]">
                       {index + 1}
                     </span>
                   </div>
@@ -230,7 +230,7 @@ export default function EvolutionTimeline({ heading, subheading, steps }: Evolut
                         background: '#0a0a0a',
                       }}
                     >
-                      <span className="text-xs font-bold text-primary">
+                      <span className="text-xs font-bold text-[#00d4ff]">
                         {index + 1}
                       </span>
                     </div>

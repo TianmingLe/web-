@@ -180,7 +180,7 @@ export default function MusicDock() {
         {!showExpanded ? (
           <button
             onClick={() => setIsExpanded(true)}
-            className="w-full h-full flex items-center justify-center text-primary hover:text-primary-light transition-colors"
+            className="w-full h-full flex items-center justify-center text-energy-light hover:text-energy transition-colors"
             aria-label="展开音乐播放器"
           >
             {isPlaying ? (
@@ -207,7 +207,7 @@ export default function MusicDock() {
               <div className="flex items-center gap-2 min-w-0">
                 <button
                   onClick={() => setPlaying(!isPlaying)}
-                  className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center hover:bg-primary/25 transition-colors shrink-0"
+                  className="w-8 h-8 rounded-full bg-energy/15 text-energy-light flex items-center justify-center hover:bg-energy/25 transition-colors shrink-0"
                   aria-label={isPlaying ? '暂停' : '播放'}
                 >
                   {isPlaying ? <Pause size={14} /> : <Play size={14} />}
@@ -295,7 +295,7 @@ export default function MusicDock() {
                   setVolume(v)
                   if (v > 0 && isMuted) setMuted(false)
                 }}
-                className="flex-1 h-1 accent-primary cursor-pointer"
+                className="flex-1 h-1 accent-energy-light cursor-pointer"
                 style={{
                   appearance: 'none',
                   background: 'rgba(255,255,255,0.1)',
