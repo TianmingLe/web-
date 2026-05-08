@@ -88,7 +88,7 @@ export default function ExpandableCard({
           }}
         >
           <div className="min-h-0 overflow-hidden">
-            <div className="pt-5 mt-5 border-t border-b-border transition-opacity duration-300" style={{ opacity: expanded ? 1 : 0 }}>
+            <div className={`pt-5 mt-5 border-t border-b-border transition-opacity duration-300 ${expanded ? '' : 'opacity-0'}`}>
               {children}
             </div>
           </div>
