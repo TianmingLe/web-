@@ -80,9 +80,8 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Ambient glows */}
-      <div className="hero-glow hero-glow-energy" style={{ top: '-20%', left: '10%' }} aria-hidden="true" />
-      <div className="hero-glow hero-glow-ai" style={{ bottom: '-15%', right: '5%', opacity: 0.06 }} aria-hidden="true" />
+      <div className="hero-glow hero-glow-energy hidden md:block" style={{ top: '-20%', left: '10%' }} aria-hidden="true" />
+      <div className="hero-glow hero-glow-ai hidden md:block" style={{ bottom: '-15%', right: '5%', opacity: 0.06 }} aria-hidden="true" />
 
       {/* Circuit SVG decoration */}
       <svg
@@ -110,30 +109,30 @@ export default function HomePage() {
 
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center text-center px-4 md:px-6 w-full max-w-5xl mx-auto py-28 md:py-36"
+        className="relative z-10 flex flex-col items-center text-center px-5 md:px-6 w-full max-w-5xl mx-auto pt-24 pb-16 md:py-36"
       >
         {/* Title badge */}
-        <p className="home-title text-[11px] md:text-xs text-energy-light font-mono font-medium tracking-[0.3em] uppercase mb-8">
+        <p className="home-title text-[10px] md:text-xs text-energy-light font-mono font-medium tracking-[0.2em] md:tracking-[0.3em] uppercase mb-6 md:mb-8">
           {profile.title}
         </p>
 
         {/* Name */}
-        <h1 className="home-name text-5xl md:text-7xl lg:text-8xl font-serif font-normal text-warm mb-6 tracking-tight leading-[0.95]">
+        <h1 className="home-name text-4xl md:text-7xl lg:text-8xl font-serif font-normal text-warm mb-4 md:mb-6 tracking-tight leading-[0.95]">
           <span className="text-gradient-warm">{profile.name}</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="home-subtitle text-base md:text-lg lg:text-xl text-warm-muted max-w-xl mb-3 leading-relaxed font-sans">
+        <p className="home-subtitle text-sm md:text-lg lg:text-xl text-warm-muted max-w-xl mb-2 md:mb-3 leading-relaxed font-sans">
           {profile.subtitle}
         </p>
 
         {/* Tagline */}
-        <p className="home-tagline text-sm md:text-base text-warm-faint max-w-lg mb-8 font-sans">
+        <p className="home-tagline text-xs md:text-base text-warm-faint max-w-lg mb-6 md:mb-8 font-sans">
           {profile.tagline}
         </p>
 
         {/* Meta info */}
-        <div className="home-meta flex flex-wrap items-center justify-center gap-4 text-warm-faint text-sm mb-12 font-sans">
+        <div className="home-meta flex flex-wrap items-center justify-center gap-2 md:gap-4 text-warm-faint text-xs md:text-sm mb-8 md:mb-12 font-sans">
           <span className="flex items-center gap-1.5">
             <GraduationCap size={14} className="text-energy/60" />
             {profile.school}
@@ -148,11 +147,11 @@ export default function HomePage() {
         </div>
 
         {/* Traits */}
-        <div className="home-traits flex flex-wrap justify-center gap-3 mb-16">
+        <div className="home-traits grid grid-cols-2 gap-2 md:gap-3 mb-10 md:mb-16 w-full max-w-lg md:max-w-none">
           {traits.map((trait, index) => (
             <div
               key={index}
-              className="group flex items-center gap-2.5 px-4 py-2.5 hud-panel cursor-default"
+              className="group flex items-center gap-2 md:gap-2.5 px-3 py-2 md:px-4 md:py-2.5 hud-panel cursor-default"
               role="listitem"
               style={{ animationDelay: `${1.4 + index * 0.1}s` }}
             >

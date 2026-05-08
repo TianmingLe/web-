@@ -295,12 +295,19 @@
 
   .hero-glow {
     position: absolute;
-    width: 600px;
-    height: 600px;
+    width: 400px;
+    height: 400px;
     border-radius: 50%;
     filter: blur(120px);
     opacity: 0.08;
     pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero-glow {
+      width: 600px;
+      height: 600px;
+    }
   }
 
   .hero-glow-energy {

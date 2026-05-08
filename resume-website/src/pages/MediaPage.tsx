@@ -97,7 +97,7 @@ export default function MediaPage() {
   const minorProjects = mediaData.projects.filter((p) => p.id !== 'omniscraper' && p.id !== 'steel_4k')
 
   return (
-    <div className="relative py-28 md:py-40 px-4 md:px-6">
+    <div className="relative pt-20 pb-12 md:py-40 px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-16 md:mb-24 text-center">
           <p className="text-energy-light/80 text-xs md:text-sm font-mono font-medium tracking-[0.3em] uppercase mb-4">

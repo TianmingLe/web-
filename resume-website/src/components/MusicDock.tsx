@@ -154,7 +154,7 @@ export default function MusicDock() {
 
   return (
     <div
-      className="fixed right-6 bottom-6 z-50 flex items-end justify-end"
+      className="fixed right-3 bottom-3 md:right-6 md:bottom-6 z-50 flex items-end justify-end"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false)
