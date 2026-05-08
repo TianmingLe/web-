@@ -79,7 +79,7 @@ export default function DarkExpandableCard({
             className={`shrink-0 mt-1 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
               expanded
                 ? 'bg-energy-dim text-energy-light rotate-180'
-                : 'bg-warm-ghost/5 text-warm-faint group-hover:bg-warm-ghost/10 group-hover:text-warm-muted'
+                : 'bg-warm-ghost/5 text-warm-faint group-hover:bg-warm-ghost/10 group-hover:text-warm-muted group-hover:scale-110'
             }`}
           >
             <ChevronDown size={14} strokeWidth={2} />

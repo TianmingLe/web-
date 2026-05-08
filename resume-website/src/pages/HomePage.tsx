@@ -57,7 +57,7 @@ function SocialIcon({ icon }: { icon: string }) {
         </svg>
       )
     default:
-      return <span className="text-xs font-sans font-medium">{icon.slice(0, 2)}</span>
+      return <span className="text-xs font-sans font-medium">{icon}</span>
   }
 }
 

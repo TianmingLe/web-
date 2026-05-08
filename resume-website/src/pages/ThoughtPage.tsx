@@ -85,7 +85,7 @@ export default function ThoughtPage() {
             <Award size={24} className="text-energy-light" />
             <h3 className="text-2xl font-serif text-warm">核心优势</h3>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {thoughtData.coreAdvantages.map((adv, index) => (
               <DarkExpandableCard key={index} className="text-center" title={adv} glowColor="energy">
                 <></>
@@ -104,7 +104,7 @@ export default function ThoughtPage() {
           <p className="text-warm-muted text-sm mb-8 font-sans">
             {thoughtData.vibeCoding.description}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {thoughtData.vibeCoding.steps.map((step, index) => (
               <DarkExpandableCard
                 key={index}
