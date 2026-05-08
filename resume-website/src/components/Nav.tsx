@@ -68,16 +68,7 @@ export default function Nav() {
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between h-14 md:h-[72px]">
-            <NavLink
-              to="/"
-              className={`font-serif text-lg md:text-2xl tracking-tight transition-colors duration-300 shrink-0 ${
-                isVersionB
-                  ? 'text-b-ink hover:text-b-terracotta'
-                  : 'text-warm hover:text-energy-light'
-              }`}
-            >
-              胡亚伟
-            </NavLink>
+            <div className="w-20 md:w-auto" />
 
             <div className="hidden md:flex items-center gap-4">
               <ul className="flex items-center gap-2" role="menubar">
