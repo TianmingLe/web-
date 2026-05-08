@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity } from 'lucide-react'
+import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity, Phone, Mail } from 'lucide-react'
+import otherData from '@data/other.json'
 
 const traits = [
   { icon: <Zap size={18} />, label: '工程专业能力', desc: 'ANSYS / AutoCAD / 实践操作' },
@@ -26,7 +27,6 @@ const hudMetrics = [
 
 export default function HomePage() {
   const contentRef = useRef<HTMLDivElement>(null)
-  const hudRef = useRef<HTMLDivElement>(null)
   const [circuitReady, setCircuitReady] = useState(false)
 
   useEffect(() => {
@@ -170,11 +170,7 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* HUD Panel */}
-        <div
-          ref={hudRef}
-          className="home-hud w-full max-w-2xl"
-        >
+        <div className="home-hud w-full max-w-2xl mt-10 md:mt-16">
           <div className="hud-panel p-5 md:p-6">
             <div className="flex items-center gap-2 mb-4">
               <Activity size={14} className="text-energy" />
@@ -207,6 +203,39 @@ export default function HomePage() {
                   style={{ width: '75%' }}
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full max-w-2xl mt-10 md:mt-16">
+          <div className="hud-panel p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Phone size={14} className="text-energy" />
+              <span className="section-label">联系方式</span>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 mb-4">
+              <div className="flex items-center gap-2">
+                <Phone size={13} className="text-warm-faint" />
+                <span className="text-warm text-sm font-sans">{otherData.contact.phone}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={13} className="text-warm-faint" />
+                <span className="text-warm text-sm font-sans">{otherData.contact.email}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 pt-4 border-t border-white/[0.06]">
+              {otherData.contact.social.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-warm-ghost/5 border border-white/[0.06] flex items-center justify-center text-warm-faint hover:text-energy hover:border-energy/30 hover:bg-energy/5 transition-all"
+                  aria-label={link.name}
+                >
+                  <span className="text-xs font-sans font-medium">{link.name.slice(0, 2)}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>

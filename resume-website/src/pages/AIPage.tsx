@@ -1,5 +1,5 @@
 import { Calendar, Layers, Zap, BookOpen, Sparkles, Tag, Hash } from 'lucide-react'
-import GlassCard from '@components/GlassCard'
+import DarkExpandableCard from '@components/DarkExpandableCard'
 import FeatureSection from '@components/FeatureSection'
 import EvolutionTimeline from '@components/EvolutionTimeline'
 import aiData from '@data/ai.json'
@@ -174,16 +174,25 @@ export default function AIPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-16">
           {minorProjects.map((project) => (
-            <GlassCard key={project.id} className="flex flex-col h-full" glowColor={project.abilities ? 'ai' : project.scenarios ? 'ai' : 'energy'}>
-              <h3 className="text-lg font-serif text-warm mb-2">{project.title}</h3>
-              {project.period && (
-                <div className="flex items-center gap-1.5 text-warm-faint text-xs mb-3 font-mono">
-                  <Calendar size={12} />
-                  <span>{project.period}</span>
-                </div>
-              )}
-              <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">{project.summary}</p>
-
+            <DarkExpandableCard
+              key={project.id}
+              title={project.title}
+              subtitle={project.summary}
+              badges={
+                project.period ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-mono">
+                    <Calendar size={10} />
+                    {project.period}
+                  </span>
+                ) : undefined
+              }
+              keywords={
+                project.tags.slice(0, 3).map((tag, i) => (
+                  <span key={i} className="px-2.5 py-0.5 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
+                ))
+              }
+              glowColor="ai"
+            >
               {project.highlights && <ProjectHighlights highlights={project.highlights} />}
               {project.abilities && <ProjectAbilities abilities={project.abilities} />}
 
@@ -218,12 +227,12 @@ export default function AIPage() {
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 mt-auto pt-3">
+              <div className="flex flex-wrap gap-2 pt-3">
                 {project.tags.map((tag, i) => (
                   <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
                 ))}
               </div>
-            </GlassCard>
+            </DarkExpandableCard>
           ))}
         </div>
 

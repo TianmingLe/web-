@@ -1,6 +1,6 @@
-import GlassCard from '@components/GlassCard'
+import DarkExpandableCard from '@components/DarkExpandableCard'
 import otherData from '@data/other.json'
-import { Award, BadgeCheck, Building2, GraduationCap, Phone, Mail } from 'lucide-react'
+import { Phone, Mail } from 'lucide-react'
 
 const socialIcons: Record<string, React.ReactNode> = {
   github: (
@@ -56,11 +56,7 @@ export default function OtherPage() {
         </div>
 
         <div className="space-y-6">
-          <GlassCard glowColor="energy">
-            <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-              <Award className="w-5 h-5 text-energy" />
-              获奖情况
-            </h3>
+          <DarkExpandableCard title="获奖情况" glowColor="energy">
             <div className="grid gap-3">
               {otherData.awards.map((award, index) => (
                 <div
@@ -78,14 +74,10 @@ export default function OtherPage() {
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </DarkExpandableCard>
 
-          <div className="grid md:grid-cols-2 gap-5">
-            <GlassCard glowColor="ai">
-              <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-                <BadgeCheck className="w-5 h-5 text-ai" />
-                证书情况
-              </h3>
+          <div className="space-y-6">
+            <DarkExpandableCard title="证书情况" glowColor="ai">
               <div className="space-y-2">
                 {otherData.certificates.map((cert, index) => (
                   <div
@@ -97,13 +89,9 @@ export default function OtherPage() {
                   </div>
                 ))}
               </div>
-            </GlassCard>
+            </DarkExpandableCard>
 
-            <GlassCard glowColor="energy">
-              <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-energy" />
-                校园经历
-              </h3>
+            <DarkExpandableCard title="校园经历" glowColor="energy">
               <div className="space-y-3">
                 {otherData.campus.map((item, index) => (
                   <div
@@ -119,14 +107,10 @@ export default function OtherPage() {
                   </div>
                 ))}
               </div>
-            </GlassCard>
+            </DarkExpandableCard>
           </div>
 
-          <GlassCard glowColor="energy">
-            <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-energy" />
-              实习经历
-            </h3>
+          <DarkExpandableCard title="实习经历" glowColor="energy">
             <div className="p-4 rounded-lg bg-warm-ghost/5 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
                 <div>
@@ -162,13 +146,9 @@ export default function OtherPage() {
                 </div>
               </div>
             </div>
-          </GlassCard>
+          </DarkExpandableCard>
 
-          <GlassCard glowColor="ai">
-            <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-ai" />
-              技能概览
-            </h3>
+          <DarkExpandableCard title="技能概览" glowColor="ai">
             <div className="grid sm:grid-cols-2 gap-4">
               {(Object.entries(otherData.skills) as [string, { level: string; items: string[] }][]).map(([key, skill]) => (
                 <div
@@ -192,13 +172,9 @@ export default function OtherPage() {
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </DarkExpandableCard>
 
-          <GlassCard glowColor="energy">
-            <h3 className="text-xl font-serif text-warm mb-4 flex items-center gap-2">
-              <Phone className="w-5 h-5 text-energy" />
-              联系方式
-            </h3>
+          <DarkExpandableCard title="联系方式" glowColor="energy">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-warm-faint" />
@@ -229,7 +205,7 @@ export default function OtherPage() {
                 ))}
               </div>
             </div>
-          </GlassCard>
+          </DarkExpandableCard>
         </div>
       </div>
     </div>

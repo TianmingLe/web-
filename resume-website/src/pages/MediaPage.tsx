@@ -1,5 +1,5 @@
 import { Play, FileText, Target, Lightbulb, Clock, MessageCircle, CheckCircle, Wrench, TrendingUp, BookOpen, ListChecks } from 'lucide-react'
-import GlassCard from '@components/GlassCard'
+import DarkExpandableCard from '@components/DarkExpandableCard'
 import FeatureSection from '@components/FeatureSection'
 import mediaData from '@data/media.json'
 
@@ -113,27 +113,40 @@ export default function MediaPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mb-16">
           {mediaData.platforms.map((platform, index) => (
-            <GlassCard key={index} className="flex flex-col" glowColor="energy">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-energy/60">{platformIcons[platform.name]}</span>
-                <div>
-                  <h3 className="text-lg font-serif text-warm">{platform.name}</h3>
-                  <p className="text-xs text-warm-faint font-mono">{platform.nameEn}</p>
+            <DarkExpandableCard
+              key={index}
+              title={
+                <div className="flex items-center gap-3">
+                  <span className="text-energy/60">{platformIcons[platform.name]}</span>
+                  <div>
+                    <h3 className="text-lg font-serif text-warm">{platform.name}</h3>
+                    <p className="text-xs text-warm-faint font-mono">{platform.nameEn}</p>
+                  </div>
                 </div>
-              </div>
+              }
+              subtitle={platform.content}
+              keywords={
+                <span className="px-2.5 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans">
+                  {platform.representative.slice(0, 6)}
+                </span>
+              }
+              glowColor="energy"
+            >
               <p className="text-3xl font-serif text-energy-light mb-1">{platform.followers}</p>
               <p className="text-xs text-warm-faint mb-4 font-mono">粉丝</p>
-              <p className="text-sm text-warm-muted mb-3 font-sans">{platform.content}</p>
-              <div className="pt-4 border-t border-white/[0.06] mt-auto">
+              <div className="pt-4 border-t border-white/[0.06]">
                 <p className="text-xs text-warm-faint mb-1 font-mono">代表作品</p>
                 <p className="text-sm text-ai-light font-sans">{platform.representative}</p>
               </div>
-            </GlassCard>
+            </DarkExpandableCard>
           ))}
         </div>
 
-        <GlassCard className="mb-16" glowColor="ai">
-          <h3 className="text-lg font-serif text-warm mb-4">内容策略</h3>
+        <DarkExpandableCard
+          className="mb-16"
+          title="内容策略"
+          glowColor="ai"
+        >
           <div className="flex flex-wrap gap-x-8 gap-y-4">
             {mediaData.contentStrategy.map((strategy, index) => {
               const Icon = strategyIcons[index]
@@ -151,7 +164,7 @@ export default function MediaPage() {
               )
             })}
           </div>
-        </GlassCard>
+        </DarkExpandableCard>
 
         {majorProjects.map((project, index) => (
           <FeatureSection
@@ -172,19 +185,26 @@ export default function MediaPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           {minorProjects.map((project, index) => (
-            <GlassCard key={index} glowColor={project.id === 'video_claw' ? 'energy' : 'ai'}>
-              <h3 className="text-xl font-serif text-warm mb-1">{project.title}</h3>
-              {project.period && (
-                <p className="text-xs text-warm-faint mb-3 font-mono">{project.period}</p>
-              )}
-              <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">{project.summary}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tags.map((tag, i) => (
-                  <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
-                ))}
-              </div>
+            <DarkExpandableCard
+              key={index}
+              title={project.title}
+              subtitle={project.summary}
+              badges={
+                project.period ? (
+                  <span className="px-2.5 py-0.5 text-xs rounded-full bg-warm-ghost/10 text-warm-faint border border-white/[0.08] font-mono">
+                    {project.period}
+                  </span>
+                ) : undefined
+              }
+              keywords={
+                project.tags.slice(0, 3).map((tag, i) => (
+                  <span key={i} className="px-2.5 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
+                ))
+              }
+              glowColor={project.id === 'video_claw' ? 'energy' : 'ai'}
+            >
               <ProjectDetails project={project} />
-            </GlassCard>
+            </DarkExpandableCard>
           ))}
         </div>
       </div>

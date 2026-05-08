@@ -1,14 +1,5 @@
-import { Monitor, Code, Cpu, FlaskConical, ClipboardList } from 'lucide-react'
-import GlassCard from '@components/GlassCard'
+import DarkExpandableCard from '@components/DarkExpandableCard'
 import energyData from '@data/energy.json'
-
-const iconMap: Record<string, React.ReactNode> = {
-  monitor: <Monitor size={24} />,
-  code: <Code size={24} />,
-  cpu: <Cpu size={24} />,
-  'flask-conical': <FlaskConical size={24} />,
-  'clipboard-list': <ClipboardList size={24} />,
-}
 
 export default function EnergyPage() {
   return (
@@ -28,17 +19,22 @@ export default function EnergyPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {energyData.skills.map((skill, index) => (
-            <GlassCard key={index} className="flex flex-col" glowColor="energy">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-energy/60">{iconMap[skill.icon]}</span>
-                <h3 className="text-lg font-serif text-warm">
-                  {skill.category}
-                </h3>
-              </div>
-              <p className="text-energy-light/60 text-[11px] font-mono uppercase tracking-wider mb-3">{skill.keywords}</p>
-              <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">
-                {skill.summary}
-              </p>
+            <DarkExpandableCard
+              key={index}
+              className="flex flex-col"
+              glowColor="energy"
+              title={skill.category}
+              subtitle={skill.summary}
+              keywords={
+                <>
+                  {skill.keywords.split('、').map((kw, i) => (
+                    <span key={i} className="bg-energy-dim text-energy-light border border-energy/20 px-2 py-0.5 rounded text-[11px] font-mono">
+                      {kw}
+                    </span>
+                  ))}
+                </>
+              }
+            >
               <ul className="space-y-2 mb-4">
                 {skill.items.map((item, i) => (
                   <li
@@ -111,7 +107,7 @@ export default function EnergyPage() {
                   </div>
                 </div>
               )}
-            </GlassCard>
+            </DarkExpandableCard>
           ))}
         </div>
       </div>
