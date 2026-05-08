@@ -67,9 +67,7 @@ export default function Nav() {
         aria-label="主导航"
       >
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex items-center justify-between h-14 md:h-[72px]">
-            <div className="w-20 md:w-auto" />
-
+          <div className="relative flex items-center justify-center h-14 md:h-[72px]">
             <div className="hidden md:flex items-center gap-4">
               <ul className="flex items-center gap-2" role="menubar">
                 {navItems.map((item) => (
@@ -136,7 +134,7 @@ export default function Nav() {
               </button>
             </div>
 
-            <div className="flex md:hidden items-center gap-2">
+            <div className="absolute right-4 md:right-8 flex md:hidden items-center gap-2">
               <button
                 onClick={toggleVersion}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-300 cursor-pointer ${

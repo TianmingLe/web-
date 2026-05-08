@@ -162,7 +162,7 @@ export default function HomeB() {
 
       <div
         ref={contentRef}
-        className="relative z-10 flex flex-col items-center justify-center text-center px-5 md:px-8 min-h-screen w-full max-w-4xl mx-auto py-16"
+        className="relative z-10 flex flex-col items-center text-center px-5 md:px-8 min-h-screen w-full max-w-4xl mx-auto pt-24 pb-16"
       >
         <div className="hb-ornament-top mb-6">
           <span className="b-ornament" />

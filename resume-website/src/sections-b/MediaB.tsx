@@ -263,9 +263,9 @@ export default function MediaB() {
               <Eye size={20} className="text-b-sage" />
             </div>
             <span className="b-number-accent text-3xl" style={{ color: 'var(--color-b-sage)' }}>
-              60万+
+              2500万+
             </span>
-            <p className="font-b-sans text-sm text-b-muted mt-2">累计播放量</p>
+            <p className="font-b-sans text-sm text-b-muted mt-2">全网累计播放量</p>
           </div>
           <div className="b-card b-card-slate p-6 text-center">
             <div className="w-12 h-12 rounded-full bg-b-slate-dim flex items-center justify-center mx-auto mb-4">
