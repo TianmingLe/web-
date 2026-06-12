@@ -28,8 +28,8 @@
     "项目管理：具备项目规划与执行能力"
   ],
   "vibeCoding": {
-    "title": "Vibe Coding 方法论",
-    "description": "与AI（Agent）协作完成编程任务的方法论。人类负责需求分析、架构设计、代码审查；AI负责代码生成、单元测试、文档编写。",
+    "title": "Vibe Coding 与 AI 协作方法论",
+    "description": "掌握与AI高效协作的方法论（Vibe Coding），能够指导AI完成复杂开发任务；我负责需求分析、架构设计、代码审查；AI负责代码生成、单元测试、文档编写。",
     "steps": [
       { "title": "明确需求", "content": "用清晰的语言描述功能需求" },
       { "title": "提供上下文", "content": "给出技术栈、约束条件、示例代码" },
@@ -45,8 +45,8 @@
   },
   "techSelection": {
     "title": "技术选型原则",
-    "subtitle": "站在巨人肩膀上",
-    "caseStudy": "video-claw → video-tezhong：初版自己手搓耗时半个月功能有限，第二版整合MediaCrawler+omi，开发效率提升3倍",
+    "subtitle": "站在巨人肩膀上，而非重复造轮子",
+    "caseStudy": "video-claw → video-tezhong：初版自己手搓耗时半个月功能有限，第二版整合MediaCrawler（成熟爬虫）+ omi（数据框架），开发效率提升3倍，功能更强大",
     "principles": [
       { "dimension": "成熟度", "desc": "GitHub stars、社区活跃度、文档完整度" },
       { "dimension": "可维护性", "desc": "代码质量、测试覆盖率、更新频率" },
@@ -72,10 +72,9 @@
         "level": "校级二等奖",
         "project": "《2024年LLM的市场应用及发展前景调研》",
         "role": "核心成员",
-        "teamSize": 4,
+        "teamSize": 3,
         "work": "设计调查问卷、收集分析数据、撰写调研报告"
       },
-
       {
         "name": "市场调查与分析大赛",
         "period": "2026.01-03",
@@ -91,7 +90,7 @@
         "level": "校级二等奖",
         "role": "核心成员（负责视频创意与制作）",
         "teamSize": 3,
-        "work": "策划视频脚本、拍摄与剪辑、添加字幕与特效"
+        "work": "策划视频脚本、拍摄与剪辑、添加字幕与特效，全程英语沟通"
       }
     ],
     "roles": [
