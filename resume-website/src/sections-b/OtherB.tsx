@@ -215,17 +215,12 @@ export default function OtherB() {
           title={
             <h3 className="font-b-serif text-lg md:text-xl text-b-ink leading-snug flex items-center gap-2.5">
               <Building2 size={20} className="text-b-terracotta" />
-              实习经历 · {otherData.internship.company}
+              实习经历
             </h3>
-          }
-          badges={
-            <span className="font-b-mono text-xs text-b-muted bg-b-cream-dark px-3 py-1.5 rounded-full">
-              {otherData.internship.period}
-            </span>
           }
           keywords={
             <>
-              {otherData.internship.achievements.slice(0, 2).map(item => (
+              {otherData.internship.slice(0, 1).flatMap(intern => intern.achievements.slice(0, 2)).map(item => (
                 <span key={item} className="b-tag b-tag-terracotta">{item}</span>
               ))}
             </>
@@ -233,39 +228,52 @@ export default function OtherB() {
           cardClass="b-card b-card-terracotta"
           className="b-fade-up b-stagger-4"
         >
-          <div>
-            <p className="font-b-sans text-sm text-b-ink-light mt-1 mb-5">
-              {otherData.internship.role}
-            </p>
-
-            <div className="mb-6">
-              <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
-                工作内容
-              </p>
-              <div className="space-y-3">
-                {otherData.internship.work.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-2 shrink-0" />
-                    <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
-                      {item}
+          <div className="space-y-6">
+            {otherData.internship.map((intern, i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h4 className="font-b-serif text-lg text-b-ink">{intern.company}</h4>
+                    <p className="font-b-sans text-sm text-b-ink-light mt-1">
+                      {intern.role}
                     </p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-3">
-                核心成果
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {otherData.internship.achievements.map((item, i) => (
-                  <span key={i} className="b-tag b-tag-terracotta">
-                    {item}
+                  <span className="font-b-mono text-xs text-b-muted">
+                    {intern.period}
                   </span>
-                ))}
+                </div>
+
+                <div className="mb-4">
+                  <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-2">
+                    工作内容
+                  </p>
+                  <div className="space-y-2">
+                    {intern.work.map((item, j) => (
+                      <div key={j} className="flex items-start gap-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-2 shrink-0" />
+                        <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
+                          {item}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-2">
+                    核心成果
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {intern.achievements.map((item, j) => (
+                      <span key={j} className="b-tag b-tag-terracotta">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {i < otherData.internship.length - 1 && <hr className="mt-5 border-b-border" />}
               </div>
-            </div>
+            ))}
           </div>
         </ExpandableCard>
 

@@ -111,40 +111,44 @@ export default function OtherPage() {
           </div>
 
           <DarkExpandableCard title="实习经历" glowColor="energy">
-            <div className="p-4 rounded-lg bg-warm-ghost/5 border border-white/[0.06]">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-warm font-semibold text-lg font-sans">{otherData.internship.company}</p>
-                  <p className="text-sm text-warm-muted font-sans">{otherData.internship.role}</p>
-                </div>
-                <span className="text-xs text-warm-faint px-3 py-1 rounded-full bg-warm-ghost/5 border border-white/[0.06] font-mono">
-                  {otherData.internship.period}
-                </span>
-              </div>
-              <div className="mb-4">
-                <p className="text-sm text-warm-muted font-medium mb-2 font-sans">工作内容</p>
-                <ul className="space-y-1.5">
-                  {otherData.internship.work.map((item, index) => (
-                    <li key={index} className="text-sm text-warm-muted flex items-start gap-2 font-sans">
-                      <span className="w-1.5 h-1.5 rounded-full bg-energy/50 mt-1.5 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-sm text-warm-muted font-medium mb-2 font-sans">成果</p>
-                <div className="flex flex-wrap gap-2">
-                  {otherData.internship.achievements.map((item, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans"
-                    >
-                      {item}
+            <div className="space-y-4">
+              {otherData.internship.map((intern, index) => (
+                <div key={index} className="p-4 rounded-lg bg-warm-ghost/5 border border-white/[0.06]">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-warm font-semibold text-lg font-sans">{intern.company}</p>
+                      <p className="text-sm text-warm-muted font-sans">{intern.role}</p>
+                    </div>
+                    <span className="text-xs text-warm-faint px-3 py-1 rounded-full bg-warm-ghost/5 border border-white/[0.06] font-mono">
+                      {intern.period}
                     </span>
-                  ))}
+                  </div>
+                  <div className="mb-4">
+                    <p className="text-sm text-warm-muted font-medium mb-2 font-sans">工作内容</p>
+                    <ul className="space-y-1.5">
+                      {intern.work.map((item, wIndex) => (
+                        <li key={wIndex} className="text-sm text-warm-muted flex items-start gap-2 font-sans">
+                          <span className="w-1.5 h-1.5 rounded-full bg-energy/50 mt-1.5 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-sm text-warm-muted font-medium mb-2 font-sans">成果</p>
+                    <div className="flex flex-wrap gap-2">
+                      {intern.achievements.map((item, aIndex) => (
+                        <span
+                          key={aIndex}
+                          className="px-3 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </DarkExpandableCard>
 
