@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity, Phone, Mail } from 'lucide-react'
+import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity, Phone, Mail, ChevronDown } from 'lucide-react'
 import otherData from '@data/other.json'
+import CapabilityMap from '@components/CapabilityMap'
 
 const traits = [
   { icon: <Zap size={18} />, label: '工程专业能力', desc: 'ANSYS / AutoCAD / 实践操作技术' },
@@ -214,7 +215,17 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="w-full max-w-2xl mt-10 md:mt-16">
+        <CapabilityMap />
+
+        <div className="flex flex-col items-center gap-3 mt-8 mb-12">
+          <span className="text-[10px] text-warm-faint font-mono tracking-[0.2em] uppercase">Scroll</span>
+          <ChevronDown 
+            size={16} 
+            className="text-energy/60 animate-bounce" 
+          />
+        </div>
+
+        <div className="w-full max-w-2xl">
           <div className="p-5 md:p-6 rounded-xl bg-surface/50 border border-border">
             <div className="flex items-center gap-2 mb-4">
               <Phone size={14} className="text-energy" />

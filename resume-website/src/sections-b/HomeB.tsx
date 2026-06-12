@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, ChevronDown, Phone, Mail, ExternalLink } from 'lucide-react'
 import CoverLayout from '@layouts/CoverLayout'
 import otherData from '@data/other.json'
+import CapabilityMapB from '@components/CapabilityMapB'
 
 const traits = [
   {
@@ -251,6 +252,8 @@ export default function HomeB() {
             </span>
           </div>
         </div>
+
+        <CapabilityMapB />
 
         <div className="hb-contact w-full max-w-2xl mx-auto mb-12">
           <div className="b-card b-card-terracotta p-6 md:p-8">
