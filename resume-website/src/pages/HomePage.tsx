@@ -4,19 +4,19 @@ import { Zap, Brain, Code, Rocket, GraduationCap, MapPin, Activity, Phone, Mail 
 import otherData from '@data/other.json'
 
 const traits = [
-  { icon: <Zap size={18} />, label: '工程专业能力', desc: 'ANSYS / AutoCAD / 实践操作' },
-  { icon: <Brain size={18} />, label: 'AI技术应用', desc: 'Agent / RAG / Prompt工程' },
+  { icon: <Zap size={18} />, label: '工程专业能力', desc: 'ANSYS / AutoCAD / 实践操作技术' },
+  { icon: <Brain size={18} />, label: 'AI技术应用', desc: 'Agent开发 / CC / Harness / Prompt工程' },
   { icon: <Code size={18} />, label: '数据驱动思维', desc: 'Python / SQL / 数据分析' },
-  { icon: <Rocket size={18} />, label: '项目执行力', desc: '团队协作 / 竞赛获奖' },
+  { icon: <Rocket size={18} />, label: '项目执行力', desc: '团队协作与竞赛获奖' },
 ]
 
 const profile = {
   name: '胡亚伟',
   title: 'AI NATIVE GRADUATE',
-  subtitle: '能源动力技术与人工智能交叉领域探索者',
+  subtitle: '一名对能源动力技术与人工智能交叉领域充满热情的工科生',
   school: '山西大学 · 能源与动力工程',
   mbti: 'ENTJ-A',
-  tagline: '将AI技术深度融入能源工程，以跨界思维驱动创新',
+  tagline: '扎实的专业能力 + 积极拥抱 AI 技术，探索赋能传统工业的创新解决方案',
 }
 
 const hudMetrics = [

@@ -8,14 +8,14 @@ const traits = [
   {
     icon: <Zap size={20} />,
     label: '工程专业能力',
-    desc: 'ANSYS / AutoCAD / 实践操作',
+    desc: 'ANSYS / AutoCAD / 实践操作技术',
     cardClass: 'b-card-terracotta',
     tagClass: 'b-tag-terracotta',
   },
   {
     icon: <Brain size={20} />,
     label: 'AI技术应用',
-    desc: 'Agent / RAG / Prompt工程',
+    desc: 'Agent开发 / CC / Harness / Prompt工程',
     cardClass: 'b-card-sage',
     tagClass: 'b-tag-sage',
   },
@@ -29,7 +29,7 @@ const traits = [
   {
     icon: <Rocket size={20} />,
     label: '项目执行力',
-    desc: '团队协作 / 竞赛获奖',
+    desc: '团队协作与竞赛获奖',
     cardClass: 'b-card-terracotta',
     tagClass: 'b-tag-terracotta',
   },
@@ -185,7 +185,7 @@ export default function HomeB() {
         </div>
 
         <p className="hb-subtitle font-b-sans text-lg md:text-xl lg:text-2xl text-b-ink-light max-w-xl mb-5 leading-relaxed">
-          能源动力技术与人工智能交叉领域探索者
+          一名对能源动力技术与人工智能交叉领域充满热情的工科生
         </p>
 
         <div className="hb-meta flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-b-muted text-sm mb-6 font-b-sans">
@@ -205,7 +205,7 @@ export default function HomeB() {
         </div>
 
         <p className="hb-tagline font-b-sans text-sm md:text-base text-b-muted max-w-md mb-10 italic leading-relaxed">
-          将AI技术深度融入能源工程，以跨界思维驱动创新
+          扎实的专业能力 + 积极拥抱 AI 技术，探索赋能传统工业的创新解决方案
         </p>
 
         <div className="hb-traits w-full max-w-3xl mb-12">
