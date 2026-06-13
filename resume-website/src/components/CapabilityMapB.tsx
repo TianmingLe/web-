@@ -1,6 +1,18 @@
 import { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import {
+  Cog, Brain, Code2, Clapperboard, Lightbulb,
+  type LucideIcon
+} from 'lucide-react'
 import { capabilityData, MainNode, SubNode } from '@data/capabilityMap'
+
+const iconMap: Record<string, LucideIcon> = {
+  energy: Cog,
+  ai: Brain,
+  dev: Code2,
+  media: Clapperboard,
+  thinking: Lightbulb,
+}
 
 interface CaseStudyModalProps {
   node: MainNode
@@ -9,11 +21,11 @@ interface CaseStudyModalProps {
 
 function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div 
+      <div
         className="relative max-w-lg w-full bg-b-cream border border-b-border rounded-2xl p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
@@ -23,19 +35,27 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
         >
           ×
         </button>
-        
+
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl">{node.icon}</span>
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: `${node.color}20` }}
+          >
+            {(() => {
+              const Icon = iconMap[node.id]
+              return Icon ? <Icon size={20} style={{ color: node.color }} /> : null
+            })()}
+          </div>
           <div>
             <h3 className="font-b-serif text-lg text-b-ink">{node.label}</h3>
             <p className="font-b-sans text-sm text-b-muted">{node.caseStudy?.title}</p>
           </div>
         </div>
-        
+
         <p className="font-b-sans text-sm text-b-ink-light mb-4 leading-relaxed">
           {node.caseStudy?.description}
         </p>
-        
+
         {node.caseStudy?.metrics && (
           <div className="grid grid-cols-3 gap-3">
             {Object.entries(node.caseStudy.metrics).map(([key, value]) => (
@@ -64,7 +84,7 @@ export default function CapabilityMapB() {
         duration: 2,
         ease: 'sine.inOut',
         yoyo: true,
-        repeat: -1
+        repeat: -1,
       })
 
       gsap.fromTo(
@@ -90,7 +110,7 @@ export default function CapabilityMapB() {
     const radius = isLoaded ? 150 : 0
     return {
       x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius
+      y: Math.sin(angle) * radius,
     }
   }
 
@@ -109,39 +129,50 @@ export default function CapabilityMapB() {
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div className="relative aspect-square max-w-lg mx-auto">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="center-node-b relative z-20">
-            <div className="relative w-28 h-28 md:w-32 md:h-32">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />
-              <div className="absolute inset-1 rounded-full bg-b-cream border-2 border-b-terracotta/40 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-4xl md:text-5xl mb-1">👤</div>
-                  <p className="font-b-mono text-xs text-b-ink">{capabilityData.center.title}</p>
-                </div>
+      <div className="relative w-[380px] h-[380px] md:w-[460px] md:h-[460px] mx-auto">
+        {/* Center node */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+          <div className="center-node-b relative w-28 h-28 md:w-32 md:h-32">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />
+            <div className="absolute inset-1 rounded-full bg-b-cream border-2 border-b-terracotta/40 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl mb-1">👤</div>
+                <p className="font-b-mono text-[10px] text-b-ink">{capabilityData.center.title}</p>
               </div>
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <span className="font-b-mono text-xs text-b-terracotta">{capabilityData.center.mbti}</span>
-              </div>
+            </div>
+            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
+              <span className="font-b-mono text-[10px] text-b-terracotta">{capabilityData.center.mbti}</span>
             </div>
           </div>
         </div>
 
+        {/* Main nodes */}
         {capabilityData.mainNodes.map((node, index) => {
           const pos = getNodePosition(index, capabilityData.mainNodes.length)
           const isHovered = hoveredNode === node.id
+          const Icon = iconMap[node.id]
 
           return (
-            <div key={node.id} className="absolute left-1/2 top-1/2">
+            <div
+              key={node.id}
+              className="main-node-b absolute z-10"
+              style={{
+                left: `calc(50% + ${pos.x}px)`,
+                top: `calc(50% + ${pos.y}px)`,
+                transform: 'translate(-50%, -50%)',
+                transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
+              }}
+            >
+              {/* Connection line */}
               <svg
-                className="map-connection-b absolute"
+                className="map-connection-b absolute pointer-events-none"
                 style={{
-                  width: Math.abs(pos.x) + 'px',
+                  width: `${Math.abs(pos.x)}px`,
                   height: '2px',
-                  left: pos.x > 0 ? '160px' : 'auto',
-                  right: pos.x < 0 ? Math.abs(pos.x) + 140 + 'px' : 'auto',
-                  top: '160px',
-                  transform: pos.x < 0 ? 'scaleX(-1)' : 'none'
+                  left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${80}px`,
+                  top: '40px',
+                  transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
+                  transformOrigin: pos.x < 0 ? 'right' : 'left',
                 }}
               >
                 <line
@@ -156,66 +187,61 @@ export default function CapabilityMapB() {
                 />
               </svg>
 
-              <div
-                className="main-node-b relative"
+              <button
+                onClick={() => node.caseStudy && setSelectedNode(node)}
+                onMouseEnter={() => setHoveredNode(node.id)}
+                onMouseLeave={() => setHoveredNode(null)}
+                className={`relative w-18 h-18 md:w-22 md:h-22 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer ${
+                  isHovered ? 'scale-110 shadow-xl' : 'hover:scale-105'
+                }`}
                 style={{
-                  transform: `translate(calc(-50% + ${pos.x}px), calc(-50% + ${pos.y}px))`,
-                  transition: isLoaded ? 'transform 0.3s ease-out' : 'none'
+                  backgroundColor: isHovered ? `${node.color}12` : '#FAF8F5',
+                  borderColor: isHovered ? node.color : '#E8E4DF',
+                  boxShadow: isHovered ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
                 }}
               >
-                <button
-                  onClick={() => node.caseStudy && setSelectedNode(node)}
-                  onMouseEnter={() => setHoveredNode(node.id)}
-                  onMouseLeave={() => setHoveredNode(null)}
-                  className={`relative w-18 h-18 md:w-22 md:h-22 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer ${
-                    isHovered ? 'scale-110 shadow-xl' : 'hover:scale-105'
-                  }`}
-                  style={{
-                    backgroundColor: isHovered ? `${node.color}12` : '#FAF8F5',
-                    borderColor: isHovered ? node.color : '#E8E4DF',
-                    boxShadow: isHovered ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)'
-                  }}
-                >
-                  <span className="text-2xl md:text-3xl">{node.icon}</span>
-                  <span 
-                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-xs transition-colors"
-                    style={{ color: isHovered ? node.color : '#9B9590' }}
-                  >
-                    {node.label}
-                  </span>
-                </button>
+                {Icon && <Icon size={24} style={{ color: isHovered ? node.color : '#9B9590' }} />}
+              </button>
 
-                {isHovered && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-64 md:w-72">
-                    <div className="bg-b-cream/95 backdrop-blur-lg rounded-xl border border-b-border p-4 shadow-xl">
-                      <div className="space-y-2">
-                        {node.subNodes.map((sub: SubNode) => (
-                          <div
-                            key={sub.id}
-                            className="flex items-center justify-between p-2 rounded-lg hover:bg-b-sand/30 transition-colors"
-                          >
-                            <span className="font-b-sans text-xs text-b-ink-light">{sub.label}</span>
-                            <span className="font-b-mono text-xs">{renderStars(sub.level)}</span>
-                          </div>
-                        ))}
-                      </div>
-                      {node.caseStudy && (
-                        <div className="mt-3 pt-3 border-t border-b-border">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedNode(node)
-                            }}
-                            className="font-b-sans text-xs text-b-terracotta hover:text-b-terracotta/80 flex items-center gap-1"
-                          >
-                            查看案例 →
-                          </button>
+              {/* Label below node */}
+              <span
+                className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-xs transition-colors"
+                style={{ color: isHovered ? node.color : '#9B9590' }}
+              >
+                {node.label}
+              </span>
+
+              {/* Sub-nodes popup */}
+              {isHovered && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-8 w-64 md:w-72 z-30">
+                  <div className="bg-b-cream/95 backdrop-blur-lg rounded-xl border border-b-border p-4 shadow-xl">
+                    <div className="space-y-2">
+                      {node.subNodes.map((sub: SubNode) => (
+                        <div
+                          key={sub.id}
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-b-sand/30 transition-colors"
+                        >
+                          <span className="font-b-sans text-xs text-b-ink-light">{sub.label}</span>
+                          <span className="font-b-mono text-xs">{renderStars(sub.level)}</span>
                         </div>
-                      )}
+                      ))}
                     </div>
+                    {node.caseStudy && (
+                      <div className="mt-3 pt-3 border-t border-b-border">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedNode(node)
+                          }}
+                          className="font-b-sans text-xs text-b-terracotta hover:text-b-terracotta/80 flex items-center gap-1"
+                        >
+                          查看案例 →
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )
         })}
