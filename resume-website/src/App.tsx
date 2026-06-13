@@ -8,7 +8,7 @@ import EnergyPage from '@pages/EnergyPage'
 import AIPage from '@pages/AIPage'
 import MediaPage from '@pages/MediaPage'
 import ThoughtPage from '@pages/ThoughtPage'
-import OtherPage from '@pages/OtherPage'
+import DevPage from '@pages/DevPage'
 import HomeBPage from '@pages-b/HomeBPage'
 import EnergyBPage from '@pages-b/EnergyBPage'
 import AIBPage from '@pages-b/AIBPage'
@@ -54,7 +54,7 @@ function AppContent() {
             <Route path="/ai" element={<AIPage />} />
             <Route path="/media" element={<MediaPage />} />
             <Route path="/thought" element={<ThoughtPage />} />
-            <Route path="/other" element={<OtherPage />} />
+            <Route path="/other" element={<DevPage />} />
           </Routes>
         )}
       </main>

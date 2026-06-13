@@ -781,14 +781,12 @@ function RippleWave({ active }: { active: boolean }) {
 function SpiderWebSubNodes({
   node,
   expanded,
-  onCaseStudy,
   isMobile,
   nodeRadius,
   webSize,
 }: {
   node: MainNode
   expanded: boolean
-  onCaseStudy: (node: MainNode) => void
   isMobile: boolean
   nodeRadius: number
   webSize: number
@@ -1016,21 +1014,15 @@ function SpiderWebSubNodes({
       })}
 
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
-        {node.caseStudy ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onCaseStudy(node)
-            }}
-            className="text-[9px] text-energy hover:text-energy-light font-sans px-2 py-0.5 rounded-full border border-energy/20 hover:border-energy/40 bg-surface/80 backdrop-blur-sm transition-colors pointer-events-auto"
-          >
-            查看案例 →
-          </button>
-        ) : (
-          <span className="text-[9px] text-warm-ghost/50 font-sans px-2 py-0.5">
-            {node.subNodes.length} 项技能
-          </span>
-        )}
+        <a
+          href={`/${node.id === 'dev' ? 'other' : node.id}`}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className="inline-block text-[9px] text-energy hover:text-energy-light font-sans px-2 py-0.5 rounded-full border border-energy/20 hover:border-energy/40 bg-surface/80 backdrop-blur-sm transition-colors pointer-events-auto"
+        >
+          查看详情 →
+        </a>
       </div>
     </div>
   )
@@ -1226,7 +1218,7 @@ function MainNodeItem({
       <SpiderWebSubNodes
         node={node}
         expanded={active || allExpanded}
-        onCaseStudy={setSelectedNode}
+
         isMobile={isMobile}
         nodeRadius={nodeRadiusWeb}
         webSize={webSize}

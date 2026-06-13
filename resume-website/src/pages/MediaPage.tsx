@@ -1,216 +1,522 @@
-import { Play, FileText, Target, Lightbulb, Clock, MessageCircle, CheckCircle, Wrench, TrendingUp, BookOpen, ListChecks } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import {
+  ArrowLeft,
+  Play,
+  Film,
+  Sparkles,
+  Wand2,
+  UserCircle,
+  Factory,
+  Clapperboard,
+  Palette,
+  Mic,
+  Scissors,
+  Image,
+  Video,
+  TrendingUp,
+  BarChart3,
+  CheckCircle2,
+  ArrowRight,
+  MonitorPlay,
+} from 'lucide-react'
+import { Link } from 'react-router-dom'
 import DarkExpandableCard from '@components/DarkExpandableCard'
-import FeatureSection from '@components/FeatureSection'
-import mediaData from '@data/media.json'
+import { capabilityData } from '@data/capabilityMap'
 
-const platformIcons: Record<string, React.ReactNode> = {
-  '哔哩哔哩': <Play size={20} />,
-  '抖音': <Play size={20} />,
-  '小红书': <FileText size={20} />,
-}
+gsap.registerPlugin(ScrollTrigger)
 
-const strategyIcons = [Target, Lightbulb, Clock, MessageCircle]
+const mediaNode = capabilityData.mainNodes.find((n) => n.id === 'media')!
 
-type Project = typeof mediaData.projects[number]
+const platforms = [
+  {
+    name: '哔哩哔哩',
+    followers: '12,000+',
+    content: '技术教程、AI应用、视频修复',
+    representative: '《钢铁是怎样炼成的》4K修复（200万+播放）',
+    icon: <Play size={24} />,
+    color: '#00A1D6',
+  },
+  {
+    name: '抖音',
+    followers: '4,900+',
+    content: '短视频技术分享、AI工具演示',
+    representative: '平均播放5,000+，切片1500万+',
+    icon: <Video size={24} />,
+    color: '#FE2C55',
+  },
+  {
+    name: '小红书',
+    followers: '4,600+',
+    content: 'AI工具使用攻略、学习心得',
+    representative: '平均点赞200+',
+    icon: <Image size={24} />,
+    color: '#FF2442',
+  },
+]
 
-function ProjectDetails({ project }: { project: Project }) {
-  switch (project.id) {
-    case 'omniscraper':
-      return (
-        <div className="space-y-2">
-          <p className="text-xs text-warm-faint font-mono uppercase tracking-wider">核心指标</p>
-          <div className="flex flex-wrap gap-2">
-            {project.highlights!.map((h, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans"
-              >
-                <CheckCircle size={12} />
-                {h}
-              </span>
-            ))}
-          </div>
-        </div>
-      )
-    case 'video_claw':
-      return (
-        <>
-          <div className="space-y-2 mb-4">
-            <p className="text-xs text-warm-faint font-mono uppercase tracking-wider">成果</p>
-            {project.outcomes!.map((o, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <CheckCircle size={14} className="text-energy mt-0.5 shrink-0" />
-                <p className="text-sm text-warm-muted font-sans">{o}</p>
-              </div>
-            ))}
-          </div>
-          <div className="px-4 py-3 rounded-lg bg-energy-dim/30 border border-energy/15">
-            <div className="flex items-start gap-2">
-              <BookOpen size={14} className="text-energy-light mt-0.5 shrink-0" />
-              <p className="text-sm text-warm-muted font-sans">{project.lessons}</p>
-            </div>
-          </div>
-        </>
-      )
-    case 'steel_4k':
-      return (
-        <>
-          <div className="mb-4">
-            <p className="text-xs text-warm-faint font-mono uppercase tracking-wider mb-2">工作流</p>
-            {project.workflow!.map((step, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <Wrench size={14} className="text-energy mt-0.5 shrink-0" />
-                <p className="text-sm text-warm-muted font-sans">{step}</p>
-              </div>
-            ))}
-          </div>
-          <div>
-            <p className="text-xs text-warm-faint font-mono uppercase tracking-wider mb-2">影响力</p>
-            {project.impact!.map((imp, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <TrendingUp size={14} className="text-energy-light mt-0.5 shrink-0" />
-                <p className="text-sm text-warm-muted font-sans">{imp}</p>
-              </div>
-            ))}
-          </div>
-        </>
-      )
-    case 'qingcao_plan':
-      return (
-        <div className="space-y-2">
-          <p className="text-xs text-warm-faint font-mono uppercase tracking-wider">实践活动</p>
-          {project.activities!.map((a, i) => (
-            <div key={i} className="flex items-start gap-2">
-              <ListChecks size={14} className="text-energy mt-0.5 shrink-0" />
-              <p className="text-sm text-warm-muted font-sans">{a}</p>
-            </div>
-          ))}
-        </div>
-      )
-    default:
-      return null
-  }
+const projects = [
+  {
+    title: '《钢铁是怎样炼成的》4K修复',
+    desc: '独立完成经典影片4K修复与发布，使用AI技术进行画质增强、分辨率提升、色彩校正，全网引发对保尔·柯察金精神的学习热潮。',
+    tags: ['Topaz Video AI', 'DaVinci Resolve', 'RIFE', '4K修复'],
+    workflow: [
+      '素材收集',
+      'AI超分(Topaz Video AI)',
+      '去噪修复(Neat Video)',
+      '色彩校正(DaVinci Resolve)',
+      '帧率提升(25fps→60fps RIFE)',
+      '音频增强',
+      '发布推广',
+    ],
+    impact: [
+      'B站播放量200万+',
+      '抖音切片1500万+',
+      '带动话题量10亿+',
+    ],
+  },
+  {
+    title: 'AI视频生成',
+    desc: '使用Stable Diffusion + AnimateDiff + ComfyUI工作流进行AI视频生成，结合ControlNet实现可控动画效果。',
+    tags: ['Stable Diffusion', 'AnimateDiff', 'ComfyUI', 'ControlNet'],
+    highlights: [
+      '文生视频/图生视频',
+      'ControlNet姿态控制',
+      'ComfyUI可视化工作流',
+      '批量生成与后期合成',
+    ],
+  },
+  {
+    title: '数字人播报',
+    desc: '使用D-ID、HeyGen等数字人平台，结合语音克隆技术，实现虚拟主播视频制作，应用于教学视频与产品介绍。',
+    tags: ['D-ID', 'HeyGen', '语音克隆', 'ElevenLabs'],
+    highlights: [
+      '数字人形象定制',
+      '多语种语音合成',
+      '口型同步优化',
+      '批量视频生产',
+    ],
+  },
+  {
+    title: '自动化内容工厂',
+    desc: '基于OmniScraper Pro实现内容采集、AI分析、自动剪辑、多平台分发的全流程自动化，构建自媒体内容生产流水线。',
+    tags: ['Python', 'n8n', 'Whisper', 'LLM', 'CI/CD'],
+    highlights: [
+      '自动采集热点内容',
+      'Whisper ASR转写',
+      'LLM智能分析与摘要',
+      '多平台自动分发',
+    ],
+  },
+]
+
+const tools = [
+  { name: 'Premiere Pro', icon: <Clapperboard size={18} />, category: '剪辑' },
+  { name: 'After Effects', icon: <Sparkles size={18} />, category: '特效' },
+  { name: 'Photoshop', icon: <Palette size={18} />, category: '图像' },
+  { name: 'Audition', icon: <Mic size={18} />, category: '音频' },
+  { name: '剪映', icon: <Scissors size={18} />, category: '剪辑' },
+  { name: 'ComfyUI', icon: <Wand2 size={18} />, category: 'AI工作流' },
+  { name: 'D-ID', icon: <UserCircle size={18} />, category: '数字人' },
+  { name: 'Topaz Video AI', icon: <MonitorPlay size={18} />, category: 'AI修复' },
+]
+
+const pipelineSteps = [
+  { title: '内容采集', desc: 'OmniScraper / 热点监控', icon: <TrendingUp size={16} /> },
+  { title: '素材处理', desc: '4K修复 / AI增强', icon: <Wand2 size={16} /> },
+  { title: '内容创作', desc: '剪辑 / 特效 / 配音', icon: <Film size={16} /> },
+  { title: 'AI生成', desc: '数字人 / 语音克隆', icon: <Sparkles size={16} /> },
+  { title: '多平台分发', desc: 'B站 / 抖音 / 小红书', icon: <Play size={16} /> },
+]
+
+function MediaParticlesBg() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    let w = (canvas.width = canvas.offsetWidth)
+    let h = (canvas.height = canvas.offsetHeight)
+
+    interface Particle {
+      x: number
+      y: number
+      vx: number
+      vy: number
+      size: number
+      alpha: number
+    }
+
+    const particles: Particle[] = []
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8,
+        size: 1 + Math.random() * 3,
+        alpha: 0.2 + Math.random() * 0.5,
+      })
+    }
+
+    const resize = () => {
+      w = canvas.width = canvas.offsetWidth
+      h = canvas.height = canvas.offsetHeight
+    }
+    window.addEventListener('resize', resize)
+
+    let raf: number
+    const loop = () => {
+      ctx.clearRect(0, 0, w, h)
+
+      for (const p of particles) {
+        p.x += p.vx
+        p.y += p.vy
+        if (p.x < 0 || p.x > w) p.vx *= -1
+        if (p.y < 0 || p.y > h) p.vy *= -1
+
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(236, 72, 153, ${p.alpha})`
+        ctx.fill()
+      }
+
+      // Draw film strips
+      const t = Date.now() * 0.001
+      for (let i = 0; i < 3; i++) {
+        const y = h * 0.3 + i * h * 0.2 + Math.sin(t + i) * 30
+        ctx.beginPath()
+        ctx.moveTo(0, y)
+        for (let x = 0; x < w; x += 10) {
+          ctx.lineTo(x, y + Math.sin(x * 0.02 + t * 2 + i) * 5)
+        }
+        ctx.strokeStyle = `rgba(236, 72, 153, ${0.05 + i * 0.02})`
+        ctx.lineWidth = 2
+        ctx.stroke()
+      }
+
+      raf = requestAnimationFrame(loop)
+    }
+    loop()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 }
 
 export default function MediaPage() {
-  const majorProjects = mediaData.projects.filter((p) => p.id === 'omniscraper' || p.id === 'steel_4k')
-  const minorProjects = mediaData.projects.filter((p) => p.id !== 'omniscraper' && p.id !== 'steel_4k')
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '.media-hero-title',
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.2 }
+      )
+      gsap.fromTo(
+        '.media-hero-sub',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.4 }
+      )
+      gsap.fromTo(
+        '.media-hero-badge',
+        { scale: 0.8, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.7)', delay: 0.6 }
+      )
+
+      const items = gsap.utils.toArray<HTMLElement>('.media-animate')
+      items.forEach((item) => {
+        gsap.fromTo(
+          item,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          }
+        )
+      })
+    }, contentRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <div className="relative pt-24 pb-16 md:pt-32 md:pb-20 px-4 md:px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-16 md:mb-24 text-center">
-          <p className="text-energy-light/80 text-[10px] md:text-xs font-mono font-medium tracking-[0.4em] uppercase mb-5">
-            {mediaData.subtitle}
-          </p>
-          <h2 className="text-3xl md:text-5xl font-serif text-warm mb-5 tracking-tight">
-            {mediaData.title}
-          </h2>
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <span className="block w-8 h-px bg-energy/30" />
-            <span className="w-1.5 h-1.5 rounded-full bg-energy/50" />
-            <span className="block w-8 h-px bg-energy/30" />
+    <div ref={contentRef} className="relative">
+      {/* Hero */}
+      <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        <MediaParticlesBg />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(236,72,153,0.08) 0%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+        <div className="relative z-10 text-center px-4">
+          <div className="media-hero-badge inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 border border-pink-500/20 mb-6">
+            <Film size={14} className="text-pink-400" />
+            <span className="text-pink-400 text-xs font-mono tracking-[0.15em] uppercase">
+              内容创作与平台运营
+            </span>
           </div>
-          <p className="text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
-            {mediaData.description}
+          <h1 className="media-hero-title text-5xl md:text-7xl font-serif text-warm mb-6 tracking-tight">
+            自媒体特种技术
+          </h1>
+          <p className="media-hero-sub text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
+            具备完整的自媒体运营能力，从内容采集、视频修复到多平台分发，
+            掌握数据驱动的内容策略与粉丝运营方法。
           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mb-16">
-          {mediaData.platforms.map((platform, index) => (
-            <DarkExpandableCard
-              key={index}
-              title={
-                <div className="flex items-center gap-3">
-                  <span className="text-energy/60">{platformIcons[platform.name]}</span>
-                  <div>
-                    <h3 className="text-lg font-serif text-warm">{platform.name}</h3>
-                    <p className="text-xs text-warm-faint font-mono">{platform.nameEn}</p>
-                  </div>
-                </div>
-              }
-              subtitle={platform.content}
-              keywords={
-                <span className="px-2.5 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans">
-                  {platform.representative.slice(0, 6)}
-                </span>
-              }
-              glowColor="energy"
+          <div className="media-hero-sub mt-8 flex items-center justify-center gap-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface border border-border hover:border-pink-400/30 hover:bg-surface-hover transition-all text-warm text-sm font-sans"
             >
-              <p className="text-3xl font-serif text-energy-light mb-1">{platform.followers}</p>
-              <p className="text-xs text-warm-faint mb-4 font-mono">粉丝</p>
-              <div className="pt-4 border-t border-white/[0.06]">
-                <p className="text-xs text-warm-faint mb-1 font-mono">代表作品</p>
-                <p className="text-sm text-ai-light font-sans">{platform.representative}</p>
-              </div>
-            </DarkExpandableCard>
-          ))}
+              <ArrowLeft size={14} />
+              返回首页
+            </Link>
+          </div>
         </div>
+      </div>
 
-        <DarkExpandableCard
-          className="mb-16"
-          title="内容策略"
-          glowColor="ai"
-        >
-          <div className="flex flex-wrap gap-x-8 gap-y-4">
-            {mediaData.contentStrategy.map((strategy, index) => {
-              const Icon = strategyIcons[index]
-              const colonIdx = strategy.indexOf('：')
-              const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
-              const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
-              return (
-                <div key={index} className="flex items-start gap-3 min-w-[220px]">
-                  <span className="text-energy/60 mt-0.5"><Icon size={18} /></span>
-                  <div>
-                    <p className="text-sm font-medium text-warm font-sans">{label}</p>
-                    {desc && <p className="text-xs text-warm-faint mt-1 font-sans">{desc}</p>}
+      <div className="relative pt-16 pb-20 px-4 md:px-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Platform Stats */}
+          <div className="media-animate mb-20">
+            <div className="flex items-center gap-3 mb-8">
+              <BarChart3 size={24} className="text-pink-400" />
+              <h2 className="text-2xl md:text-3xl font-serif text-warm">平台数据</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {platforms.map((plat, idx) => (
+                <div
+                  key={idx}
+                  className="industrial-card p-6 hover:border-pink-400/20 transition-all"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-pink-400">{plat.icon}</span>
+                    <div>
+                      <h3 className="text-lg font-serif text-warm">{plat.name}</h3>
+                    </div>
+                  </div>
+                  <p className="text-pink-400 text-3xl font-mono font-bold mb-1">
+                    {plat.followers}
+                  </p>
+                  <p className="text-warm-faint text-xs font-sans mb-4">粉丝</p>
+                  <p className="text-warm-muted text-sm mb-3 font-sans">{plat.content}</p>
+                  <div className="pt-3 border-t border-border">
+                    <p className="text-warm-faint text-xs font-mono mb-1">代表作品</p>
+                    <p className="text-warm text-sm font-sans">{plat.representative}</p>
                   </div>
                 </div>
-              )
-            })}
-          </div>
-        </DarkExpandableCard>
-
-        {majorProjects.map((project, index) => (
-          <FeatureSection
-            key={project.id}
-            title={project.title}
-            description={project.summary}
-            badge={project.period}
-            reverse={index % 2 !== 0}
-          >
-            <div className="flex flex-wrap gap-2 mb-4">
-              {project.tags.map((tag, i) => (
-                <span key={i} className="px-3 py-1 text-xs rounded-full bg-energy-dim text-energy-light border border-energy/20 font-sans">{tag}</span>
               ))}
             </div>
-            <ProjectDetails project={project} />
-          </FeatureSection>
-        ))}
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-          {minorProjects.map((project, index) => (
-            <DarkExpandableCard
-              key={index}
-              title={project.title}
-              subtitle={project.summary}
-              badges={
-                project.period ? (
-                  <span className="px-2.5 py-0.5 text-xs rounded-full bg-warm-ghost/10 text-warm-faint border border-white/[0.08] font-mono">
-                    {project.period}
-                  </span>
-                ) : undefined
-              }
-              keywords={
-                project.tags.slice(0, 3).map((tag, i) => (
-                  <span key={i} className="px-2.5 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">{tag}</span>
-                ))
-              }
-              glowColor={project.id === 'video_claw' ? 'energy' : 'ai'}
-            >
-              <ProjectDetails project={project} />
-            </DarkExpandableCard>
-          ))}
+          {/* Skills from capabilityMap */}
+          <div className="media-animate mb-20">
+            <div className="flex items-center gap-3 mb-8">
+              <Sparkles size={24} className="text-pink-400" />
+              <h2 className="text-2xl md:text-3xl font-serif text-warm">技能矩阵</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {mediaNode.subNodes.map((skill) => (
+                <DarkExpandableCard
+                  key={skill.id}
+                  title={skill.label}
+                  glowColor="ai"
+                  keywords={
+                    skill.level && (
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-2 h-2 rounded-full ${
+                              i < (skill.level || 0)
+                                ? 'bg-pink-400'
+                                : 'bg-warm-ghost/20'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    <TrendingUp size={16} className="text-pink-400/70" />
+                    <span className="text-warm-muted text-sm font-sans">
+                      熟练度等级 {skill.level}/5
+                    </span>
+                  </div>
+                </DarkExpandableCard>
+              ))}
+            </div>
+          </div>
+
+          {/* Projects */}
+          <div className="media-animate mb-20">
+            <div className="flex items-center gap-3 mb-8">
+              <Clapperboard size={24} className="text-pink-400" />
+              <h2 className="text-2xl md:text-3xl font-serif text-warm">项目展示</h2>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {projects.map((proj, idx) => (
+                <div
+                  key={idx}
+                  className="industrial-card p-6 hover:border-pink-400/20 transition-all"
+                >
+                  <h3 className="text-lg font-serif text-warm mb-3">{proj.title}</h3>
+                  <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">
+                    {proj.desc}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {proj.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-2.5 py-1 text-xs rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 font-sans"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {proj.workflow && (
+                    <div className="mb-4">
+                      <p className="text-warm-faint text-xs font-mono uppercase tracking-wider mb-2">
+                        工作流
+                      </p>
+                      <div className="flex flex-wrap items-center gap-1">
+                        {proj.workflow.map((step, i) => (
+                          <div key={i} className="flex items-center gap-1">
+                            <span className="text-warm-muted text-xs font-sans">{step}</span>
+                            {i < proj.workflow.length - 1 && (
+                              <ArrowRight size={10} className="text-warm-faint" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {proj.impact && (
+                    <div className="space-y-2">
+                      {proj.impact.map((imp, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <TrendingUp size={14} className="text-pink-400 mt-0.5 shrink-0" />
+                          <span className="text-warm-muted text-xs font-sans">{imp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {proj.highlights && (
+                    <div className="space-y-2">
+                      {proj.highlights.map((h, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <CheckCircle2 size={14} className="text-pink-400 mt-0.5 shrink-0" />
+                          <span className="text-warm-muted text-xs font-sans">{h}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Tool Stack */}
+          <div className="media-animate mb-20">
+            <div className="flex items-center gap-3 mb-8">
+              <Wand2 size={24} className="text-pink-400" />
+              <h2 className="text-2xl md:text-3xl font-serif text-warm">工具栈</h2>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {tools.map((tool, idx) => (
+                <div
+                  key={idx}
+                  className="industrial-card p-5 text-center group hover:border-pink-400/20 transition-all"
+                >
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                    {tool.icon}
+                  </div>
+                  <p className="text-warm text-sm font-medium font-sans">{tool.name}</p>
+                  <p className="text-warm-faint text-xs mt-1 font-sans">{tool.category}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Pipeline */}
+          <div className="media-animate">
+            <div className="flex items-center gap-3 mb-8">
+              <Factory size={24} className="text-pink-400" />
+              <h2 className="text-2xl md:text-3xl font-serif text-warm">内容生产流水线</h2>
+            </div>
+            <div className="industrial-card p-6 md:p-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2">
+                {pipelineSteps.map((step, idx) => (
+                  <div key={idx} className="flex items-center gap-2 w-full md:w-auto">
+                    <div className="flex-1 md:flex-none text-center p-4 rounded-xl bg-base-elevated border border-border hover:border-pink-400/20 transition-colors">
+                      <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
+                        {step.icon}
+                      </div>
+                      <p className="text-warm text-sm font-medium font-sans">{step.title}</p>
+                      <p className="text-warm-faint text-xs mt-1 font-sans">{step.desc}</p>
+                    </div>
+                    {idx < pipelineSteps.length - 1 && (
+                      <ArrowRight size={16} className="text-warm-faint hidden md:block shrink-0" />
+                    )}
+                    {idx < pipelineSteps.length - 1 && (
+                      <ArrowRight size={16} className="text-warm-faint md:hidden rotate-90 mx-auto" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Case Study */}
+          {mediaNode.caseStudy && (
+            <div className="media-animate mt-20">
+              <div className="industrial-card p-6 md:p-8 hover:border-pink-400/20 transition-all">
+                <div className="flex items-center gap-3 mb-4">
+                  <MonitorPlay size={24} className="text-pink-400" />
+                  <h3 className="text-xl font-serif text-warm">{mediaNode.caseStudy.title}</h3>
+                </div>
+                <p className="text-warm-muted text-sm leading-relaxed mb-6 font-sans">
+                  {mediaNode.caseStudy.description}
+                </p>
+                <div className="grid grid-cols-3 gap-4">
+                  {Object.entries(mediaNode.caseStudy.metrics || {}).map(([k, v], i) => (
+                    <div
+                      key={i}
+                      className="text-center p-4 rounded-lg bg-base-elevated border border-border"
+                    >
+                      <p className="text-pink-400 text-xl font-mono font-medium">{v}</p>
+                      <p className="text-warm-faint text-[10px] font-mono mt-1 uppercase">
+                        {k}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

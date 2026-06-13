@@ -781,14 +781,12 @@ function RippleWaveB({ active }: { active: boolean }) {
 function SpiderWebSubNodesB({
   node,
   expanded,
-  onCaseStudy,
   isMobile,
   nodeRadius,
   webSize,
 }: {
   node: MainNode
   expanded: boolean
-  onCaseStudy: (node: MainNode) => void
   isMobile: boolean
   nodeRadius: number
   webSize: number
@@ -1016,21 +1014,15 @@ function SpiderWebSubNodesB({
       })}
 
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
-        {node.caseStudy ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onCaseStudy(node)
-            }}
-            className="font-b-sans text-[9px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-0.5 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
-          >
-            查看案例 →
-          </button>
-        ) : (
-          <span className="font-b-sans text-[9px] text-b-sand/60 px-2 py-0.5">
-            {node.subNodes.length} 项技能
-          </span>
-        )}
+        <a
+          href={`/${node.id === 'dev' ? 'other' : node.id}`}
+          onClick={(e) => {
+            e.stopPropagation()
+          }}
+          className="inline-block font-b-sans text-[9px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-0.5 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
+        >
+          查看详情 →
+        </a>
       </div>
     </div>
   )
@@ -1225,7 +1217,7 @@ function MainNodeItemB({
       <SpiderWebSubNodesB
         node={node}
         expanded={active || allExpanded}
-        onCaseStudy={setSelectedNode}
+
         isMobile={isMobile}
         nodeRadius={nodeRadiusWeb}
         webSize={webSize}
