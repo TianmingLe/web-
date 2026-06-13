@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import {
   Cog, Brain, Code2, Clapperboard, Lightbulb,
@@ -71,14 +71,14 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes - Magazine Edition
+// SpiderWeb sub-nodes - Magazine Edition with spotlight
 function SpiderWebSubNodesB({
   node,
-  revealed,
+  active,
   onCaseStudy,
 }: {
   node: MainNode
-  revealed: boolean
+  active: boolean
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
@@ -86,7 +86,7 @@ function SpiderWebSubNodesB({
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!webRef.current || !revealed) return
+    if (!webRef.current || !active) return
 
     const lines = webRef.current.querySelectorAll('.web-line-b')
     const ringLines = webRef.current.querySelectorAll('.web-ring-b')
@@ -95,23 +95,23 @@ function SpiderWebSubNodesB({
     gsap.fromTo(
       lines,
       { strokeDashoffset: 200, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.3, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.1 }
+      { strokeDashoffset: 0, opacity: 0.3, duration: 0.8, stagger: 0.1, ease: 'power2.out', delay: 0.2 }
     )
 
     gsap.fromTo(
       ringLines,
       { strokeDashoffset: 100, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 0.4 }
+      { strokeDashoffset: 0, opacity: 0.2, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.6 }
     )
 
     gsap.fromTo(
       subNodes,
       { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.07, ease: 'back.out(1.7)', delay: 0.3 }
+      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5 }
     )
-  }, [revealed])
+  }, [active])
 
-  if (!revealed) return null
+  if (!active) return null
 
   return (
     <div
@@ -236,10 +236,41 @@ function SpiderWebSubNodesB({
 
 export default function CapabilityMapB() {
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
-  const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set())
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
+  const [showAll, setShowAll] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
+  const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
+
+  const runSpotlightSequence = useCallback(() => {
+    const nodes = capabilityData.mainNodes
+    let current = 0
+
+    const highlightNext = () => {
+      if (current >= nodes.length) {
+        setActiveNodeIndex(-1)
+        setShowAll(true)
+        return
+      }
+
+      setActiveNodeIndex(current)
+
+      const btn = nodeRefs.current[current]
+      if (btn) {
+        gsap.fromTo(
+          btn,
+          { scale: 0.6, opacity: 0.5 },
+          { scale: 1.15, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }
+        )
+      }
+
+      current++
+      setTimeout(highlightNext, 2500)
+    }
+
+    highlightNext()
+  }, [])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -278,12 +309,9 @@ export default function CapabilityMapB() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated.current) {
             hasAnimated.current = true
-            const nodeIds = capabilityData.mainNodes.map((n) => n.id)
-            nodeIds.forEach((id, index) => {
-              setTimeout(() => {
-                setRevealedNodes((prev) => new Set([...prev, id]))
-              }, index * 200)
-            })
+            setTimeout(() => {
+              runSpotlightSequence()
+            }, 800)
           }
         })
       },
@@ -292,7 +320,7 @@ export default function CapabilityMapB() {
 
     observer.observe(container)
     return () => observer.disconnect()
-  }, [])
+  }, [runSpotlightSequence])
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
@@ -303,8 +331,21 @@ export default function CapabilityMapB() {
     }
   }
 
+  const isNodeActive = (index: number) => activeNodeIndex === index
+  const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll
+
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-16">
+      {/* Spotlight overlay */}
+      {activeNodeIndex >= 0 && !showAll && (
+        <div
+          className="absolute inset-0 z-5 pointer-events-none transition-opacity duration-700"
+          style={{
+            background: 'radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), transparent 120px, rgba(250, 248, 245, 0.7) 280px)',
+          }}
+        />
+      )}
+
       <div className="text-center mb-10">
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mb-4" />
         <h2 className="font-b-serif text-2xl md:text-3xl text-b-ink mb-3">能力地图</h2>
@@ -314,7 +355,10 @@ export default function CapabilityMapB() {
 
       <div className="relative w-[580px] h-[580px] md:w-[700px] md:h-[700px] mx-auto">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
+          <div
+            className="center-node-b relative w-24 h-24 md:w-28 md:h-28 transition-opacity duration-700"
+            style={{ opacity: activeNodeIndex >= 0 && !showAll ? 0.3 : 1 }}
+          >
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />
             <div className="absolute inset-1 rounded-full bg-b-cream border-2 border-b-terracotta/40 flex items-center justify-center">
               <div className="text-center">
@@ -330,7 +374,8 @@ export default function CapabilityMapB() {
 
         {capabilityData.mainNodes.map((node, index) => {
           const pos = getNodePosition(index, capabilityData.mainNodes.length)
-          const isRevealed = revealedNodes.has(node.id)
+          const active = isNodeActive(index)
+          const dimmed = isNodeDimmed(index)
           const Icon = iconMap[node.id]
 
           return (
@@ -345,7 +390,7 @@ export default function CapabilityMapB() {
               }}
             >
               <svg
-                className="map-connection-b absolute pointer-events-none"
+                className="map-connection-b absolute pointer-events-none transition-opacity duration-700"
                 style={{
                   width: `${Math.abs(pos.x)}px`,
                   height: '2px',
@@ -353,6 +398,7 @@ export default function CapabilityMapB() {
                   top: '32px',
                   transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
                   transformOrigin: pos.x < 0 ? 'right' : 'left',
+                  opacity: dimmed ? 0.1 : 0.4,
                 }}
               >
                 <line
@@ -363,34 +409,48 @@ export default function CapabilityMapB() {
                   stroke={node.color}
                   strokeWidth="2"
                   strokeDasharray="4,4"
-                  opacity="0.4"
                 />
               </svg>
 
               <button
+                ref={(el) => { nodeRefs.current[index] = el }}
                 onClick={() => node.caseStudy && setSelectedNode(node)}
-                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer z-30 ${
-                  isRevealed ? 'scale-110 shadow-xl' : 'hover:scale-105'
+                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer z-30 ${
+                  active ? 'scale-115 shadow-xl' : 'hover:scale-105'
                 }`}
                 style={{
-                  backgroundColor: isRevealed ? `${node.color}12` : '#FAF8F5',
-                  borderColor: isRevealed ? node.color : '#E8E4DF',
-                  boxShadow: isRevealed ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
+                  backgroundColor: active ? `${node.color}15` : dimmed ? 'rgba(250,248,245,0.5)' : '#FAF8F5',
+                  borderColor: active ? node.color : dimmed ? '#E8E4DF' : '#E8E4DF',
+                  boxShadow: active ? `0 0 40px ${node.glowColor}, 0 0 80px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
+                  opacity: dimmed ? 0.3 : 1,
+                  transform: active ? 'scale(1.15)' : dimmed ? 'scale(0.85)' : 'scale(1)',
                 }}
               >
-                {Icon && <Icon size={20} style={{ color: isRevealed ? node.color : '#9B9590' }} />}
+                {Icon && (
+                  <Icon
+                    size={active ? 24 : 20}
+                    style={{
+                      color: active ? node.color : dimmed ? '#C4BFB9' : '#9B9590',
+                      transition: 'all 0.7s ease',
+                    }}
+                  />
+                )}
               </button>
 
               <span
-                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-colors"
-                style={{ color: isRevealed ? node.color : '#9B9590' }}
+                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-all duration-700"
+                style={{
+                  color: active ? node.color : dimmed ? '#C4BFB9' : '#9B9590',
+                  opacity: dimmed ? 0.4 : 1,
+                  transform: active ? 'scale(1.1)' : 'scale(1)',
+                }}
               >
                 {node.label}
               </span>
 
               <SpiderWebSubNodesB
                 node={node}
-                revealed={isRevealed}
+                active={active}
                 onCaseStudy={setSelectedNode}
               />
             </div>

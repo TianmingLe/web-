@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import {
   Cog, Brain, Code2, Clapperboard, Lightbulb,
@@ -71,24 +71,22 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes - positioned outward to avoid overlap
+// SpiderWeb sub-nodes with spotlight animation
 function SpiderWebSubNodes({
   node,
-  revealed,
+  active,
   onCaseStudy,
-  nodeAngle,
 }: {
   node: MainNode
-  revealed: boolean
+  active: boolean
   onCaseStudy: (node: MainNode) => void
-  nodeAngle: number
 }) {
   const subCount = node.subNodes.length
   const subRadius = 110
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!webRef.current || !revealed) return
+    if (!webRef.current || !active) return
 
     const lines = webRef.current.querySelectorAll('.web-line')
     const ringLines = webRef.current.querySelectorAll('.web-ring')
@@ -97,23 +95,23 @@ function SpiderWebSubNodes({
     gsap.fromTo(
       lines,
       { strokeDashoffset: 200, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.3, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.1 }
+      { strokeDashoffset: 0, opacity: 0.3, duration: 0.8, stagger: 0.1, ease: 'power2.out', delay: 0.2 }
     )
 
     gsap.fromTo(
       ringLines,
       { strokeDashoffset: 100, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 0.4 }
+      { strokeDashoffset: 0, opacity: 0.2, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.6 }
     )
 
     gsap.fromTo(
       subNodes,
       { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.07, ease: 'back.out(1.7)', delay: 0.3 }
+      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5 }
     )
-  }, [revealed])
+  }, [active])
 
-  if (!revealed) return null
+  if (!active) return null
 
   return (
     <div
@@ -238,10 +236,44 @@ function SpiderWebSubNodes({
 
 export default function CapabilityMap() {
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
-  const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set())
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
+  const [showAll, setShowAll] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
+  const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
+
+  // Spotlight sequence: each node gets highlighted one by one
+  const runSpotlightSequence = useCallback(() => {
+    const nodes = capabilityData.mainNodes
+    let current = 0
+
+    const highlightNext = () => {
+      if (current >= nodes.length) {
+        // All done, show everything
+        setActiveNodeIndex(-1)
+        setShowAll(true)
+        return
+      }
+
+      setActiveNodeIndex(current)
+
+      // Animate the active node growing from small
+      const btn = nodeRefs.current[current]
+      if (btn) {
+        gsap.fromTo(
+          btn,
+          { scale: 0.6, opacity: 0.5 },
+          { scale: 1.15, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }
+        )
+      }
+
+      current++
+      setTimeout(highlightNext, 2500) // 2.5s per node spotlight
+    }
+
+    highlightNext()
+  }, [])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -271,6 +303,7 @@ export default function CapabilityMap() {
     return () => ctx.revert()
   }, [])
 
+  // Scroll-triggered spotlight sequence
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -280,12 +313,10 @@ export default function CapabilityMap() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated.current) {
             hasAnimated.current = true
-            const nodeIds = capabilityData.mainNodes.map((n) => n.id)
-            nodeIds.forEach((id, index) => {
-              setTimeout(() => {
-                setRevealedNodes((prev) => new Set([...prev, id]))
-              }, index * 200)
-            })
+            // Wait a bit after scroll-in, then start spotlight
+            setTimeout(() => {
+              runSpotlightSequence()
+            }, 800)
           }
         })
       },
@@ -294,7 +325,7 @@ export default function CapabilityMap() {
 
     observer.observe(container)
     return () => observer.disconnect()
-  }, [])
+  }, [runSpotlightSequence])
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
@@ -302,12 +333,24 @@ export default function CapabilityMap() {
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
-      angle,
     }
   }
 
+  const isNodeActive = (index: number) => activeNodeIndex === index
+  const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll
+
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-12">
+      {/* Spotlight overlay - dims the whole area except active node */}
+      {activeNodeIndex >= 0 && !showAll && (
+        <div
+          className="absolute inset-0 z-5 pointer-events-none transition-opacity duration-700"
+          style={{
+            background: 'radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), transparent 120px, rgba(15, 23, 42, 0.75) 280px)',
+          }}
+        />
+      )}
+
       <div className="text-center mb-8">
         <h2 className="text-xl md:text-2xl font-serif text-warm mb-2">能力地图</h2>
         <p className="text-warm-faint text-sm font-sans">核心能力星系 · Core Capabilities</p>
@@ -316,7 +359,10 @@ export default function CapabilityMap() {
       <div className="relative w-[560px] h-[560px] md:w-[660px] md:h-[660px] mx-auto">
         {/* Center node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <div className="center-node relative w-20 h-20 md:w-24 md:h-24">
+          <div
+            className="center-node relative w-20 h-20 md:w-24 md:h-24 transition-opacity duration-700"
+            style={{ opacity: activeNodeIndex >= 0 && !showAll ? 0.3 : 1 }}
+          >
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-energy to-ai animate-pulse opacity-50" />
             <div className="absolute inset-1 rounded-full bg-surface border-2 border-energy/30 flex items-center justify-center">
               <div className="text-center">
@@ -333,7 +379,8 @@ export default function CapabilityMap() {
         {/* Main nodes */}
         {capabilityData.mainNodes.map((node, index) => {
           const pos = getNodePosition(index, capabilityData.mainNodes.length)
-          const isRevealed = revealedNodes.has(node.id)
+          const active = isNodeActive(index)
+          const dimmed = isNodeDimmed(index)
           const Icon = iconMap[node.id]
 
           return (
@@ -349,7 +396,7 @@ export default function CapabilityMap() {
             >
               {/* Connection line to center */}
               <svg
-                className="map-connection absolute pointer-events-none"
+                className="map-connection absolute pointer-events-none transition-opacity duration-700"
                 style={{
                   width: `${Math.abs(pos.x)}px`,
                   height: '2px',
@@ -357,6 +404,7 @@ export default function CapabilityMap() {
                   top: '32px',
                   transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
                   transformOrigin: pos.x < 0 ? 'right' : 'left',
+                  opacity: dimmed ? 0.1 : 0.4,
                 }}
               >
                 <line
@@ -367,38 +415,51 @@ export default function CapabilityMap() {
                   stroke={node.color}
                   strokeWidth="2"
                   strokeDasharray="4,4"
-                  opacity="0.4"
                 />
               </svg>
 
               <button
+                ref={(el) => { nodeRefs.current[index] = el }}
                 onClick={() => node.caseStudy && setSelectedNode(node)}
-                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer z-30 ${
-                  isRevealed ? 'scale-110 shadow-lg' : 'hover:scale-105'
+                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer z-30 ${
+                  active ? 'scale-115 shadow-lg' : 'hover:scale-105'
                 }`}
                 style={{
-                  backgroundColor: isRevealed ? `${node.color}15` : 'rgba(255,255,255,0.05)',
-                  borderColor: isRevealed ? node.color : 'rgba(255,255,255,0.1)',
-                  boxShadow: isRevealed ? `0 0 30px ${node.glowColor}` : 'none',
+                  backgroundColor: active ? `${node.color}20` : dimmed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+                  borderColor: active ? node.color : dimmed ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+                  boxShadow: active ? `0 0 40px ${node.glowColor}, 0 0 80px ${node.glowColor}` : 'none',
+                  opacity: dimmed ? 0.25 : 1,
+                  transform: active ? 'scale(1.15)' : dimmed ? 'scale(0.85)' : 'scale(1)',
                 }}
               >
-                {Icon && <Icon size={20} style={{ color: isRevealed ? node.color : '#94A3B8' }} />}
+                {Icon && (
+                  <Icon
+                    size={active ? 24 : 20}
+                    style={{
+                      color: active ? node.color : dimmed ? '#475569' : '#94A3B8',
+                      transition: 'all 0.7s ease',
+                    }}
+                  />
+                )}
               </button>
 
               {/* Label below node */}
               <span
-                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium font-sans transition-colors"
-                style={{ color: isRevealed ? node.color : '#94A3B8' }}
+                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium font-sans transition-all duration-700"
+                style={{
+                  color: active ? node.color : dimmed ? '#475569' : '#94A3B8',
+                  opacity: dimmed ? 0.4 : 1,
+                  transform: active ? 'scale(1.1)' : 'scale(1)',
+                }}
               >
                 {node.label}
               </span>
 
-              {/* Spider web sub-nodes - auto reveal on scroll */}
+              {/* Spider web sub-nodes - only for active node */}
               <SpiderWebSubNodes
                 node={node}
-                revealed={isRevealed}
+                active={active}
                 onCaseStudy={setSelectedNode}
-                nodeAngle={pos.angle}
               />
             </div>
           )
