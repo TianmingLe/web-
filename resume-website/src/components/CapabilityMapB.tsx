@@ -82,7 +82,7 @@ function SpiderWebSubNodesB({
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
-  const subRadius = 85
+  const subRadius = 110
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -120,23 +120,23 @@ function SpiderWebSubNodesB({
       style={{
         left: '50%',
         top: '50%',
-        width: '200px',
-        height: '200px',
-        marginLeft: '-100px',
-        marginTop: '-100px',
+        width: '260px',
+        height: '260px',
+        marginLeft: '-130px',
+        marginTop: '-130px',
       }}
     >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 100 + Math.cos(angle) * subRadius
-          const y2 = 100 + Math.sin(angle) * subRadius
+          const x2 = 130 + Math.cos(angle) * subRadius
+          const y2 = 130 + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line-b"
-              x1="100"
-              y1="100"
+              x1="130"
+              y1="130"
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -150,10 +150,10 @@ function SpiderWebSubNodesB({
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 100 + Math.cos(angle1) * subRadius
-          const y1 = 100 + Math.sin(angle1) * subRadius
-          const x2 = 100 + Math.cos(angle2) * subRadius
-          const y2 = 100 + Math.sin(angle2) * subRadius
+          const x1 = 130 + Math.cos(angle1) * subRadius
+          const y1 = 130 + Math.sin(angle1) * subRadius
+          const x2 = 130 + Math.cos(angle2) * subRadius
+          const y2 = 130 + Math.sin(angle2) * subRadius
           return (
             <line
               key={`ring-${i}`}
@@ -189,18 +189,18 @@ function SpiderWebSubNodesB({
             }}
           >
             <div
-              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-md border backdrop-blur-sm"
+              className="flex flex-col items-center gap-0.5 px-1.5 py-0.5 rounded-md border backdrop-blur-sm"
               style={{
                 backgroundColor: `${node.color}08`,
                 borderColor: `${node.color}25`,
-                minWidth: '72px',
+                minWidth: '60px',
               }}
             >
-              <span className="font-b-sans text-[9px] text-b-ink-light text-center leading-tight whitespace-nowrap">
+              <span className="font-b-sans text-[8px] text-b-ink-light text-center leading-tight whitespace-nowrap">
                 {sub.label}
               </span>
               {sub.level && (
-                <span className="font-b-mono text-[9px]">
+                <span className="font-b-mono text-[8px]">
                   {[...Array(5)].map((_, j) => (
                     <span key={j} className={j < sub.level ? 'text-b-terracotta' : 'text-b-sand'}>
                       ★
@@ -296,7 +296,7 @@ export default function CapabilityMapB() {
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 170 : 0
+    const radius = isLoaded ? 200 : 0
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
@@ -312,7 +312,7 @@ export default function CapabilityMapB() {
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div className="relative w-[500px] h-[500px] md:w-[580px] md:h-[580px] mx-auto">
+      <div className="relative w-[580px] h-[580px] md:w-[700px] md:h-[700px] mx-auto">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />

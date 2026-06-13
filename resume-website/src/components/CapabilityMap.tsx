@@ -84,7 +84,7 @@ function SpiderWebSubNodes({
   nodeAngle: number
 }) {
   const subCount = node.subNodes.length
-  const subRadius = 85
+  const subRadius = 110
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -122,23 +122,23 @@ function SpiderWebSubNodes({
       style={{
         left: '50%',
         top: '50%',
-        width: '200px',
-        height: '200px',
-        marginLeft: '-100px',
-        marginTop: '-100px',
+        width: '260px',
+        height: '260px',
+        marginLeft: '-130px',
+        marginTop: '-130px',
       }}
     >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 100 + Math.cos(angle) * subRadius
-          const y2 = 100 + Math.sin(angle) * subRadius
+          const x2 = 130 + Math.cos(angle) * subRadius
+          const y2 = 130 + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line"
-              x1="100"
-              y1="100"
+              x1="130"
+              y1="130"
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -152,10 +152,10 @@ function SpiderWebSubNodes({
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 100 + Math.cos(angle1) * subRadius
-          const y1 = 100 + Math.sin(angle1) * subRadius
-          const x2 = 100 + Math.cos(angle2) * subRadius
-          const y2 = 100 + Math.sin(angle2) * subRadius
+          const x1 = 130 + Math.cos(angle1) * subRadius
+          const y1 = 130 + Math.sin(angle1) * subRadius
+          const x2 = 130 + Math.cos(angle2) * subRadius
+          const y2 = 130 + Math.sin(angle2) * subRadius
           return (
             <line
               key={`ring-${i}`}
@@ -191,18 +191,18 @@ function SpiderWebSubNodes({
             }}
           >
             <div
-              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-md border backdrop-blur-sm"
+              className="flex flex-col items-center gap-0.5 px-1.5 py-0.5 rounded-md border backdrop-blur-sm"
               style={{
                 backgroundColor: `${node.color}12`,
                 borderColor: `${node.color}35`,
-                minWidth: '72px',
+                minWidth: '60px',
               }}
             >
-              <span className="text-[9px] text-warm-muted font-sans text-center leading-tight whitespace-nowrap">
+              <span className="text-[8px] text-warm-muted font-sans text-center leading-tight whitespace-nowrap">
                 {sub.label}
               </span>
               {sub.level && (
-                <span className="text-[9px] font-mono">
+                <span className="text-[8px] font-mono">
                   {[...Array(5)].map((_, j) => (
                     <span key={j} className={j < sub.level ? 'text-energy' : 'text-warm-ghost'}>
                       ★
@@ -298,7 +298,7 @@ export default function CapabilityMap() {
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 160 : 0
+    const radius = isLoaded ? 190 : 0
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
@@ -313,7 +313,7 @@ export default function CapabilityMap() {
         <p className="text-warm-faint text-sm font-sans">核心能力星系 · Core Capabilities</p>
       </div>
 
-      <div className="relative w-[480px] h-[480px] md:w-[560px] md:h-[560px] mx-auto">
+      <div className="relative w-[560px] h-[560px] md:w-[660px] md:h-[660px] mx-auto">
         {/* Center node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="center-node relative w-20 h-20 md:w-24 md:h-24">
