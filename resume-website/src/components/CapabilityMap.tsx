@@ -71,14 +71,14 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes with spotlight animation
+// SpiderWeb sub-nodes - all nodes expand together
 function SpiderWebSubNodes({
   node,
-  active,
+  expanded,
   onCaseStudy,
 }: {
   node: MainNode
-  active: boolean
+  expanded: boolean
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
@@ -86,7 +86,7 @@ function SpiderWebSubNodes({
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!webRef.current || !active) return
+    if (!webRef.current || !expanded) return
 
     const lines = webRef.current.querySelectorAll('.web-line')
     const ringLines = webRef.current.querySelectorAll('.web-ring')
@@ -109,9 +109,9 @@ function SpiderWebSubNodes({
       { scale: 0, opacity: 0 },
       { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5 }
     )
-  }, [active])
+  }, [expanded])
 
-  if (!active) return null
+  if (!expanded) return null
 
   return (
     <div
@@ -234,42 +234,83 @@ function SpiderWebSubNodes({
   )
 }
 
+// Animated center icon that rotates and pulses
+function AnimatedCenterIcon({ active }: { active: boolean }) {
+  const iconRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!iconRef.current) return
+    if (active) {
+      gsap.to(iconRef.current, {
+        rotation: 360,
+        duration: 3,
+        ease: 'none',
+        repeat: -1,
+      })
+      gsap.to(iconRef.current, {
+        scale: 1.2,
+        duration: 0.8,
+        ease: 'power2.out',
+        yoyo: true,
+        repeat: -1,
+      })
+    } else {
+      gsap.killTweensOf(iconRef.current)
+      gsap.to(iconRef.current, { rotation: 0, scale: 1, duration: 0.5 })
+    }
+  }, [active])
+
+  return (
+    <div
+      ref={iconRef}
+      className="text-3xl md:text-4xl"
+      style={{ display: 'inline-block' }}
+    >
+      👤
+    </div>
+  )
+}
+
 export default function CapabilityMap() {
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
+  const [allExpanded, setAllExpanded] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
   const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
 
-  // Spotlight sequence: each node gets highlighted one by one
+  // Spotlight sequence: each node highlighted one by one, then all expand together
   const runSpotlightSequence = useCallback(() => {
     const nodes = capabilityData.mainNodes
     let current = 0
 
     const highlightNext = () => {
       if (current >= nodes.length) {
-        // All done, show everything
+        // All nodes shown, now expand all spider webs together
         setActiveNodeIndex(-1)
-        setShowAll(true)
+        setAllExpanded(true)
+        setTimeout(() => {
+          setShowAll(true)
+        }, 2000)
         return
       }
 
       setActiveNodeIndex(current)
 
-      // Animate the active node growing from small
+      // Animate the active node growing from small with spotlight
       const btn = nodeRefs.current[current]
       if (btn) {
         gsap.fromTo(
           btn,
-          { scale: 0.6, opacity: 0.5 },
-          { scale: 1.15, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }
+          { scale: 0.5, opacity: 0.3 },
+          { scale: 1.2, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' }
         )
       }
 
       current++
-      setTimeout(highlightNext, 2500) // 2.5s per node spotlight
+      setTimeout(highlightNext, 2000) // 2s per node spotlight
     }
 
     highlightNext()
@@ -277,14 +318,6 @@ export default function CapabilityMap() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.to('.center-node', {
-        scale: [1, 1.05, 1],
-        duration: 2,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-      })
-
       gsap.fromTo(
         '.map-connection',
         { scaleX: 0, opacity: 0 },
@@ -313,10 +346,9 @@ export default function CapabilityMap() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated.current) {
             hasAnimated.current = true
-            // Wait a bit after scroll-in, then start spotlight
             setTimeout(() => {
               runSpotlightSequence()
-            }, 800)
+            }, 600)
           }
         })
       },
@@ -337,37 +369,56 @@ export default function CapabilityMap() {
   }
 
   const isNodeActive = (index: number) => activeNodeIndex === index
-  const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll
+  const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
 
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-12">
-      {/* Spotlight overlay - dims the whole area except active node */}
-      {activeNodeIndex >= 0 && !showAll && (
+      {/* Strong spotlight overlay - dims everything except active node area */}
+      {(activeNodeIndex >= 0 || allExpanded) && !showAll && (
         <div
-          className="absolute inset-0 z-5 pointer-events-none transition-opacity duration-700"
+          className="absolute inset-0 z-5 pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%), transparent 120px, rgba(15, 23, 42, 0.75) 280px)',
+            background: 'rgba(0, 0, 0, 0.82)',
+            transition: 'background 0.8s ease',
           }}
         />
       )}
 
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 relative z-10">
         <h2 className="text-xl md:text-2xl font-serif text-warm mb-2">能力地图</h2>
         <p className="text-warm-faint text-sm font-sans">核心能力星系 · Core Capabilities</p>
       </div>
 
       <div className="relative w-[560px] h-[560px] md:w-[660px] md:h-[660px] mx-auto">
-        {/* Center node */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <div
-            className="center-node relative w-20 h-20 md:w-24 md:h-24 transition-opacity duration-700"
-            style={{ opacity: activeNodeIndex >= 0 && !showAll ? 0.3 : 1 }}
-          >
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-energy to-ai animate-pulse opacity-50" />
-            <div className="absolute inset-1 rounded-full bg-surface border-2 border-energy/30 flex items-center justify-center">
+        {/* Center node - always on top during spotlight */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
+          style={{
+            opacity: activeNodeIndex >= 0 && !showAll ? 1 : 1,
+            transition: 'opacity 0.5s ease',
+          }}
+        >
+          <div className="center-node relative w-20 h-20 md:w-24 md:h-24">
+            <div
+              className="absolute inset-0 rounded-full animate-pulse"
+              style={{
+                background: activeNodeIndex >= 0 && !showAll
+                  ? 'radial-gradient(circle, rgba(249,115,22,0.4) 0%, rgba(6,182,212,0.2) 50%, transparent 70%)'
+                  : 'radial-gradient(circle, rgba(249,115,22,0.3) 0%, rgba(6,182,212,0.15) 50%, transparent 70%)',
+                animationDuration: activeNodeIndex >= 0 ? '1s' : '2s',
+              }}
+            />
+            <div className="absolute inset-1 rounded-full bg-surface border-2 border-energy/40 flex items-center justify-center shadow-lg"
+              style={{
+                boxShadow: activeNodeIndex >= 0 && !showAll
+                  ? '0 0 30px rgba(249,115,22,0.5), 0 0 60px rgba(6,182,212,0.3), inset 0 0 20px rgba(249,115,22,0.1)'
+                  : '0 0 15px rgba(249,115,22,0.2)',
+                transition: 'box-shadow 0.5s ease',
+              }}
+            >
               <div className="text-center">
-                <div className="text-xl md:text-2xl mb-0.5">👤</div>
-                <p className="text-[9px] text-warm font-mono">{capabilityData.center.title}</p>
+                <AnimatedCenterIcon active={activeNodeIndex >= 0 && !showAll} />
+                <p className="text-[9px] text-warm font-mono mt-0.5">{capabilityData.center.title}</p>
               </div>
             </div>
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
@@ -386,17 +437,18 @@ export default function CapabilityMap() {
           return (
             <div
               key={node.id}
-              className="main-node absolute z-10"
+              className="main-node absolute"
               style={{
                 left: `calc(50% + ${pos.x}px)`,
                 top: `calc(50% + ${pos.y}px)`,
                 transform: 'translate(-50%, -50%)',
                 transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
+                zIndex: active ? 25 : 10,
               }}
             >
               {/* Connection line to center */}
               <svg
-                className="map-connection absolute pointer-events-none transition-opacity duration-700"
+                className="absolute pointer-events-none transition-opacity duration-700"
                 style={{
                   width: `${Math.abs(pos.x)}px`,
                   height: '2px',
@@ -404,7 +456,8 @@ export default function CapabilityMap() {
                   top: '32px',
                   transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
                   transformOrigin: pos.x < 0 ? 'right' : 'left',
-                  opacity: dimmed ? 0.1 : 0.4,
+                  opacity: dimmed ? 0.05 : active ? 0.8 : 0.4,
+                  zIndex: 1,
                 }}
               >
                 <line
@@ -412,8 +465,8 @@ export default function CapabilityMap() {
                   y1="0"
                   x2="100%"
                   y2="0"
-                  stroke={node.color}
-                  strokeWidth="2"
+                  stroke={active ? node.color : '#475569'}
+                  strokeWidth={active ? 3 : 2}
                   strokeDasharray="4,4"
                 />
               </svg>
@@ -421,44 +474,47 @@ export default function CapabilityMap() {
               <button
                 ref={(el) => { nodeRefs.current[index] = el }}
                 onClick={() => node.caseStudy && setSelectedNode(node)}
-                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer z-30 ${
-                  active ? 'scale-115 shadow-lg' : 'hover:scale-105'
-                }`}
+                className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer"
                 style={{
-                  backgroundColor: active ? `${node.color}20` : dimmed ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+                  backgroundColor: active ? `${node.color}30` : dimmed ? 'rgba(30,30,40,0.6)' : 'rgba(255,255,255,0.05)',
                   borderColor: active ? node.color : dimmed ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
-                  boxShadow: active ? `0 0 40px ${node.glowColor}, 0 0 80px ${node.glowColor}` : 'none',
-                  opacity: dimmed ? 0.25 : 1,
-                  transform: active ? 'scale(1.15)' : dimmed ? 'scale(0.85)' : 'scale(1)',
+                  boxShadow: active
+                    ? `0 0 50px ${node.glowColor}, 0 0 100px ${node.glowColor}, 0 0 150px ${node.glowColor}`
+                    : dimmed ? 'none' : 'none',
+                  opacity: dimmed ? 0.15 : 1,
+                  transform: active ? 'scale(1.25)' : dimmed ? 'scale(0.8)' : 'scale(1)',
+                  zIndex: active ? 30 : 10,
                 }}
               >
                 {Icon && (
                   <Icon
-                    size={active ? 24 : 20}
+                    size={active ? 28 : 20}
                     style={{
-                      color: active ? node.color : dimmed ? '#475569' : '#94A3B8',
+                      color: active ? node.color : dimmed ? '#334155' : '#94A3B8',
                       transition: 'all 0.7s ease',
+                      filter: active ? `drop-shadow(0 0 8px ${node.color})` : 'none',
                     }}
                   />
                 )}
               </button>
 
-              {/* Label below node */}
+              {/* Label */}
               <span
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium font-sans transition-all duration-700"
                 style={{
-                  color: active ? node.color : dimmed ? '#475569' : '#94A3B8',
-                  opacity: dimmed ? 0.4 : 1,
-                  transform: active ? 'scale(1.1)' : 'scale(1)',
+                  color: active ? node.color : dimmed ? '#1e293b' : '#94A3B8',
+                  opacity: dimmed ? 0.2 : 1,
+                  transform: active ? 'scale(1.15)' : 'scale(1)',
+                  textShadow: active ? `0 0 10px ${node.glowColor}` : 'none',
                 }}
               >
                 {node.label}
               </span>
 
-              {/* Spider web sub-nodes - only for active node */}
+              {/* Spider web - shown for active node during spotlight, or all nodes when allExpanded */}
               <SpiderWebSubNodes
                 node={node}
-                active={active}
+                expanded={active || allExpanded}
                 onCaseStudy={setSelectedNode}
               />
             </div>
