@@ -110,8 +110,25 @@ export default function HomePage() {
     }
   }, [])
 
+  useEffect(() => {
+    // Load energy flow canvas script
+    const existing = document.getElementById('energy-flow-script')
+    if (!existing) {
+      const script = document.createElement('script')
+      script.id = 'energy-flow-script'
+      script.src = '/energy-flow-canvas.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {/* Algorithmic Art Background Canvas */}
+      <div className="absolute inset-0 z-0" aria-hidden="true">
+        <canvas id="energy-flow-canvas" style={{ width: '100%', height: '100%', display: 'block' }} />
+      </div>
+
       <div className="hero-glow hero-glow-energy hidden md:block" style={{ top: '-20%', left: '10%' }} aria-hidden="true" />
       <div className="hero-glow hero-glow-ai hidden md:block" style={{ bottom: '-15%', right: '5%', opacity: 0.06 }} aria-hidden="true" />
 

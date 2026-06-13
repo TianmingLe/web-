@@ -156,8 +156,24 @@ export default function HomeB() {
     return () => ctx.revert()
   }, [])
 
+  useEffect(() => {
+    const existing = document.getElementById('energy-flow-script-b')
+    if (!existing) {
+      const script = document.createElement('script')
+      script.id = 'energy-flow-script-b'
+      script.src = '/energy-flow-canvas-b.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
   return (
-    <CoverLayout id="home-b" aria-label="首页封面" className="bg-b-cream">
+    <CoverLayout id="home-b" aria-label="首页封面" className="bg-b-cream relative overflow-hidden">
+      {/* Algorithmic Art Background Canvas */}
+      <div className="absolute inset-0 z-0" aria-hidden="true">
+        <canvas id="energy-flow-canvas-b" style={{ width: '100%', height: '100%', display: 'block' }} />
+      </div>
+
       <div className="b-hero-shape b-hero-shape-1" aria-hidden="true" />
       <div className="b-hero-shape b-hero-shape-2" aria-hidden="true" />
 
