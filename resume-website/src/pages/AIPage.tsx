@@ -36,7 +36,7 @@ const stats = [
 
 const projects = [
   {
-    title: 'Altezhong-yanjing 智能眼镜',
+    title: 'Altezhong-yanjing 智能眼镜系统',
     desc: '基于「轻眼镜+重后端」架构的智能眼镜系统，实现眼镜-手机-PC-云的多条链路。包含ESP32-S3固件（BLE音频/视觉特征提取）、Flutter移动应用、FastAPI后端和PC中继服务，支持断点续传与OTA升级。',
     tags: ['ESP32-S3', 'Flutter', 'FastAPI', 'TFLite Micro', 'BLE', 'WebSocket'],
     highlights: [

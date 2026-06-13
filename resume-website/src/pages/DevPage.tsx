@@ -61,19 +61,19 @@ const projects = [
   },
   {
     title: '个人网站',
-    desc: '使用React 18 + TypeScript + Vite + Tailwind CSS构建的响应式个人作品集网站，集成GSAP动画、粒子背景、音乐播放器等交互元素，支持双版本主题切换。',
+    desc: '使用React 18 + TypeScript + Vite + Tailwind CSS构建的响应式个人作品集网站，集成GSAP动画、粒子背景、音乐播放器等交互元素。',
     tags: ['React', 'TypeScript', 'Vite', 'Tailwind CSS', 'GSAP'],
     highlights: [
       '响应式设计，支持移动端与桌面端',
       'GSAP ScrollTrigger滚动动画',
       'Canvas粒子背景效果',
-      '双版本主题切换（A/B Test）',
+      '双版本主题切换',
     ],
   },
   {
     title: '自动化脚本',
-    desc: '开发基于Python的任务调度脚本，实现邮件自动提醒、文件自动备份与数据自动抓取等日常任务，配置定时执行逻辑以优化工作效率；利用自动化工作流API实现批量文档的智能解析与结构化处理。',
-    tags: ['Python', 'Schedule', 'API', 'Selenium'],
+    desc: '开发基于Python的任务调度脚本，实现邮件自动提醒、文件自动备份与数据自动抓取等日常任务，配置定时执行逻辑以优化工作效率。',
+    tags: ['Python', 'Schedule', 'API'],
     highlights: [
       '邮件自动提醒系统',
       '文件自动备份与同步',
@@ -82,14 +82,14 @@ const projects = [
     ],
   },
   {
-    title: '数据库管理系统',
-    desc: '参与数据库设计与管理系统开发，完成多表关联查询优化、索引设计、存储过程编写，理解事务隔离级别与锁机制，具备SQL性能调优能力。',
-    tags: ['SQL', 'PostgreSQL', 'MySQL', 'Redis'],
+    title: 'AI辅助的数据库操作',
+    desc: '通过自然语言交互生成SQL复杂查询，利用AI进行查询结构优化和性能调优；在开发中结合AI辅助完成多表关联查询与数据库方案设计。',
+    tags: ['SQL', 'PostgreSQL', 'AI协作'],
     highlights: [
       '多表关联查询优化',
-      '索引设计与性能调优',
-      '存储过程与触发器',
-      'Redis缓存策略',
+      'AI辅助查询生成',
+      '数据库方案设计',
+      '查询性能调优',
     ],
   },
 ]

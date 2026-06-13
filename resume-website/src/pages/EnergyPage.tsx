@@ -45,29 +45,35 @@ const timeline = [
     tags: ['SolidWorks', 'ANSYS Fluent', '热力学'],
   },
   {
-    period: '2025.03 - 2025.05',
-    title: '太阳能集热器性能测试',
-    desc: '设计并执行热工测试实验，使用热电偶、流量计等设备采集数据，分析集热效率',
-    tags: ['热工测试', '数据采集', '实验设计'],
-  },
-  {
     period: '2025.06',
     title: '风电场运维实习',
-    desc: '在220kV升压站进行设备巡检，使用红外测温仪排查隐患，SCADA系统监控',
+    desc: '在山西粤电盂县粤鑫风电场进行设备巡检，使用红外测温仪排查隐患，SCADA系统监控',
     tags: ['电力运维', 'SCADA', '风机诊断'],
   },
   {
-    period: '2025.09 - 2025.12',
-    title: '基于51/STM32的智能控制系统',
-    desc: '完成LED动态显示、矩阵键盘、UART通信、温度采集报警、PWM电机调速等功能',
-    tags: ['STM32', '51单片机', '嵌入式'],
+    period: '2025.02 - 2025.03',
+    title: '基于开源方案的写字机系统集成',
+    desc: '从0到1独立完成写字机项目全流程实施，基于Arduino Uno/STM32控制板，累计自动化书写500+页A4文档',
+    tags: ['Arduino', 'STM32', 'GRBL', '嵌入式'],
+  },
+  {
+    period: '2025.06 - 2025.07',
+    title: '基于51单片机的多功能智能控制系统',
+    desc: '完成LED动态显示、矩阵键盘、UART通信、温度采集报警、PWM电机调速等功能，整合10+种外设模块',
+    tags: ['51单片机', 'Keil', '嵌入式'],
+  },
+  {
+    period: '2025.07 - 2025.09',
+    title: '基于STM32的嵌入式系统综合开发',
+    desc: '系统整合20+种外设模块与通信协议，累计编写代码8000+行，实现工业级系统稳定性',
+    tags: ['STM32', 'HAL库', '嵌入式'],
   },
 ]
 
 const projects = [
   {
     title: '卧式壳管式换热器建模与仿真',
-    desc: '完成卧式壳管式换热器零部件三维建模与装配设计，进行流动、传热等多物理场耦合仿真分析。建模精度0.1mm，仿真周期48h，验证误差<5%。',
+    desc: '完成卧式壳管式换热器零部件三维建模与装配设计，进行流动、传热等多物理场耦合仿真分析。',
     metrics: [
       { label: '建模精度', value: '0.1mm' },
       { label: '仿真周期', value: '48h' },
@@ -75,21 +81,12 @@ const projects = [
     ],
   },
   {
-    title: '太阳能集热器性能测试',
-    desc: '设计完整的实验方案，使用热电偶、热电阻、流量计等设备进行热工测试，采集并分析数据，评估集热器热效率与热损失系数。',
+    title: '写字机系统集成',
+    desc: '独立完成写字机项目全流程实施，基于Arduino Uno/STM32控制板，使用GRBL固件进行烧录与参数校准，累计自动化书写500+页A4文档，节省手写时间200+小时。',
     metrics: [
-      { label: '测试精度', value: '±0.5℃' },
-      { label: '数据点', value: '10,000+' },
-      { label: '效率提升', value: '12%' },
-    ],
-  },
-  {
-    title: '太阳能光伏发电系统',
-    desc: '参与光伏系统设计，完成组件选型、阵列布局、逆变器配置与发电量估算，理解MPPT控制原理与并网技术。',
-    metrics: [
-      { label: '设计容量', value: '50kW' },
-      { label: '年发电量', value: '65MWh' },
-      { label: '系统效率', value: '85%' },
+      { label: '书写速度', value: '800-1200mm/min' },
+      { label: '书写页数', value: '500+' },
+      { label: '一致性误差', value: '<0.5mm' },
     ],
   },
 ]
@@ -285,7 +282,7 @@ export default function EnergyPage() {
               <Zap size={24} className="text-energy-light" />
               <h2 className="text-2xl md:text-3xl font-serif text-warm">项目展示</h2>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {projects.map((proj, idx) => (
                 <div
                   key={idx}

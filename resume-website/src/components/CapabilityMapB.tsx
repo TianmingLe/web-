@@ -1254,7 +1254,7 @@ export default function CapabilityMapB() {
         setAllExpanded(true)
         setTimeout(() => {
           setShowAll(true)
-        }, 3500)
+        }, 5000)
         return
       }
 
@@ -1270,7 +1270,7 @@ export default function CapabilityMapB() {
       }
 
       current++
-      setTimeout(highlightNext, 3500)
+      setTimeout(highlightNext, 5000)
     }
 
     highlightNext()
@@ -1281,16 +1281,16 @@ export default function CapabilityMapB() {
       gsap.fromTo(
         '.map-connection-b',
         { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 1, duration: 0.8, ease: 'power2.out', stagger: 0.15, delay: 0.5 }
+        { scaleX: 1, opacity: 1, duration: 1.2, ease: 'power2.out', stagger: 0.25, delay: 0.8 }
       )
 
       gsap.fromTo(
         '.main-node-b',
         { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.5)', stagger: 0.1, delay: 0.8 }
+        { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.5)', stagger: 0.2, delay: 1.2 }
       )
 
-      setTimeout(() => setIsLoaded(true), 1500)
+      setTimeout(() => setIsLoaded(true), 2500)
     }, containerRef)
 
     return () => ctx.revert()
@@ -1307,7 +1307,7 @@ export default function CapabilityMapB() {
             hasAnimated.current = true
             setTimeout(() => {
               runSpotlightSequence()
-            }, 600)
+            }, 1200)
           }
         })
       },
