@@ -169,9 +169,9 @@ function SpiderWebSubNodesB({
         )
       })}
 
-      {/* Case study button at bottom */}
-      {node.caseStudy && (
-        <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
+      {/* Case study button at bottom - always render container for consistent layout */}
+      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
+        {node.caseStudy ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -181,8 +181,12 @@ function SpiderWebSubNodesB({
           >
             查看案例 →
           </button>
-        </div>
-      )}
+        ) : (
+          <span className="font-b-sans text-[10px] text-b-sand/60 px-2 py-1">
+            {node.subNodes.length} 项技能
+          </span>
+        )}
+      </div>
     </div>
   )
 }
