@@ -71,7 +71,7 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes - Magazine Edition with scroll-triggered reveal
+// SpiderWeb sub-nodes - Magazine Edition
 function SpiderWebSubNodesB({
   node,
   revealed,
@@ -82,7 +82,7 @@ function SpiderWebSubNodesB({
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
-  const subRadius = 90
+  const subRadius = 85
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -114,18 +114,29 @@ function SpiderWebSubNodesB({
   if (!revealed) return null
 
   return (
-    <div ref={webRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
+    <div
+      ref={webRef}
+      className="absolute pointer-events-none"
+      style={{
+        left: '50%',
+        top: '50%',
+        width: '200px',
+        height: '200px',
+        marginLeft: '-100px',
+        marginTop: '-100px',
+      }}
+    >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 110 + Math.cos(angle) * subRadius
-          const y2 = 110 + Math.sin(angle) * subRadius
+          const x2 = 100 + Math.cos(angle) * subRadius
+          const y2 = 100 + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line-b"
-              x1="110"
-              y1="110"
+              x1="100"
+              y1="100"
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -139,10 +150,10 @@ function SpiderWebSubNodesB({
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 110 + Math.cos(angle1) * subRadius
-          const y1 = 110 + Math.sin(angle1) * subRadius
-          const x2 = 110 + Math.cos(angle2) * subRadius
-          const y2 = 110 + Math.sin(angle2) * subRadius
+          const x1 = 100 + Math.cos(angle1) * subRadius
+          const y1 = 100 + Math.sin(angle1) * subRadius
+          const x2 = 100 + Math.cos(angle2) * subRadius
+          const y2 = 100 + Math.sin(angle2) * subRadius
           return (
             <line
               key={`ring-${i}`}
@@ -178,18 +189,18 @@ function SpiderWebSubNodesB({
             }}
           >
             <div
-              className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border backdrop-blur-sm"
+              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-md border backdrop-blur-sm"
               style={{
                 backgroundColor: `${node.color}08`,
                 borderColor: `${node.color}25`,
-                minWidth: '80px',
+                minWidth: '72px',
               }}
             >
-              <span className="font-b-sans text-[10px] text-b-ink-light text-center leading-tight whitespace-nowrap">
+              <span className="font-b-sans text-[9px] text-b-ink-light text-center leading-tight whitespace-nowrap">
                 {sub.label}
               </span>
               {sub.level && (
-                <span className="font-b-mono text-[10px]">
+                <span className="font-b-mono text-[9px]">
                   {[...Array(5)].map((_, j) => (
                     <span key={j} className={j < sub.level ? 'text-b-terracotta' : 'text-b-sand'}>
                       ★
@@ -202,19 +213,19 @@ function SpiderWebSubNodesB({
         )
       })}
 
-      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
+      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
         {node.caseStudy ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onCaseStudy(node)
             }}
-            className="font-b-sans text-[10px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-1 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
+            className="font-b-sans text-[9px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-0.5 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
           >
             查看案例 →
           </button>
         ) : (
-          <span className="font-b-sans text-[10px] text-b-sand/60 px-2 py-1">
+          <span className="font-b-sans text-[9px] text-b-sand/60 px-2 py-0.5">
             {node.subNodes.length} 项技能
           </span>
         )}
@@ -285,7 +296,7 @@ export default function CapabilityMapB() {
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 150 : 0
+    const radius = isLoaded ? 170 : 0
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
@@ -301,7 +312,7 @@ export default function CapabilityMapB() {
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div className="relative w-[420px] h-[420px] md:w-[500px] md:h-[500px] mx-auto">
+      <div className="relative w-[500px] h-[500px] md:w-[580px] md:h-[580px] mx-auto">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />

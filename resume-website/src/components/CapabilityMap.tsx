@@ -71,18 +71,20 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes - always visible with animated reveal
+// SpiderWeb sub-nodes - positioned outward to avoid overlap
 function SpiderWebSubNodes({
   node,
   revealed,
   onCaseStudy,
+  nodeAngle,
 }: {
   node: MainNode
   revealed: boolean
   onCaseStudy: (node: MainNode) => void
+  nodeAngle: number
 }) {
   const subCount = node.subNodes.length
-  const subRadius = 90
+  const subRadius = 85
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -92,7 +94,6 @@ function SpiderWebSubNodes({
     const ringLines = webRef.current.querySelectorAll('.web-ring')
     const subNodes = webRef.current.querySelectorAll('.sub-node-item')
 
-    // Clockwise reveal animation
     gsap.fromTo(
       lines,
       { strokeDashoffset: 200, opacity: 0 },
@@ -115,19 +116,29 @@ function SpiderWebSubNodes({
   if (!revealed) return null
 
   return (
-    <div ref={webRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
-      {/* Web lines from center to each sub-node */}
+    <div
+      ref={webRef}
+      className="absolute pointer-events-none"
+      style={{
+        left: '50%',
+        top: '50%',
+        width: '200px',
+        height: '200px',
+        marginLeft: '-100px',
+        marginTop: '-100px',
+      }}
+    >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 110 + Math.cos(angle) * subRadius
-          const y2 = 110 + Math.sin(angle) * subRadius
+          const x2 = 100 + Math.cos(angle) * subRadius
+          const y2 = 100 + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line"
-              x1="110"
-              y1="110"
+              x1="100"
+              y1="100"
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -138,14 +149,13 @@ function SpiderWebSubNodes({
             />
           )
         })}
-        {/* Connect sub-nodes to form web ring */}
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 110 + Math.cos(angle1) * subRadius
-          const y1 = 110 + Math.sin(angle1) * subRadius
-          const x2 = 110 + Math.cos(angle2) * subRadius
-          const y2 = 110 + Math.sin(angle2) * subRadius
+          const x1 = 100 + Math.cos(angle1) * subRadius
+          const y1 = 100 + Math.sin(angle1) * subRadius
+          const x2 = 100 + Math.cos(angle2) * subRadius
+          const y2 = 100 + Math.sin(angle2) * subRadius
           return (
             <line
               key={`ring-${i}`}
@@ -164,7 +174,6 @@ function SpiderWebSubNodes({
         })}
       </svg>
 
-      {/* Sub-nodes */}
       {node.subNodes.map((sub: SubNode, i: number) => {
         const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
         const x = Math.cos(angle) * subRadius
@@ -182,18 +191,18 @@ function SpiderWebSubNodes({
             }}
           >
             <div
-              className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border backdrop-blur-sm"
+              className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-md border backdrop-blur-sm"
               style={{
-                backgroundColor: `${node.color}10`,
-                borderColor: `${node.color}30`,
-                minWidth: '80px',
+                backgroundColor: `${node.color}12`,
+                borderColor: `${node.color}35`,
+                minWidth: '72px',
               }}
             >
-              <span className="text-[10px] text-warm-muted font-sans text-center leading-tight whitespace-nowrap">
+              <span className="text-[9px] text-warm-muted font-sans text-center leading-tight whitespace-nowrap">
                 {sub.label}
               </span>
               {sub.level && (
-                <span className="text-[10px] font-mono">
+                <span className="text-[9px] font-mono">
                   {[...Array(5)].map((_, j) => (
                     <span key={j} className={j < sub.level ? 'text-energy' : 'text-warm-ghost'}>
                       ★
@@ -206,20 +215,19 @@ function SpiderWebSubNodes({
         )
       })}
 
-      {/* Bottom label */}
-      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
+      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
         {node.caseStudy ? (
           <button
             onClick={(e) => {
               e.stopPropagation()
               onCaseStudy(node)
             }}
-            className="text-[10px] text-energy hover:text-energy-light font-sans px-2 py-1 rounded-full border border-energy/20 hover:border-energy/40 bg-surface/80 backdrop-blur-sm transition-colors pointer-events-auto"
+            className="text-[9px] text-energy hover:text-energy-light font-sans px-2 py-0.5 rounded-full border border-energy/20 hover:border-energy/40 bg-surface/80 backdrop-blur-sm transition-colors pointer-events-auto"
           >
             查看案例 →
           </button>
         ) : (
-          <span className="text-[10px] text-warm-ghost/50 font-sans px-2 py-1">
+          <span className="text-[9px] text-warm-ghost/50 font-sans px-2 py-0.5">
             {node.subNodes.length} 项技能
           </span>
         )}
@@ -263,7 +271,6 @@ export default function CapabilityMap() {
     return () => ctx.revert()
   }, [])
 
-  // Scroll-triggered clockwise reveal
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -273,7 +280,6 @@ export default function CapabilityMap() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated.current) {
             hasAnimated.current = true
-            // Reveal nodes clockwise with stagger
             const nodeIds = capabilityData.mainNodes.map((n) => n.id)
             nodeIds.forEach((id, index) => {
               setTimeout(() => {
@@ -292,21 +298,22 @@ export default function CapabilityMap() {
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 140 : 0
+    const radius = isLoaded ? 160 : 0
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
+      angle,
     }
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-3xl mx-auto py-12">
+    <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-12">
       <div className="text-center mb-8">
         <h2 className="text-xl md:text-2xl font-serif text-warm mb-2">能力地图</h2>
         <p className="text-warm-faint text-sm font-sans">核心能力星系 · Core Capabilities</p>
       </div>
 
-      <div className="relative w-[400px] h-[400px] md:w-[480px] md:h-[480px] mx-auto">
+      <div className="relative w-[480px] h-[480px] md:w-[560px] md:h-[560px] mx-auto">
         {/* Center node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="center-node relative w-20 h-20 md:w-24 md:h-24">
@@ -391,6 +398,7 @@ export default function CapabilityMap() {
                 node={node}
                 revealed={isRevealed}
                 onCaseStudy={setSelectedNode}
+                nodeAngle={pos.angle}
               />
             </div>
           )
