@@ -71,7 +71,416 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes - all nodes expand together
+// Floating particles background inside map container
+function FloatingParticles({ activeNodeIndex, allExpanded, showAll, nodePositions }: {
+  activeNodeIndex: number
+  allExpanded: boolean
+  showAll: boolean
+  nodePositions: { x: number; y: number }[]
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const particlesRef = useRef<HTMLDivElement[]>([])
+  const animRef = useRef<gsap.core.Tween[]>([])
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const particles = particlesRef.current.filter(Boolean)
+    if (!particles.length) return
+
+    // Kill previous tweens
+    animRef.current.forEach(t => t.kill())
+    animRef.current = []
+
+    const active = activeNodeIndex >= 0 && !showAll
+    const targetX = active ? nodePositions[activeNodeIndex]?.x ?? 0 : 0
+    const targetY = active ? nodePositions[activeNodeIndex]?.y ?? 0 : 0
+    const color = active ? capabilityData.mainNodes[activeNodeIndex]?.color : '#94A3B8'
+
+    particles.forEach((p, i) => {
+      if (active) {
+        const angle = Math.random() * Math.PI * 2
+        const dist = 80 + Math.random() * 100
+        const tx = targetX + Math.cos(angle) * dist
+        const ty = targetY + Math.sin(angle) * dist
+        const t1 = gsap.to(p, {
+          x: tx,
+          y: ty,
+          duration: 1.5 + Math.random(),
+          ease: 'power2.out',
+          repeat: -1,
+          yoyo: true,
+        })
+        const t2 = gsap.to(p, {
+          opacity: 0.4 + Math.random() * 0.4,
+          scale: 1.2 + Math.random() * 0.8,
+          backgroundColor: color,
+          boxShadow: `0 0 8px ${color}, 0 0 16px ${color}`,
+          duration: 0.8,
+        })
+        animRef.current.push(t1, t2)
+      } else if (allExpanded && !showAll) {
+        const angle = (i / particles.length) * Math.PI * 2
+        const radius = 120 + (i % 3) * 80
+        const t1 = gsap.to(p, {
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+          duration: 3 + Math.random() * 2,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        })
+        const t2 = gsap.to(p, {
+          opacity: 0.2,
+          scale: 1,
+          backgroundColor: '#475569',
+          boxShadow: 'none',
+          duration: 0.8,
+        })
+        animRef.current.push(t1, t2)
+      } else {
+        const t1 = gsap.to(p, {
+          x: (Math.random() - 0.5) * 600,
+          y: (Math.random() - 0.5) * 600,
+          duration: 8 + Math.random() * 4,
+          ease: 'sine.inOut',
+          repeat: -1,
+          yoyo: true,
+        })
+        const t2 = gsap.to(p, {
+          opacity: 0.15,
+          scale: 1,
+          backgroundColor: '#475569',
+          boxShadow: 'none',
+          duration: 0.8,
+        })
+        animRef.current.push(t1, t2)
+      }
+    })
+
+    return () => {
+      animRef.current.forEach(t => t.kill())
+    }
+  }, [activeNodeIndex, allExpanded, showAll, nodePositions])
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+      {Array.from({ length: 24 }).map((_, i) => (
+        <div
+          key={i}
+          ref={(el) => { if (el) particlesRef.current[i] = el }}
+          className="absolute left-1/2 top-1/2 w-1 h-1 rounded-full opacity-0"
+          style={{
+            backgroundColor: '#475569',
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Concentric pulsing rings around center
+function CenterRings({ active }: { active: boolean }) {
+  const ringsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!ringsRef.current) return
+    const rings = ringsRef.current.querySelectorAll('.center-ring')
+    if (active) {
+      rings.forEach((ring, i) => {
+        gsap.fromTo(ring,
+          { scale: 0.8, opacity: 0 },
+          {
+            scale: 2.2 + i * 0.6,
+            opacity: 0.15 - i * 0.03,
+            duration: 2 + i * 0.5,
+            ease: 'power2.out',
+            repeat: -1,
+            delay: i * 0.4,
+          }
+        )
+      })
+    } else {
+      rings.forEach((ring) => {
+        gsap.killTweensOf(ring)
+        gsap.to(ring, { scale: 0.8, opacity: 0, duration: 0.5 })
+      })
+    }
+  }, [active])
+
+  return (
+    <div ref={ringsRef} className="absolute inset-0 pointer-events-none">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="center-ring absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-energy/30"
+          style={{
+            width: '80px',
+            height: '80px',
+            opacity: 0,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Energy beam from center to active node
+function EnergyBeam({ active, fromX, fromY, toX, toY, color }: {
+  active: boolean
+  fromX: number
+  fromY: number
+  toX: number
+  toY: number
+  color: string
+}) {
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    if (!svgRef.current || !active) return
+    const line = svgRef.current.querySelector('.energy-line')
+    const glow = svgRef.current.querySelector('.energy-glow')
+    if (!line || !glow) return
+
+    gsap.fromTo(line,
+      { strokeDashoffset: 300, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.8, duration: 0.6, ease: 'power2.out' }
+    )
+    gsap.fromTo(glow,
+      { strokeDashoffset: 300, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.4, duration: 0.6, ease: 'power2.out', delay: 0.1 }
+    )
+
+    // Pulsing animation
+    const pulse = gsap.to(line, {
+      opacity: 0.4,
+      duration: 0.8,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+
+    return () => { pulse.kill() }
+  }, [active, fromX, fromY, toX, toY])
+
+  if (!active) return null
+
+  return (
+    <svg
+      ref={svgRef}
+      className="absolute pointer-events-none"
+      style={{
+        left: '50%',
+        top: '50%',
+        width: '100%',
+        height: '100%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 5,
+      }}
+    >
+      <line
+        className="energy-glow"
+        x1={fromX + 430}
+        y1={fromY + 430}
+        x2={toX + 430}
+        y2={toY + 430}
+        stroke={color}
+        strokeWidth="6"
+        strokeLinecap="round"
+        opacity="0"
+        strokeDasharray="300"
+        strokeDashoffset="300"
+        filter="blur(4px)"
+      />
+      <line
+        className="energy-line"
+        x1={fromX + 430}
+        y1={fromY + 430}
+        x2={toX + 430}
+        y2={toY + 430}
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0"
+        strokeDasharray="8,4"
+        strokeDashoffset="300"
+      />
+    </svg>
+  )
+}
+
+// Constellation lines connecting main nodes
+function ConstellationLines({ positions, showAll, allExpanded }: {
+  positions: { x: number; y: number }[]
+  showAll: boolean
+  allExpanded: boolean
+}) {
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    if (!svgRef.current) return
+    const lines = svgRef.current.querySelectorAll('.constellation-line')
+    const visible = showAll || allExpanded
+
+    lines.forEach((line, i) => {
+      if (visible) {
+        gsap.fromTo(line,
+          { opacity: 0, strokeDashoffset: 200 },
+          { opacity: 0.12, strokeDashoffset: 0, duration: 1, delay: i * 0.1, ease: 'power2.out' }
+        )
+      } else {
+        gsap.to(line, { opacity: 0, duration: 0.5 })
+      }
+    })
+  }, [showAll, allExpanded])
+
+  if (!positions.length) return null
+
+  const lines: { x1: number; y1: number; x2: number; y2: number }[] = []
+  for (let i = 0; i < positions.length; i++) {
+    const next = (i + 1) % positions.length
+    lines.push({
+      x1: positions[i].x + 430,
+      y1: positions[i].y + 430,
+      x2: positions[next].x + 430,
+      y2: positions[next].y + 430,
+    })
+  }
+
+  return (
+    <svg
+      ref={svgRef}
+      className="absolute pointer-events-none"
+      style={{
+        left: '50%',
+        top: '50%',
+        width: '860px',
+        height: '860px',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 1,
+      }}
+    >
+      {lines.map((line, i) => (
+        <line
+          key={i}
+          className="constellation-line"
+          x1={line.x1}
+          y1={line.y1}
+          x2={line.x2}
+          y2={line.y2}
+          stroke="#94A3B8"
+          strokeWidth="1"
+          strokeDasharray="200"
+          strokeDashoffset="200"
+          opacity="0"
+        />
+      ))}
+    </svg>
+  )
+}
+
+// Floating orbiting labels around each main node
+function OrbitingLabels({ node, active, dimmed }: {
+  node: MainNode
+  active: boolean
+  dimmed: boolean
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const labels = containerRef.current.querySelectorAll('.orbit-label')
+    labels.forEach((label, i) => {
+      const angle = (i / labels.length) * 360
+      const radius = 42 + (i % 2) * 10
+      const duration = 4 + (i % 3) * 1.5
+      gsap.to(label, {
+        rotation: angle + 360,
+        duration,
+        ease: 'none',
+        repeat: -1,
+        transformOrigin: `0px ${radius}px`,
+      })
+    })
+  }, [])
+
+  const labels = ['01', '02', '03']
+  return (
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none">
+      {labels.map((text, i) => (
+        <div
+          key={i}
+          className="orbit-label absolute left-1/2 top-1/2 opacity-0"
+          style={{
+            marginLeft: '-3px',
+            marginTop: '-3px',
+            opacity: active ? 0.5 : dimmed ? 0.05 : 0.2,
+            transition: 'opacity 0.7s ease',
+          }}
+        >
+          <span
+            className="text-[7px] font-mono"
+            style={{
+              color: active ? node.color : '#475569',
+            }}
+          >
+            {text}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// Ripple wave effect traveling from center outward
+function RippleWave({ active }: {
+  active: boolean
+}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current || !active) return
+    const ripples = containerRef.current.querySelectorAll('.ripple-ring')
+
+    ripples.forEach((ripple, i) => {
+      gsap.fromTo(ripple,
+        { scale: 0, opacity: 0.6 },
+        {
+          scale: 3.5,
+          opacity: 0,
+          duration: 2.5,
+          delay: i * 0.8,
+          ease: 'power2.out',
+          repeat: -1,
+        }
+      )
+    })
+
+    return () => {
+      ripples.forEach((r) => gsap.killTweensOf(r))
+    }
+  }, [active])
+
+  if (!active) return null
+
+  return (
+    <div ref={containerRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ zIndex: 4 }}>
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="ripple-ring absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-energy/40"
+          style={{
+            width: '100px',
+            height: '100px',
+            opacity: 0,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// SpiderWeb sub-nodes with secondary sub-nodes
 function SpiderWebSubNodes({
   node,
   expanded,
@@ -91,6 +500,8 @@ function SpiderWebSubNodes({
     const lines = webRef.current.querySelectorAll('.web-line')
     const ringLines = webRef.current.querySelectorAll('.web-ring')
     const subNodes = webRef.current.querySelectorAll('.sub-node-item')
+    const secLines = webRef.current.querySelectorAll('.sec-web-line')
+    const secNodes = webRef.current.querySelectorAll('.sec-sub-node-item')
 
     gsap.fromTo(
       lines,
@@ -109,9 +520,36 @@ function SpiderWebSubNodes({
       { scale: 0, opacity: 0 },
       { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5 }
     )
+
+    // Secondary nodes appear after main sub-nodes
+    gsap.fromTo(
+      secLines,
+      { strokeDashoffset: 60, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 1.2 }
+    )
+
+    gsap.fromTo(
+      secNodes,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'back.out(1.7)', delay: 1.4 }
+    )
   }, [expanded])
 
   if (!expanded) return null
+
+  // Generate secondary sub-nodes for each main sub-node
+  const generateSecSubNodes = (sub: SubNode, parentIndex: number) => {
+    const secCount = 2 + (parentIndex % 2)
+    const result: { label: string; angle: number; parentAngle: number }[] = []
+    for (let i = 0; i < secCount; i++) {
+      result.push({
+        label: `${sub.label.split(' ')[0]}·${i + 1}`,
+        angle: ((i / secCount) * Math.PI) - Math.PI / 2,
+        parentAngle: (parentIndex / subCount) * 2 * Math.PI - Math.PI / 2,
+      })
+    }
+    return result
+  }
 
   return (
     <div
@@ -120,23 +558,23 @@ function SpiderWebSubNodes({
       style={{
         left: '50%',
         top: '50%',
-        width: '260px',
-        height: '260px',
-        marginLeft: '-130px',
-        marginTop: '-130px',
+        width: '320px',
+        height: '320px',
+        marginLeft: '-160px',
+        marginTop: '-160px',
       }}
     >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 130 + Math.cos(angle) * subRadius
-          const y2 = 130 + Math.sin(angle) * subRadius
+          const x2 = 160 + Math.cos(angle) * subRadius
+          const y2 = 160 + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line"
-              x1="130"
-              y1="130"
+              x1="160"
+              y1="160"
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -150,10 +588,10 @@ function SpiderWebSubNodes({
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 130 + Math.cos(angle1) * subRadius
-          const y1 = 130 + Math.sin(angle1) * subRadius
-          const x2 = 130 + Math.cos(angle2) * subRadius
-          const y2 = 130 + Math.sin(angle2) * subRadius
+          const x1 = 160 + Math.cos(angle1) * subRadius
+          const y1 = 160 + Math.sin(angle1) * subRadius
+          const x2 = 160 + Math.cos(angle2) * subRadius
+          const y2 = 160 + Math.sin(angle2) * subRadius
           return (
             <line
               key={`ring-${i}`}
@@ -169,6 +607,33 @@ function SpiderWebSubNodes({
               strokeDashoffset="100"
             />
           )
+        })}
+        {/* Secondary lines */}
+        {node.subNodes.map((sub, pi) => {
+          const parentAngle = (pi / subCount) * 2 * Math.PI - Math.PI / 2
+          const px = 160 + Math.cos(parentAngle) * subRadius
+          const py = 160 + Math.sin(parentAngle) * subRadius
+          const secNodes = generateSecSubNodes(sub, pi)
+          return secNodes.map((sec, si) => {
+            const secAngle = parentAngle + sec.angle * 0.6
+            const sx = px + Math.cos(secAngle) * 45
+            const sy = py + Math.sin(secAngle) * 45
+            return (
+              <line
+                key={`sec-line-${pi}-${si}`}
+                className="sec-web-line"
+                x1={px}
+                y1={py}
+                x2={sx}
+                y2={sy}
+                stroke={node.color}
+                strokeWidth="0.5"
+                opacity="0"
+                strokeDasharray="60"
+                strokeDashoffset="60"
+              />
+            )
+          })
         })}
       </svg>
 
@@ -202,7 +667,7 @@ function SpiderWebSubNodes({
               {sub.level && (
                 <span className="text-[8px] font-mono">
                   {[...Array(5)].map((_, j) => (
-                    <span key={j} className={j < sub.level ? 'text-energy' : 'text-warm-ghost'}>
+                    <span key={j} className={j < (sub.level ?? 0) ? 'text-energy' : 'text-warm-ghost'}>
                       ★
                     </span>
                   ))}
@@ -211,6 +676,42 @@ function SpiderWebSubNodes({
             </div>
           </div>
         )
+      })}
+
+      {/* Secondary sub-nodes */}
+      {node.subNodes.map((sub, pi) => {
+        const parentAngle = (pi / subCount) * 2 * Math.PI - Math.PI / 2
+        const px = Math.cos(parentAngle) * subRadius
+        const py = Math.sin(parentAngle) * subRadius
+        const secNodes = generateSecSubNodes(sub, pi)
+        return secNodes.map((sec, si) => {
+          const secAngle = parentAngle + sec.angle * 0.6
+          const sx = px + Math.cos(secAngle) * 45
+          const sy = py + Math.sin(secAngle) * 45
+          return (
+            <div
+              key={`sec-${pi}-${si}`}
+              className="sec-sub-node-item absolute pointer-events-none"
+              style={{
+                left: `calc(50% + ${sx}px)`,
+                top: `calc(50% + ${sy}px)`,
+                transform: 'translate(-50%, -50%) scale(0)',
+                zIndex: 2,
+              }}
+            >
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{
+                  backgroundColor: node.color,
+                  boxShadow: `0 0 4px ${node.color}`,
+                }}
+              />
+              <span className="text-[6px] text-warm-ghost font-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2">
+                {sec.label}
+              </span>
+            </div>
+          )
+        })
       })}
 
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
@@ -234,38 +735,63 @@ function SpiderWebSubNodes({
   )
 }
 
-// Animated center icon that rotates and pulses
-function AnimatedCenterIcon({ active }: { active: boolean }) {
-  const iconRef = useRef<HTMLDivElement>(null)
+// Orbiting particles around center
+function CenterOrbitingParticles({ active }: { active: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!iconRef.current) return
+    if (!containerRef.current) return
+    const particles = containerRef.current.querySelectorAll('.orbit-particle')
     if (active) {
-      gsap.to(iconRef.current, {
-        rotation: 360,
-        duration: 3,
-        ease: 'none',
-        repeat: -1,
-      })
-      gsap.to(iconRef.current, {
-        scale: 1.2,
-        duration: 0.8,
-        ease: 'power2.out',
-        yoyo: true,
-        repeat: -1,
+      particles.forEach((p, i) => {
+        const angle = (i / particles.length) * 360
+        const radius = 45 + (i % 3) * 12
+        const duration = 2 + (i % 3) * 0.8
+        gsap.to(p, {
+          rotation: angle + 360,
+          duration,
+          ease: 'none',
+          repeat: -1,
+          transformOrigin: `0px ${radius}px`,
+        })
+        gsap.to(p, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.4,
+          delay: i * 0.1,
+        })
       })
     } else {
-      gsap.killTweensOf(iconRef.current)
-      gsap.to(iconRef.current, { rotation: 0, scale: 1, duration: 0.5 })
+      particles.forEach((p) => {
+        gsap.killTweensOf(p)
+        gsap.to(p, { opacity: 0, scale: 0, duration: 0.3 })
+      })
     }
   }, [active])
 
+  const colors = ['#F97316', '#06B6D4', '#8B5CF6', '#EC4899', '#10B981', '#F59E0B']
   return (
-    <div
-      ref={iconRef}
-      className="text-3xl md:text-4xl"
-      style={{ display: 'inline-block' }}
-    >
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none">
+      {colors.map((c, i) => (
+        <div
+          key={i}
+          className="orbit-particle absolute left-1/2 top-1/2 w-1.5 h-1.5 rounded-full opacity-0"
+          style={{
+            backgroundColor: c,
+            boxShadow: `0 0 6px ${c}, 0 0 12px ${c}`,
+            marginLeft: '-3px',
+            marginTop: '-3px',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Static center icon (no animation on the icon itself)
+function StaticCenterIcon() {
+  return (
+    <div className="text-2xl md:text-3xl" style={{ display: 'inline-block' }}>
       👤
     </div>
   )
@@ -361,15 +887,22 @@ export default function CapabilityMap() {
 
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 190 : 0
+    const radius = isLoaded ? 260 : 0
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius,
     }
   }
 
+  const nodePositions = capabilityData.mainNodes.map((_, i) =>
+    getNodePosition(i, capabilityData.mainNodes.length)
+  )
+
   const isNodeActive = (index: number) => activeNodeIndex === index
   const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
+
+  const activePos = activeNodeIndex >= 0 ? nodePositions[activeNodeIndex] : null
+  const activeColor = activeNodeIndex >= 0 ? capabilityData.mainNodes[activeNodeIndex]?.color : undefined
 
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-12">
@@ -389,7 +922,37 @@ export default function CapabilityMap() {
         <p className="text-warm-faint text-sm font-sans">核心能力星系 · Core Capabilities</p>
       </div>
 
-      <div className="relative w-[560px] h-[560px] md:w-[660px] md:h-[660px] mx-auto">
+      <div className="relative w-[720px] h-[720px] md:w-[860px] md:h-[860px] mx-auto">
+        {/* Floating particles background */}
+        <FloatingParticles
+          activeNodeIndex={activeNodeIndex}
+          allExpanded={allExpanded}
+          showAll={showAll}
+          nodePositions={nodePositions}
+        />
+
+        {/* Constellation lines between main nodes */}
+        <ConstellationLines
+          positions={nodePositions}
+          showAll={showAll}
+          allExpanded={allExpanded}
+        />
+
+        {/* Ripple wave from center when allExpanded */}
+        <RippleWave active={allExpanded && !showAll} />
+
+        {/* Energy beam to active node */}
+        {activePos && activeColor && (
+          <EnergyBeam
+            active={activeNodeIndex >= 0 && !showAll}
+            fromX={0}
+            fromY={0}
+            toX={activePos.x}
+            toY={activePos.y}
+            color={activeColor}
+          />
+        )}
+
         {/* Center node - always on top during spotlight */}
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
@@ -399,6 +962,7 @@ export default function CapabilityMap() {
           }}
         >
           <div className="center-node relative w-20 h-20 md:w-24 md:h-24">
+            <CenterRings active={activeNodeIndex >= 0 && !showAll} />
             <div
               className="absolute inset-0 rounded-full animate-pulse"
               style={{
@@ -416,8 +980,9 @@ export default function CapabilityMap() {
                 transition: 'box-shadow 0.5s ease',
               }}
             >
-              <div className="text-center">
-                <AnimatedCenterIcon active={activeNodeIndex >= 0 && !showAll} />
+              <div className="text-center relative">
+                <CenterOrbitingParticles active={activeNodeIndex >= 0 && !showAll} />
+                <StaticCenterIcon />
                 <p className="text-[9px] text-warm font-mono mt-0.5">{capabilityData.center.title}</p>
               </div>
             </div>
@@ -510,6 +1075,9 @@ export default function CapabilityMap() {
               >
                 {node.label}
               </span>
+
+              {/* Orbiting labels */}
+              <OrbitingLabels node={node} active={active} dimmed={dimmed} />
 
               {/* Spider web - shown for active node during spotlight, or all nodes when allExpanded */}
               <SpiderWebSubNodes

@@ -74,30 +74,34 @@ export default function Other() {
           <Building2 size={24} className="text-ai" />
           <h3 className="text-2xl font-serif text-warm">实习经历</h3>
         </div>
-        <GlassCard glowColor="ai">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h4 className="text-lg font-medium text-warm font-sans">{otherData.internship.company}</h4>
-              <p className="text-sm text-warm-muted font-sans">{otherData.internship.role}</p>
-            </div>
-            <span className="text-xs text-warm-faint font-mono">{otherData.internship.period}</span>
-          </div>
-          <div className="space-y-2 mb-4">
-            {otherData.internship.work.map((item, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-ai/50 mt-1.5 shrink-0" />
-                <p className="text-warm-muted text-sm font-sans">{item}</p>
+        <div className="space-y-6">
+          {otherData.internship.map((intern: any, idx: number) => (
+            <GlassCard key={idx} glowColor="ai">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h4 className="text-lg font-medium text-warm font-sans">{intern.company}</h4>
+                  <p className="text-sm text-warm-muted font-sans">{intern.role}</p>
+                </div>
+                <span className="text-xs text-warm-faint font-mono">{intern.period}</span>
               </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {otherData.internship.achievements.map((item, i) => (
-              <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">
-                {item}
-              </span>
-            ))}
-          </div>
-        </GlassCard>
+              <div className="space-y-2 mb-4">
+                {intern.work.map((item: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-ai/50 mt-1.5 shrink-0" />
+                    <p className="text-warm-muted text-sm font-sans">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {intern.achievements.map((item: string, i: number) => (
+                  <span key={i} className="px-3 py-1 text-xs rounded-full bg-ai-dim text-ai-light border border-ai/20 font-sans">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </GlassCard>
+          ))}
+        </div>
       </div>
 
       <div>
