@@ -71,6 +71,122 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
+// SpiderWeb sub-nodes component - Magazine Edition
+function SpiderWebSubNodesB({
+  node,
+  onCaseStudy,
+}: {
+  node: MainNode
+  onCaseStudy: (node: MainNode) => void
+}) {
+  const subCount = node.subNodes.length
+  const subRadius = 90
+
+  return (
+    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
+      {/* Web lines from center to each sub-node */}
+      <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+        {node.subNodes.map((_, i) => {
+          const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
+          const x2 = 110 + Math.cos(angle) * subRadius
+          const y2 = 110 + Math.sin(angle) * subRadius
+          return (
+            <line
+              key={`line-${i}`}
+              x1="110"
+              y1="110"
+              x2={x2}
+              y2={y2}
+              stroke={node.color}
+              strokeWidth="1"
+              opacity="0.3"
+              strokeDasharray="3,3"
+            />
+          )
+        })}
+        {/* Connect sub-nodes to form web ring */}
+        {node.subNodes.map((_, i) => {
+          const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
+          const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
+          const x1 = 110 + Math.cos(angle1) * subRadius
+          const y1 = 110 + Math.sin(angle1) * subRadius
+          const x2 = 110 + Math.cos(angle2) * subRadius
+          const y2 = 110 + Math.sin(angle2) * subRadius
+          return (
+            <line
+              key={`ring-${i}`}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={node.color}
+              strokeWidth="0.5"
+              opacity="0.2"
+            />
+          )
+        })}
+      </svg>
+
+      {/* Sub-nodes */}
+      {node.subNodes.map((sub: SubNode, i: number) => {
+        const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
+        const x = Math.cos(angle) * subRadius
+        const y = Math.sin(angle) * subRadius
+
+        return (
+          <div
+            key={sub.id}
+            className="absolute pointer-events-auto"
+            style={{
+              left: `calc(50% + ${x}px)`,
+              top: `calc(50% + ${y}px)`,
+              transform: 'translate(-50%, -50%)',
+              zIndex: 2,
+            }}
+          >
+            <div
+              className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border backdrop-blur-sm"
+              style={{
+                backgroundColor: `${node.color}08`,
+                borderColor: `${node.color}25`,
+                minWidth: '80px',
+              }}
+            >
+              <span className="font-b-sans text-[10px] text-b-ink-light text-center leading-tight whitespace-nowrap">
+                {sub.label}
+              </span>
+              {sub.level && (
+                <span className="font-b-mono text-[10px]">
+                  {[...Array(5)].map((_, j) => (
+                    <span key={j} className={j < sub.level ? 'text-b-terracotta' : 'text-b-sand'}>
+                      ★
+                    </span>
+                  ))}
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+
+      {/* Case study button at bottom */}
+      {node.caseStudy && (
+        <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onCaseStudy(node)
+            }}
+            className="font-b-sans text-[10px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-1 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
+          >
+            查看案例 →
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CapabilityMapB() {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
@@ -114,12 +230,6 @@ export default function CapabilityMapB() {
     }
   }
 
-  const renderStars = (level: number = 0) => {
-    return [...Array(5)].map((_, i) => (
-      <span key={i} className={i < level ? 'text-b-terracotta' : 'text-b-sand'}>★</span>
-    ))
-  }
-
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-16">
       <div className="text-center mb-10">
@@ -129,19 +239,19 @@ export default function CapabilityMapB() {
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div className="relative w-[380px] h-[380px] md:w-[460px] md:h-[460px] mx-auto">
+      <div className="relative w-[420px] h-[420px] md:w-[500px] md:h-[500px] mx-auto">
         {/* Center node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <div className="center-node-b relative w-28 h-28 md:w-32 md:h-32">
+          <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />
             <div className="absolute inset-1 rounded-full bg-b-cream border-2 border-b-terracotta/40 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-3xl md:text-4xl mb-1">👤</div>
-                <p className="font-b-mono text-[10px] text-b-ink">{capabilityData.center.title}</p>
+                <div className="text-2xl md:text-3xl mb-0.5">👤</div>
+                <p className="font-b-mono text-[9px] text-b-ink">{capabilityData.center.title}</p>
               </div>
             </div>
-            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-              <span className="font-b-mono text-[10px] text-b-terracotta">{capabilityData.center.mbti}</span>
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
+              <span className="font-b-mono text-[9px] text-b-terracotta">{capabilityData.center.mbti}</span>
             </div>
           </div>
         </div>
@@ -163,14 +273,14 @@ export default function CapabilityMapB() {
                 transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
               }}
             >
-              {/* Connection line */}
+              {/* Connection line to center */}
               <svg
                 className="map-connection-b absolute pointer-events-none"
                 style={{
                   width: `${Math.abs(pos.x)}px`,
                   height: '2px',
-                  left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${80}px`,
-                  top: '40px',
+                  left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${60}px`,
+                  top: '32px',
                   transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
                   transformOrigin: pos.x < 0 ? 'right' : 'left',
                 }}
@@ -191,7 +301,7 @@ export default function CapabilityMapB() {
                 onClick={() => node.caseStudy && setSelectedNode(node)}
                 onMouseEnter={() => setHoveredNode(node.id)}
                 onMouseLeave={() => setHoveredNode(null)}
-                className={`relative w-18 h-18 md:w-22 md:h-22 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer ${
+                className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer z-30 ${
                   isHovered ? 'scale-110 shadow-xl' : 'hover:scale-105'
                 }`}
                 style={{
@@ -200,47 +310,20 @@ export default function CapabilityMapB() {
                   boxShadow: isHovered ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
                 }}
               >
-                {Icon && <Icon size={24} style={{ color: isHovered ? node.color : '#9B9590' }} />}
+                {Icon && <Icon size={20} style={{ color: isHovered ? node.color : '#9B9590' }} />}
               </button>
 
               {/* Label below node */}
               <span
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-xs transition-colors"
+                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-colors"
                 style={{ color: isHovered ? node.color : '#9B9590' }}
               >
                 {node.label}
               </span>
 
-              {/* Sub-nodes popup */}
+              {/* Spider web sub-nodes */}
               {isHovered && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-8 w-64 md:w-72 z-30">
-                  <div className="bg-b-cream/95 backdrop-blur-lg rounded-xl border border-b-border p-4 shadow-xl">
-                    <div className="space-y-2">
-                      {node.subNodes.map((sub: SubNode) => (
-                        <div
-                          key={sub.id}
-                          className="flex items-center justify-between p-2 rounded-lg hover:bg-b-sand/30 transition-colors"
-                        >
-                          <span className="font-b-sans text-xs text-b-ink-light">{sub.label}</span>
-                          <span className="font-b-mono text-xs">{renderStars(sub.level)}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {node.caseStudy && (
-                      <div className="mt-3 pt-3 border-t border-b-border">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedNode(node)
-                          }}
-                          className="font-b-sans text-xs text-b-terracotta hover:text-b-terracotta/80 flex items-center gap-1"
-                        >
-                          查看案例 →
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <SpiderWebSubNodesB node={node} onCaseStudy={setSelectedNode} />
               )}
             </div>
           )
