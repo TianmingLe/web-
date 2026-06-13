@@ -5,6 +5,7 @@ import {
   type LucideIcon
 } from 'lucide-react'
 import { capabilityData, MainNode, SubNode } from '@data/capabilityMap'
+import { useMediaQuery } from '@hooks/useMediaQuery'
 
 const iconMap: Record<string, LucideIcon> = {
   energy: Cog,
@@ -14,6 +15,25 @@ const iconMap: Record<string, LucideIcon> = {
   thinking: Lightbulb,
 }
 
+/* ------------------------------------------------------------------ */
+/*  Shared constants (derived from container size)                     */
+/* ------------------------------------------------------------------ */
+const CONTAINER_SM = 380   // mobile base (px)
+const CONTAINER_MD = 760   // desktop base (px)
+const CONTAINER_LG = 920   // desktop large (px)
+
+function useContainerSize() {
+  const isMd = useMediaQuery('(min-width: 768px)')
+  const isLg = useMediaQuery('(min-width: 1024px)')
+  return {
+    size: isLg ? CONTAINER_LG : isMd ? CONTAINER_MD : CONTAINER_SM,
+    isMobile: !isMd,
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Modal                                                              */
+/* ------------------------------------------------------------------ */
 interface CaseStudyModalProps {
   node: MainNode
   onClose: () => void
@@ -71,7 +91,50 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// Floating particles background inside map container
+/* ------------------------------------------------------------------ */
+/*  Text Scramble Effect                                               */
+/* ------------------------------------------------------------------ */
+function useTextScramble(text: string, active: boolean) {
+  const [display, setDisplay] = useState(text)
+  const frameRef = useRef<number>(0)
+
+  useEffect(() => {
+    if (!active) {
+      setDisplay(text)
+      return
+    }
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
+    let iteration = 0
+    const total = text.length * 4
+
+    const tick = () => {
+      setDisplay(
+        text
+          .split('')
+          .map((char, idx) => {
+            if (char === ' ') return ' '
+            if (iteration / 4 > idx) return text[idx]
+            return chars[Math.floor(Math.random() * chars.length)]
+          })
+          .join('')
+      )
+      iteration++
+      if (iteration <= total) {
+        frameRef.current = requestAnimationFrame(tick)
+      } else {
+        setDisplay(text)
+      }
+    }
+    frameRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frameRef.current)
+  }, [active, text])
+
+  return display
+}
+
+/* ------------------------------------------------------------------ */
+/*  Floating Particles                                                 */
+/* ------------------------------------------------------------------ */
 function FloatingParticlesB({ activeNodeIndex, allExpanded, showAll, nodePositions }: {
   activeNodeIndex: number
   allExpanded: boolean
@@ -178,7 +241,9 @@ function FloatingParticlesB({ activeNodeIndex, allExpanded, showAll, nodePositio
   )
 }
 
-// Concentric pulsing rings around center
+/* ------------------------------------------------------------------ */
+/*  Center Rings                                                       */
+/* ------------------------------------------------------------------ */
 function CenterRingsB({ active }: { active: boolean }) {
   const ringsRef = useRef<HTMLDivElement>(null)
 
@@ -224,14 +289,216 @@ function CenterRingsB({ active }: { active: boolean }) {
   )
 }
 
-// Energy beam from center to active node
-function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
+/* ------------------------------------------------------------------ */
+/*  Rotating Hexagon Mesh                                              */
+/* ------------------------------------------------------------------ */
+function HexagonMeshB({ active, containerSize }: { active: boolean; containerSize: number }) {
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  useEffect(() => {
+    if (!svgRef.current) return
+    const group = svgRef.current.querySelector('.hex-group-b')
+    if (!group) return
+    if (active) {
+      gsap.to(group, {
+        rotation: 360,
+        duration: 60,
+        ease: 'none',
+        repeat: -1,
+        transformOrigin: '50% 50%',
+      })
+      gsap.fromTo(group, { opacity: 0 }, { opacity: 0.25, duration: 1 })
+    } else {
+      gsap.killTweensOf(group)
+      gsap.to(group, { opacity: 0, duration: 0.6 })
+    }
+  }, [active])
+
+  const cx = containerSize / 2
+  const cy = containerSize / 2
+  const r = 120
+  const hexPoints = Array.from({ length: 6 }).map((_, i) => {
+    const a = (i * 60 - 30) * (Math.PI / 180)
+    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
+  }).join(' ')
+
+  return (
+    <svg
+      ref={svgRef}
+      className="absolute pointer-events-none"
+      style={{
+        left: '50%',
+        top: '50%',
+        width: containerSize,
+        height: containerSize,
+        transform: 'translate(-50%, -50%)',
+        zIndex: 2,
+      }}
+    >
+      <g className="hex-group-b" opacity="0">
+        <polygon
+          points={hexPoints}
+          fill="none"
+          stroke="#C46C54"
+          strokeWidth="1"
+          opacity="0.6"
+        />
+        <polygon
+          points={hexPoints}
+          fill="none"
+          stroke="#8B9D78"
+          strokeWidth="0.5"
+          opacity="0.4"
+          transform={`rotate(30 ${cx} ${cy})`}
+        />
+      </g>
+    </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Shooting Stars                                                     */
+/* ------------------------------------------------------------------ */
+function ShootingStarsB({ active }: { active: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (!containerRef.current || !active) return
+    const container = containerRef.current
+
+    const spawn = () => {
+      const star = document.createElement('div')
+      const angle = Math.random() * Math.PI * 2
+      const len = 60 + Math.random() * 80
+      star.style.position = 'absolute'
+      star.style.left = '50%'
+      star.style.top = '50%'
+      star.style.width = `${len}px`
+      star.style.height = '2px'
+      star.style.borderRadius = '1px'
+      star.style.background = 'linear-gradient(90deg, rgba(196,108,84,0.8), transparent)'
+      star.style.boxShadow = '0 0 6px rgba(196,108,84,0.6)'
+      star.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`
+      star.style.opacity = '0'
+      star.style.pointerEvents = 'none'
+      container.appendChild(star)
+
+      const dist = 200 + Math.random() * 250
+      const tx = Math.cos(angle) * dist
+      const ty = Math.sin(angle) * dist
+
+      gsap.fromTo(star,
+        { x: 0, y: 0, opacity: 1, scale: 0.5 },
+        {
+          x: tx,
+          y: ty,
+          opacity: 0,
+          scale: 1.2,
+          duration: 0.8 + Math.random() * 0.6,
+          ease: 'power2.out',
+          onComplete: () => star.remove(),
+        }
+      )
+    }
+
+    timerRef.current = setInterval(spawn, 1200)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+      container.innerHTML = ''
+    }
+  }, [active])
+
+  return <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 6 }} />
+}
+
+/* ------------------------------------------------------------------ */
+/*  Glowing Node Halos                                                 */
+/* ------------------------------------------------------------------ */
+function NodeHaloB({ active, color }: { active: boolean; color: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!ref.current) return
+    if (active) {
+      gsap.fromTo(ref.current,
+        { scale: 1, opacity: 0.6 },
+        { scale: 1.6, opacity: 0, duration: 1.5, ease: 'power2.out', repeat: -1 }
+      )
+    } else {
+      gsap.killTweensOf(ref.current)
+      gsap.to(ref.current, { scale: 1, opacity: 0, duration: 0.4 })
+    }
+  }, [active])
+
+  return (
+    <div
+      ref={ref}
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+      style={{
+        width: 56,
+        height: 56,
+        background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+        opacity: 0,
+        zIndex: 0,
+      }}
+    />
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Particle Burst on Activation                                       */
+/* ------------------------------------------------------------------ */
+function ParticleBurstB({ active, color }: { active: boolean; color: string }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current || !active) return
+    const container = containerRef.current
+    container.innerHTML = ''
+
+    const count = 12
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div')
+      p.className = 'absolute left-1/2 top-1/2 rounded-full pointer-events-none'
+      p.style.width = '3px'
+      p.style.height = '3px'
+      p.style.backgroundColor = color
+      p.style.boxShadow = `0 0 4px ${color}`
+      container.appendChild(p)
+
+      const angle = (i / count) * Math.PI * 2
+      const dist = 30 + Math.random() * 40
+      gsap.fromTo(p,
+        { x: 0, y: 0, opacity: 1, scale: 1 },
+        {
+          x: Math.cos(angle) * dist,
+          y: Math.sin(angle) * dist,
+          opacity: 0,
+          scale: 0,
+          duration: 0.6 + Math.random() * 0.4,
+          ease: 'power2.out',
+          delay: Math.random() * 0.1,
+          onComplete: () => p.remove(),
+        }
+      )
+    }
+  }, [active, color])
+
+  return <div ref={containerRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 15 }} />
+}
+
+/* ------------------------------------------------------------------ */
+/*  Energy Beam with Traveling Light                                   */
+/* ------------------------------------------------------------------ */
+function EnergyBeamB({ active, fromX, fromY, toX, toY, color, containerSize }: {
   active: boolean
   fromX: number
   fromY: number
   toX: number
   toY: number
   color: string
+  containerSize: number
 }) {
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -239,7 +506,8 @@ function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
     if (!svgRef.current || !active) return
     const line = svgRef.current.querySelector('.energy-line-b')
     const glow = svgRef.current.querySelector('.energy-glow-b')
-    if (!line || !glow) return
+    const travel = svgRef.current.querySelector('.energy-travel-b')
+    if (!line || !glow || !travel) return
 
     gsap.fromTo(line,
       { strokeDashoffset: 300, opacity: 0 },
@@ -258,10 +526,21 @@ function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
       ease: 'sine.inOut',
     })
 
-    return () => { pulse.kill() }
+    const len = Math.hypot(toX - fromX, toY - fromY)
+    const travelAnim = gsap.fromTo(travel,
+      { strokeDashoffset: len, opacity: 1 },
+      { strokeDashoffset: -len, opacity: 1, duration: 1.2, ease: 'none', repeat: -1 }
+    )
+
+    return () => {
+      pulse.kill()
+      travelAnim.kill()
+    }
   }, [active, fromX, fromY, toX, toY])
 
   if (!active) return null
+
+  const half = containerSize / 2
 
   return (
     <svg
@@ -270,18 +549,18 @@ function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
       style={{
         left: '50%',
         top: '50%',
-        width: '100%',
-        height: '100%',
+        width: containerSize,
+        height: containerSize,
         transform: 'translate(-50%, -50%)',
         zIndex: 5,
       }}
     >
       <line
         className="energy-glow-b"
-        x1={fromX + 460}
-        y1={fromY + 460}
-        x2={toX + 460}
-        y2={toY + 460}
+        x1={fromX + half}
+        y1={fromY + half}
+        x2={toX + half}
+        y2={toY + half}
         stroke={color}
         strokeWidth="6"
         strokeLinecap="round"
@@ -292,10 +571,10 @@ function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
       />
       <line
         className="energy-line-b"
-        x1={fromX + 460}
-        y1={fromY + 460}
-        x2={toX + 460}
-        y2={toY + 460}
+        x1={fromX + half}
+        y1={fromY + half}
+        x2={toX + half}
+        y2={toY + half}
         stroke={color}
         strokeWidth="2"
         strokeLinecap="round"
@@ -303,15 +582,30 @@ function EnergyBeamB({ active, fromX, fromY, toX, toY, color }: {
         strokeDasharray="8,4"
         strokeDashoffset="300"
       />
+      <line
+        className="energy-travel-b"
+        x1={fromX + half}
+        y1={fromY + half}
+        x2={toX + half}
+        y2={toY + half}
+        stroke="#FFFFFF"
+        strokeWidth="3"
+        strokeLinecap="round"
+        opacity="0"
+        strokeDasharray="20,200"
+      />
     </svg>
   )
 }
 
-// Constellation lines connecting main nodes
-function ConstellationLinesB({ positions, showAll, allExpanded }: {
+/* ------------------------------------------------------------------ */
+/*  Constellation Lines                                                */
+/* ------------------------------------------------------------------ */
+function ConstellationLinesB({ positions, showAll, allExpanded, containerSize }: {
   positions: { x: number; y: number }[]
   showAll: boolean
   allExpanded: boolean
+  containerSize: number
 }) {
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -334,14 +628,15 @@ function ConstellationLinesB({ positions, showAll, allExpanded }: {
 
   if (!positions.length) return null
 
+  const half = containerSize / 2
   const lines: { x1: number; y1: number; x2: number; y2: number }[] = []
   for (let i = 0; i < positions.length; i++) {
     const next = (i + 1) % positions.length
     lines.push({
-      x1: positions[i].x + 460,
-      y1: positions[i].y + 460,
-      x2: positions[next].x + 460,
-      y2: positions[next].y + 460,
+      x1: positions[i].x + half,
+      y1: positions[i].y + half,
+      x2: positions[next].x + half,
+      y2: positions[next].y + half,
     })
   }
 
@@ -352,8 +647,8 @@ function ConstellationLinesB({ positions, showAll, allExpanded }: {
       style={{
         left: '50%',
         top: '50%',
-        width: '920px',
-        height: '920px',
+        width: containerSize,
+        height: containerSize,
         transform: 'translate(-50%, -50%)',
         zIndex: 1,
       }}
@@ -377,7 +672,9 @@ function ConstellationLinesB({ positions, showAll, allExpanded }: {
   )
 }
 
-// Floating orbiting labels around each main node
+/* ------------------------------------------------------------------ */
+/*  Orbiting Labels                                                    */
+/* ------------------------------------------------------------------ */
 function OrbitingLabelsB({ node, active, dimmed }: {
   node: MainNode
   active: boolean
@@ -430,10 +727,10 @@ function OrbitingLabelsB({ node, active, dimmed }: {
   )
 }
 
-// Ripple wave effect traveling from center outward
-function RippleWaveB({ active }: {
-  active: boolean
-}) {
+/* ------------------------------------------------------------------ */
+/*  Ripple Wave                                                        */
+/* ------------------------------------------------------------------ */
+function RippleWaveB({ active }: { active: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -478,18 +775,26 @@ function RippleWaveB({ active }: {
   )
 }
 
-// SpiderWeb sub-nodes with secondary sub-nodes
+/* ------------------------------------------------------------------ */
+/*  Spider Web Sub-Nodes (curved lines)                                */
+/* ------------------------------------------------------------------ */
 function SpiderWebSubNodesB({
   node,
   expanded,
   onCaseStudy,
+  isMobile,
+  nodeRadius,
+  webSize,
 }: {
   node: MainNode
   expanded: boolean
   onCaseStudy: (node: MainNode) => void
+  isMobile: boolean
+  nodeRadius: number
+  webSize: number
 }) {
   const subCount = node.subNodes.length
-  const subRadius = 110
+  const subRadius = nodeRadius
   const webRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -535,7 +840,7 @@ function SpiderWebSubNodesB({
   if (!expanded) return null
 
   const generateSecSubNodes = (sub: SubNode, parentIndex: number) => {
-    const secCount = 2 + (parentIndex % 2)
+    const secCount = isMobile ? 2 : 2 + (parentIndex % 2)
     const result: { label: string; angle: number; parentAngle: number }[] = []
     for (let i = 0; i < secCount; i++) {
       result.push({
@@ -547,6 +852,8 @@ function SpiderWebSubNodesB({
     return result
   }
 
+  const half = webSize / 2
+
   return (
     <div
       ref={webRef}
@@ -554,23 +861,23 @@ function SpiderWebSubNodesB({
       style={{
         left: '50%',
         top: '50%',
-        width: '320px',
-        height: '320px',
-        marginLeft: '-160px',
-        marginTop: '-160px',
+        width: webSize,
+        height: webSize,
+        marginLeft: -half,
+        marginTop: -half,
       }}
     >
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = 160 + Math.cos(angle) * subRadius
-          const y2 = 160 + Math.sin(angle) * subRadius
+          const x2 = half + Math.cos(angle) * subRadius
+          const y2 = half + Math.sin(angle) * subRadius
           return (
             <line
               key={`line-${i}`}
               className="web-line-b"
-              x1="160"
-              y1="160"
+              x1={half}
+              y1={half}
               x2={x2}
               y2={y2}
               stroke={node.color}
@@ -584,20 +891,20 @@ function SpiderWebSubNodesB({
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = 160 + Math.cos(angle1) * subRadius
-          const y1 = 160 + Math.sin(angle1) * subRadius
-          const x2 = 160 + Math.cos(angle2) * subRadius
-          const y2 = 160 + Math.sin(angle2) * subRadius
+          const x1 = half + Math.cos(angle1) * subRadius
+          const y1 = half + Math.sin(angle1) * subRadius
+          const x2 = half + Math.cos(angle2) * subRadius
+          const y2 = half + Math.sin(angle2) * subRadius
+          const mx = (x1 + x2) / 2 + Math.cos((angle1 + angle2) / 2) * 10
+          const my = (y1 + y2) / 2 + Math.sin((angle1 + angle2) / 2) * 10
           return (
-            <line
+            <path
               key={`ring-${i}`}
               className="web-ring-b"
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
               stroke={node.color}
               strokeWidth="0.5"
+              fill="none"
               opacity="0"
               strokeDasharray="100"
               strokeDashoffset="100"
@@ -606,23 +913,23 @@ function SpiderWebSubNodesB({
         })}
         {node.subNodes.map((sub, pi) => {
           const parentAngle = (pi / subCount) * 2 * Math.PI - Math.PI / 2
-          const px = 160 + Math.cos(parentAngle) * subRadius
-          const py = 160 + Math.sin(parentAngle) * subRadius
+          const px = half + Math.cos(parentAngle) * subRadius
+          const py = half + Math.sin(parentAngle) * subRadius
           const secNodes = generateSecSubNodes(sub, pi)
           return secNodes.map((sec, si) => {
             const secAngle = parentAngle + sec.angle * 0.6
-            const sx = px + Math.cos(secAngle) * 45
-            const sy = py + Math.sin(secAngle) * 45
+            const sx = px + Math.cos(secAngle) * (isMobile ? 30 : 45)
+            const sy = py + Math.sin(secAngle) * (isMobile ? 30 : 45)
+            const mx = (px + sx) / 2 + Math.cos((parentAngle + secAngle) / 2) * 6
+            const my = (py + sy) / 2 + Math.sin((parentAngle + secAngle) / 2) * 6
             return (
-              <line
+              <path
                 key={`sec-line-${pi}-${si}`}
                 className="sec-web-line-b"
-                x1={px}
-                y1={py}
-                x2={sx}
-                y2={sy}
+                d={`M ${px} ${py} Q ${mx} ${my} ${sx} ${sy}`}
                 stroke={node.color}
                 strokeWidth="0.5"
+                fill="none"
                 opacity="0"
                 strokeDasharray="60"
                 strokeDashoffset="60"
@@ -653,7 +960,7 @@ function SpiderWebSubNodesB({
               style={{
                 backgroundColor: `${node.color}08`,
                 borderColor: `${node.color}25`,
-                minWidth: '60px',
+                minWidth: isMobile ? '44px' : '60px',
               }}
             >
               <span className="font-b-sans text-[8px] text-b-ink-light text-center leading-tight whitespace-nowrap">
@@ -680,8 +987,8 @@ function SpiderWebSubNodesB({
         const secNodes = generateSecSubNodes(sub, pi)
         return secNodes.map((sec, si) => {
           const secAngle = parentAngle + sec.angle * 0.6
-          const sx = px + Math.cos(secAngle) * 45
-          const sy = py + Math.sin(secAngle) * 45
+          const sx = px + Math.cos(secAngle) * (isMobile ? 30 : 45)
+          const sy = py + Math.sin(secAngle) * (isMobile ? 30 : 45)
           return (
             <div
               key={`sec-${pi}-${si}`}
@@ -729,7 +1036,9 @@ function SpiderWebSubNodesB({
   )
 }
 
-// Orbiting particles around center
+/* ------------------------------------------------------------------ */
+/*  Center Orbiting Particles                                          */
+/* ------------------------------------------------------------------ */
 function CenterOrbitingParticlesB({ active }: { active: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -782,7 +1091,9 @@ function CenterOrbitingParticlesB({ active }: { active: boolean }) {
   )
 }
 
-// Static center icon (no animation on the icon itself)
+/* ------------------------------------------------------------------ */
+/*  Static Center Icon                                                 */
+/* ------------------------------------------------------------------ */
 function StaticCenterIconB() {
   return (
     <div className="text-2xl md:text-3xl" style={{ display: 'inline-block' }}>
@@ -791,6 +1102,141 @@ function StaticCenterIconB() {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/*  Main Node Item (extracted to allow hooks per node)                */
+/* ------------------------------------------------------------------ */
+function MainNodeItemB({
+  node,
+  index,
+  isLoaded,
+  activeNodeIndex,
+  allExpanded,
+  showAll,
+  nodeRefs,
+  setSelectedNode,
+  isMobile,
+}: {
+  node: MainNode
+  index: number
+  isLoaded: boolean
+  activeNodeIndex: number
+  allExpanded: boolean
+  showAll: boolean
+  nodeRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>
+  setSelectedNode: (node: MainNode | null) => void
+  isMobile: boolean
+}) {
+  const total = capabilityData.mainNodes.length
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2
+  const radius = isLoaded ? (isMobile ? 150 : 280) : 0
+  const pos = { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
+  const active = activeNodeIndex === index
+  const dimmed = activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
+  const Icon = iconMap[node.id]
+  const labelText = useTextScramble(node.label, active)
+  const nodeRadiusWeb = isMobile ? 70 : 110
+  const webSize = isMobile ? 220 : 320
+
+  return (
+    <div
+      className="main-node-b absolute"
+      style={{
+        left: `calc(50% + ${pos.x}px)`,
+        top: `calc(50% + ${pos.y}px)`,
+        transform: 'translate(-50%, -50%)',
+        transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
+        zIndex: active ? 25 : 10,
+      }}
+    >
+      <svg
+        className="absolute pointer-events-none transition-opacity duration-700"
+        style={{
+          width: `${Math.abs(pos.x)}px`,
+          height: '2px',
+          left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${60}px`,
+          top: '32px',
+          transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
+          transformOrigin: pos.x < 0 ? 'right' : 'left',
+          opacity: dimmed ? 0.05 : active ? 0.8 : 0.4,
+          zIndex: 1,
+        }}
+      >
+        <line
+          x1="0"
+          y1="0"
+          x2="100%"
+          y2="0"
+          stroke={active ? node.color : '#C4BFB9'}
+          strokeWidth={active ? 3 : 2}
+          strokeDasharray="4,4"
+        />
+      </svg>
+
+      {/* Node halo */}
+      <NodeHaloB active={active} color={node.color} />
+
+      {/* Particle burst */}
+      <ParticleBurstB active={active} color={node.color} />
+
+      <button
+        ref={(el) => { nodeRefs.current[index] = el }}
+        onClick={() => node.caseStudy && setSelectedNode(node)}
+        className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer"
+        style={{
+          backgroundColor: active ? `${node.color}18` : dimmed ? 'rgba(220,215,208,0.5)' : '#FAF8F5',
+          borderColor: active ? node.color : dimmed ? '#E8E4DF' : '#E8E4DF',
+          boxShadow: active
+            ? `0 0 50px ${node.glowColor}, 0 0 100px ${node.glowColor}, 0 0 150px ${node.glowColor}`
+            : dimmed ? 'none' : '0 4px 20px rgba(0,0,0,0.05)',
+          opacity: dimmed ? 0.2 : 1,
+          transform: active ? 'scale(1.25)' : dimmed ? 'scale(0.8)' : 'scale(1)',
+          zIndex: active ? 30 : 10,
+        }}
+      >
+        {Icon && (
+          <Icon
+            size={active ? 28 : 20}
+            style={{
+              color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
+              transition: 'all 0.7s ease',
+              filter: active ? `drop-shadow(0 0 8px ${node.color})` : 'none',
+            }}
+          />
+        )}
+      </button>
+
+      {/* Label with scramble */}
+      <span
+        className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-all duration-700"
+        style={{
+          color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
+          opacity: dimmed ? 0.3 : 1,
+          transform: active ? 'scale(1.15)' : 'scale(1)',
+          textShadow: active ? `0 0 10px ${node.glowColor}` : 'none',
+        }}
+      >
+        {labelText}
+      </span>
+
+      {/* Orbiting labels */}
+      <OrbitingLabelsB node={node} active={active} dimmed={dimmed} />
+
+      {/* Spider web */}
+      <SpiderWebSubNodesB
+        node={node}
+        expanded={active || allExpanded}
+        onCaseStudy={setSelectedNode}
+        isMobile={isMobile}
+        nodeRadius={nodeRadiusWeb}
+        webSize={webSize}
+      />
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main Component                                                     */
+/* ------------------------------------------------------------------ */
 export default function CapabilityMapB() {
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
@@ -800,7 +1246,12 @@ export default function CapabilityMapB() {
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
   const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const overlayRef = useRef<HTMLDivElement>(null)
 
+  const { size: containerSize, isMobile } = useContainerSize()
+  const nodeRadius = isMobile ? 150 : 280
+
+  // Spotlight sequence
   const runSpotlightSequence = useCallback(() => {
     const nodes = capabilityData.mainNodes
     let current = 0
@@ -811,7 +1262,7 @@ export default function CapabilityMapB() {
         setAllExpanded(true)
         setTimeout(() => {
           setShowAll(true)
-        }, 2000)
+        }, 3500)
         return
       }
 
@@ -827,7 +1278,7 @@ export default function CapabilityMapB() {
       }
 
       current++
-      setTimeout(highlightNext, 2000)
+      setTimeout(highlightNext, 3500)
     }
 
     highlightNext()
@@ -875,37 +1326,37 @@ export default function CapabilityMapB() {
     return () => observer.disconnect()
   }, [runSpotlightSequence])
 
-  const getNodePosition = (index: number, total: number) => {
-    const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? 280 : 0
-    return {
-      x: Math.cos(angle) * radius,
-      y: Math.sin(angle) * radius,
+  // Overlay fade in/out
+  useEffect(() => {
+    if (!overlayRef.current) return
+    const shouldShow = (activeNodeIndex >= 0 || allExpanded) && !showAll
+    if (shouldShow) {
+      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out' })
+    } else {
+      gsap.to(overlayRef.current, { opacity: 0, duration: 0.6, ease: 'power2.in' })
     }
-  }
+  }, [activeNodeIndex, allExpanded, showAll])
 
-  const nodePositions = capabilityData.mainNodes.map((_, i) =>
-    getNodePosition(i, capabilityData.mainNodes.length)
-  )
-
-  const isNodeActive = (index: number) => activeNodeIndex === index
-  const isNodeDimmed = (index: number) => activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
+  const totalNodes = capabilityData.mainNodes.length
+  const nodePositions = capabilityData.mainNodes.map((_, i) => {
+    const angle = (i / totalNodes) * 2 * Math.PI - Math.PI / 2
+    const radius = isLoaded ? nodeRadius : 0
+    return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
+  })
 
   const activePos = activeNodeIndex >= 0 ? nodePositions[activeNodeIndex] : null
   const activeColor = activeNodeIndex >= 0 ? capabilityData.mainNodes[activeNodeIndex]?.color : undefined
 
   return (
     <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-16">
-      {/* Strong spotlight overlay */}
-      {(activeNodeIndex >= 0 || allExpanded) && !showAll && (
-        <div
-          className="absolute inset-0 z-5 pointer-events-none"
-          style={{
-            background: 'rgba(245, 242, 237, 0.85)',
-            transition: 'background 0.8s ease',
-          }}
-        />
-      )}
+      {/* Spotlight overlay with GSAP fade */}
+      <div
+        ref={overlayRef}
+        className="absolute inset-0 z-[5] pointer-events-none opacity-0"
+        style={{
+          background: 'rgba(245, 242, 237, 0.85)',
+        }}
+      />
 
       <div className="text-center mb-10 relative z-10">
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mb-4" />
@@ -914,7 +1365,13 @@ export default function CapabilityMapB() {
         <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div className="relative w-[760px] h-[760px] md:w-[920px] md:h-[920px] mx-auto">
+      <div
+        className="relative mx-auto"
+        style={{
+          width: containerSize,
+          height: containerSize,
+        }}
+      >
         {/* Floating particles background */}
         <FloatingParticlesB
           activeNodeIndex={activeNodeIndex}
@@ -928,7 +1385,14 @@ export default function CapabilityMapB() {
           positions={nodePositions}
           showAll={showAll}
           allExpanded={allExpanded}
+          containerSize={containerSize}
         />
+
+        {/* Hexagon mesh */}
+        <HexagonMeshB active={activeNodeIndex >= 0 && !showAll} containerSize={containerSize} />
+
+        {/* Shooting stars */}
+        <ShootingStarsB active={activeNodeIndex >= 0 && !showAll} />
 
         {/* Ripple wave from center when allExpanded */}
         <RippleWaveB active={allExpanded && !showAll} />
@@ -942,6 +1406,7 @@ export default function CapabilityMapB() {
             toX={activePos.x}
             toY={activePos.y}
             color={activeColor}
+            containerSize={containerSize}
           />
         )}
 
@@ -979,98 +1444,20 @@ export default function CapabilityMapB() {
           </div>
         </div>
 
-        {capabilityData.mainNodes.map((node, index) => {
-          const pos = getNodePosition(index, capabilityData.mainNodes.length)
-          const active = isNodeActive(index)
-          const dimmed = isNodeDimmed(index)
-          const Icon = iconMap[node.id]
-
-          return (
-            <div
-              key={node.id}
-              className="main-node-b absolute"
-              style={{
-                left: `calc(50% + ${pos.x}px)`,
-                top: `calc(50% + ${pos.y}px)`,
-                transform: 'translate(-50%, -50%)',
-                transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
-                zIndex: active ? 25 : 10,
-              }}
-            >
-              <svg
-                className="absolute pointer-events-none transition-opacity duration-700"
-                style={{
-                  width: `${Math.abs(pos.x)}px`,
-                  height: '2px',
-                  left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${60}px`,
-                  top: '32px',
-                  transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
-                  transformOrigin: pos.x < 0 ? 'right' : 'left',
-                  opacity: dimmed ? 0.05 : active ? 0.8 : 0.4,
-                  zIndex: 1,
-                }}
-              >
-                <line
-                  x1="0"
-                  y1="0"
-                  x2="100%"
-                  y2="0"
-                  stroke={active ? node.color : '#C4BFB9'}
-                  strokeWidth={active ? 3 : 2}
-                  strokeDasharray="4,4"
-                />
-              </svg>
-
-              <button
-                ref={(el) => { nodeRefs.current[index] = el }}
-                onClick={() => node.caseStudy && setSelectedNode(node)}
-                className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer"
-                style={{
-                  backgroundColor: active ? `${node.color}18` : dimmed ? 'rgba(220,215,208,0.5)' : '#FAF8F5',
-                  borderColor: active ? node.color : dimmed ? '#E8E4DF' : '#E8E4DF',
-                  boxShadow: active
-                    ? `0 0 50px ${node.glowColor}, 0 0 100px ${node.glowColor}, 0 0 150px ${node.glowColor}`
-                    : dimmed ? 'none' : '0 4px 20px rgba(0,0,0,0.05)',
-                  opacity: dimmed ? 0.2 : 1,
-                  transform: active ? 'scale(1.25)' : dimmed ? 'scale(0.8)' : 'scale(1)',
-                  zIndex: active ? 30 : 10,
-                }}
-              >
-                {Icon && (
-                  <Icon
-                    size={active ? 28 : 20}
-                    style={{
-                      color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
-                      transition: 'all 0.7s ease',
-                      filter: active ? `drop-shadow(0 0 8px ${node.color})` : 'none',
-                    }}
-                  />
-                )}
-              </button>
-
-              <span
-                className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-all duration-700"
-                style={{
-                  color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
-                  opacity: dimmed ? 0.3 : 1,
-                  transform: active ? 'scale(1.15)' : 'scale(1)',
-                  textShadow: active ? `0 0 10px ${node.glowColor}` : 'none',
-                }}
-              >
-                {node.label}
-              </span>
-
-              {/* Orbiting labels */}
-              <OrbitingLabelsB node={node} active={active} dimmed={dimmed} />
-
-              <SpiderWebSubNodesB
-                node={node}
-                expanded={active || allExpanded}
-                onCaseStudy={setSelectedNode}
-              />
-            </div>
-          )
-        })}
+        {capabilityData.mainNodes.map((node, index) => (
+          <MainNodeItemB
+            key={node.id}
+            node={node}
+            index={index}
+            isLoaded={isLoaded}
+            activeNodeIndex={activeNodeIndex}
+            allExpanded={allExpanded}
+            showAll={showAll}
+            nodeRefs={nodeRefs}
+            setSelectedNode={setSelectedNode}
+            isMobile={isMobile}
+          />
+        ))}
       </div>
 
       {selectedNode && (
