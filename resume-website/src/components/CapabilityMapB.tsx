@@ -71,20 +71,50 @@ function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes component - Magazine Edition
+// SpiderWeb sub-nodes - Magazine Edition with scroll-triggered reveal
 function SpiderWebSubNodesB({
   node,
+  revealed,
   onCaseStudy,
 }: {
   node: MainNode
+  revealed: boolean
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
   const subRadius = 90
+  const webRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!webRef.current || !revealed) return
+
+    const lines = webRef.current.querySelectorAll('.web-line-b')
+    const ringLines = webRef.current.querySelectorAll('.web-ring-b')
+    const subNodes = webRef.current.querySelectorAll('.sub-node-item-b')
+
+    gsap.fromTo(
+      lines,
+      { strokeDashoffset: 200, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.3, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.1 }
+    )
+
+    gsap.fromTo(
+      ringLines,
+      { strokeDashoffset: 100, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 0.4 }
+    )
+
+    gsap.fromTo(
+      subNodes,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.07, ease: 'back.out(1.7)', delay: 0.3 }
+    )
+  }, [revealed])
+
+  if (!revealed) return null
 
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
-      {/* Web lines from center to each sub-node */}
+    <div ref={webRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
           const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
@@ -93,18 +123,19 @@ function SpiderWebSubNodesB({
           return (
             <line
               key={`line-${i}`}
+              className="web-line-b"
               x1="110"
               y1="110"
               x2={x2}
               y2={y2}
               stroke={node.color}
               strokeWidth="1"
-              opacity="0.3"
-              strokeDasharray="3,3"
+              opacity="0"
+              strokeDasharray="200"
+              strokeDashoffset="200"
             />
           )
         })}
-        {/* Connect sub-nodes to form web ring */}
         {node.subNodes.map((_, i) => {
           const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
           const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
@@ -115,19 +146,21 @@ function SpiderWebSubNodesB({
           return (
             <line
               key={`ring-${i}`}
+              className="web-ring-b"
               x1={x1}
               y1={y1}
               x2={x2}
               y2={y2}
               stroke={node.color}
               strokeWidth="0.5"
-              opacity="0.2"
+              opacity="0"
+              strokeDasharray="100"
+              strokeDashoffset="100"
             />
           )
         })}
       </svg>
 
-      {/* Sub-nodes */}
       {node.subNodes.map((sub: SubNode, i: number) => {
         const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
         const x = Math.cos(angle) * subRadius
@@ -136,11 +169,11 @@ function SpiderWebSubNodesB({
         return (
           <div
             key={sub.id}
-            className="absolute pointer-events-auto"
+            className="sub-node-item-b absolute pointer-events-auto"
             style={{
               left: `calc(50% + ${x}px)`,
               top: `calc(50% + ${y}px)`,
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate(-50%, -50%) scale(0)',
               zIndex: 2,
             }}
           >
@@ -169,7 +202,6 @@ function SpiderWebSubNodesB({
         )
       })}
 
-      {/* Case study button at bottom - always render container for consistent layout */}
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
         {node.caseStudy ? (
           <button
@@ -192,10 +224,11 @@ function SpiderWebSubNodesB({
 }
 
 export default function CapabilityMapB() {
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
+  const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set())
   const [isLoaded, setIsLoaded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -225,6 +258,31 @@ export default function CapabilityMapB() {
     return () => ctx.revert()
   }, [])
 
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated.current) {
+            hasAnimated.current = true
+            const nodeIds = capabilityData.mainNodes.map((n) => n.id)
+            nodeIds.forEach((id, index) => {
+              setTimeout(() => {
+                setRevealedNodes((prev) => new Set([...prev, id]))
+              }, index * 200)
+            })
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [])
+
   const getNodePosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2
     const radius = isLoaded ? 150 : 0
@@ -244,7 +302,6 @@ export default function CapabilityMapB() {
       </div>
 
       <div className="relative w-[420px] h-[420px] md:w-[500px] md:h-[500px] mx-auto">
-        {/* Center node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
           <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-b-terracotta to-b-sage animate-pulse opacity-40" />
@@ -260,10 +317,9 @@ export default function CapabilityMapB() {
           </div>
         </div>
 
-        {/* Main nodes */}
         {capabilityData.mainNodes.map((node, index) => {
           const pos = getNodePosition(index, capabilityData.mainNodes.length)
-          const isHovered = hoveredNode === node.id
+          const isRevealed = revealedNodes.has(node.id)
           const Icon = iconMap[node.id]
 
           return (
@@ -277,7 +333,6 @@ export default function CapabilityMapB() {
                 transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
               }}
             >
-              {/* Connection line to center */}
               <svg
                 className="map-connection-b absolute pointer-events-none"
                 style={{
@@ -303,32 +358,30 @@ export default function CapabilityMapB() {
 
               <button
                 onClick={() => node.caseStudy && setSelectedNode(node)}
-                onMouseEnter={() => setHoveredNode(node.id)}
-                onMouseLeave={() => setHoveredNode(null)}
                 className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer z-30 ${
-                  isHovered ? 'scale-110 shadow-xl' : 'hover:scale-105'
+                  isRevealed ? 'scale-110 shadow-xl' : 'hover:scale-105'
                 }`}
                 style={{
-                  backgroundColor: isHovered ? `${node.color}12` : '#FAF8F5',
-                  borderColor: isHovered ? node.color : '#E8E4DF',
-                  boxShadow: isHovered ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
+                  backgroundColor: isRevealed ? `${node.color}12` : '#FAF8F5',
+                  borderColor: isRevealed ? node.color : '#E8E4DF',
+                  boxShadow: isRevealed ? `0 0 30px ${node.glowColor}` : '0 4px 20px rgba(0,0,0,0.05)',
                 }}
               >
-                {Icon && <Icon size={20} style={{ color: isHovered ? node.color : '#9B9590' }} />}
+                {Icon && <Icon size={20} style={{ color: isRevealed ? node.color : '#9B9590' }} />}
               </button>
 
-              {/* Label below node */}
               <span
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-colors"
-                style={{ color: isHovered ? node.color : '#9B9590' }}
+                style={{ color: isRevealed ? node.color : '#9B9590' }}
               >
                 {node.label}
               </span>
 
-              {/* Spider web sub-nodes */}
-              {isHovered && (
-                <SpiderWebSubNodesB node={node} onCaseStudy={setSelectedNode} />
-              )}
+              <SpiderWebSubNodesB
+                node={node}
+                revealed={isRevealed}
+                onCaseStudy={setSelectedNode}
+              />
             </div>
           )
         })}

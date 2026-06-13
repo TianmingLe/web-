@@ -71,19 +71,51 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   )
 }
 
-// SpiderWeb sub-nodes component
+// SpiderWeb sub-nodes - always visible with animated reveal
 function SpiderWebSubNodes({
   node,
+  revealed,
   onCaseStudy,
 }: {
   node: MainNode
+  revealed: boolean
   onCaseStudy: (node: MainNode) => void
 }) {
   const subCount = node.subNodes.length
   const subRadius = 90
+  const webRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!webRef.current || !revealed) return
+
+    const lines = webRef.current.querySelectorAll('.web-line')
+    const ringLines = webRef.current.querySelectorAll('.web-ring')
+    const subNodes = webRef.current.querySelectorAll('.sub-node-item')
+
+    // Clockwise reveal animation
+    gsap.fromTo(
+      lines,
+      { strokeDashoffset: 200, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.3, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.1 }
+    )
+
+    gsap.fromTo(
+      ringLines,
+      { strokeDashoffset: 100, opacity: 0 },
+      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 0.4 }
+    )
+
+    gsap.fromTo(
+      subNodes,
+      { scale: 0, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.07, ease: 'back.out(1.7)', delay: 0.3 }
+    )
+  }, [revealed])
+
+  if (!revealed) return null
 
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
+    <div ref={webRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] pointer-events-none">
       {/* Web lines from center to each sub-node */}
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
         {node.subNodes.map((_, i) => {
@@ -93,14 +125,16 @@ function SpiderWebSubNodes({
           return (
             <line
               key={`line-${i}`}
+              className="web-line"
               x1="110"
               y1="110"
               x2={x2}
               y2={y2}
               stroke={node.color}
               strokeWidth="1"
-              opacity="0.3"
-              strokeDasharray="3,3"
+              opacity="0"
+              strokeDasharray="200"
+              strokeDashoffset="200"
             />
           )
         })}
@@ -115,13 +149,16 @@ function SpiderWebSubNodes({
           return (
             <line
               key={`ring-${i}`}
+              className="web-ring"
               x1={x1}
               y1={y1}
               x2={x2}
               y2={y2}
               stroke={node.color}
               strokeWidth="0.5"
-              opacity="0.2"
+              opacity="0"
+              strokeDasharray="100"
+              strokeDashoffset="100"
             />
           )
         })}
@@ -136,11 +173,11 @@ function SpiderWebSubNodes({
         return (
           <div
             key={sub.id}
-            className="absolute pointer-events-auto"
+            className="sub-node-item absolute pointer-events-auto"
             style={{
               left: `calc(50% + ${x}px)`,
               top: `calc(50% + ${y}px)`,
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate(-50%, -50%) scale(0)',
               zIndex: 2,
             }}
           >
@@ -169,7 +206,7 @@ function SpiderWebSubNodes({
         )
       })}
 
-      {/* Case study button at bottom - always render container for consistent layout */}
+      {/* Bottom label */}
       <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-8px', zIndex: 2 }}>
         {node.caseStudy ? (
           <button
@@ -192,10 +229,11 @@ function SpiderWebSubNodes({
 }
 
 export default function CapabilityMap() {
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
+  const [revealedNodes, setRevealedNodes] = useState<Set<string>>(new Set())
   const [isLoaded, setIsLoaded] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -223,6 +261,33 @@ export default function CapabilityMap() {
     }, containerRef)
 
     return () => ctx.revert()
+  }, [])
+
+  // Scroll-triggered clockwise reveal
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated.current) {
+            hasAnimated.current = true
+            // Reveal nodes clockwise with stagger
+            const nodeIds = capabilityData.mainNodes.map((n) => n.id)
+            nodeIds.forEach((id, index) => {
+              setTimeout(() => {
+                setRevealedNodes((prev) => new Set([...prev, id]))
+              }, index * 200)
+            })
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+
+    observer.observe(container)
+    return () => observer.disconnect()
   }, [])
 
   const getNodePosition = (index: number, total: number) => {
@@ -261,7 +326,7 @@ export default function CapabilityMap() {
         {/* Main nodes */}
         {capabilityData.mainNodes.map((node, index) => {
           const pos = getNodePosition(index, capabilityData.mainNodes.length)
-          const isHovered = hoveredNode === node.id
+          const isRevealed = revealedNodes.has(node.id)
           const Icon = iconMap[node.id]
 
           return (
@@ -301,32 +366,32 @@ export default function CapabilityMap() {
 
               <button
                 onClick={() => node.caseStudy && setSelectedNode(node)}
-                onMouseEnter={() => setHoveredNode(node.id)}
-                onMouseLeave={() => setHoveredNode(null)}
                 className={`relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-300 flex items-center justify-center cursor-pointer z-30 ${
-                  isHovered ? 'scale-110 shadow-lg' : 'hover:scale-105'
+                  isRevealed ? 'scale-110 shadow-lg' : 'hover:scale-105'
                 }`}
                 style={{
-                  backgroundColor: isHovered ? `${node.color}15` : 'rgba(255,255,255,0.05)',
-                  borderColor: isHovered ? node.color : 'rgba(255,255,255,0.1)',
-                  boxShadow: isHovered ? `0 0 30px ${node.glowColor}` : 'none',
+                  backgroundColor: isRevealed ? `${node.color}15` : 'rgba(255,255,255,0.05)',
+                  borderColor: isRevealed ? node.color : 'rgba(255,255,255,0.1)',
+                  boxShadow: isRevealed ? `0 0 30px ${node.glowColor}` : 'none',
                 }}
               >
-                {Icon && <Icon size={20} style={{ color: isHovered ? node.color : '#94A3B8' }} />}
+                {Icon && <Icon size={20} style={{ color: isRevealed ? node.color : '#94A3B8' }} />}
               </button>
 
               {/* Label below node */}
               <span
                 className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium font-sans transition-colors"
-                style={{ color: isHovered ? node.color : '#94A3B8' }}
+                style={{ color: isRevealed ? node.color : '#94A3B8' }}
               >
                 {node.label}
               </span>
 
-              {/* Spider web sub-nodes */}
-              {isHovered && (
-                <SpiderWebSubNodes node={node} onCaseStudy={setSelectedNode} />
-              )}
+              {/* Spider web sub-nodes - auto reveal on scroll */}
+              <SpiderWebSubNodes
+                node={node}
+                revealed={isRevealed}
+                onCaseStudy={setSelectedNode}
+              />
             </div>
           )
         })}
