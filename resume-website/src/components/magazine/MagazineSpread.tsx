@@ -98,7 +98,7 @@ export default function MagazineSpread({
         <div className="flex relative" style={{ minHeight: '700px' }}>
           {/* 中缝阴影 */}
           <div
-            className="absolute left-1/2 top-0 bottom-0 w-2 -translate-x-1/2 pointer-events-none z-10"
+            className="absolute left-1/2 top-0 bottom-0 w-2 -translate-x-1/2 pointer-events-none z-0"
             style={{
               background:
                 'linear-gradient(90deg, rgba(0,0,0,0.15), transparent, rgba(0,0,0,0.15))',

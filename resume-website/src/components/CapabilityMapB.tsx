@@ -1006,7 +1006,7 @@ function SpiderWebSubNodesB({
                   boxShadow: `0 0 4px ${node.color}`,
                 }}
               />
-              <span className="text-[6px] text-b-sand font-b-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2">
+              <span className="text-[6px] text-b-sand font-b-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2 z-10">
                 {sec.label}
               </span>
             </div>
@@ -1362,7 +1362,7 @@ export default function CapabilityMapB() {
       {/* Spotlight overlay with GSAP fade */}
       <div
         ref={overlayRef}
-        className="absolute inset-0 z-[5] pointer-events-none opacity-0"
+        className="absolute inset-0 z-[1] pointer-events-none opacity-0"
         style={{
           background: 'rgba(245, 242, 237, 0.85)',
         }}
@@ -1421,7 +1421,7 @@ export default function CapabilityMapB() {
         )}
 
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
         >
           <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
             <CenterRingsB active={activeNodeIndex >= 0 && !showAll} />

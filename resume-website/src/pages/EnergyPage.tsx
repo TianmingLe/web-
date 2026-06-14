@@ -662,7 +662,7 @@ function OrbitalDashboard() {
             return (
               <div
                 key={idx}
-                className="orbit-card absolute"
+                className="orbit-card absolute z-20"
                 style={{
                   left: '50%',
                   top: '50%',
@@ -782,7 +782,7 @@ function MagazineSpread({
         <div className="flex relative" style={{ minHeight: '600px' }}>
           {/* Center fold shadow */}
           <div
-            className="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none z-10"
+            className="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 pointer-events-none z-0"
             style={{
               background: 'linear-gradient(90deg, rgba(0,0,0,0.3), transparent, rgba(0,0,0,0.3))',
             }}

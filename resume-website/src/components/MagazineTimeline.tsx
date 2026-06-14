@@ -231,7 +231,7 @@ function EventCard({
       </div>
 
       <div
-        className={`b-card p-5 md:p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-b-hover group ${event.milestone ? 'ring-1 ring-b-terracotta/20' : ''}`}
+        className={`b-card relative z-0 p-5 md:p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-b-hover group ${event.milestone ? 'ring-1 ring-b-terracotta/20' : ''}`}
       >
         {event.milestone && (
           <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-b-terracotta text-white flex items-center justify-center shadow-md z-10">
@@ -567,7 +567,7 @@ export default function MagazineTimeline() {
             ref={lineSvgRef}
             className="hidden md:block absolute left-1/2 top-0 -translate-x-1/2 w-1 h-full"
             preserveAspectRatio="none"
-            style={{ zIndex: 1, overflow: 'visible' }}
+            style={{ zIndex: 0, overflow: 'visible' }}
           >
             <defs>
               <linearGradient
@@ -596,7 +596,7 @@ export default function MagazineTimeline() {
 
           {/* Mobile line */}
           <div
-            className="md:hidden absolute left-[15px] top-0 bottom-0 w-px"
+            className="md:hidden absolute left-[15px] top-0 bottom-0 w-px z-0"
             style={{
               background:
                 'linear-gradient(to bottom, #B5654E, #7A8B6F 50%, #5B6B7A)',

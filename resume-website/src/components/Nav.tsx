@@ -175,7 +175,7 @@ export default function Nav() {
       )}
 
       <div
-        className={`fixed top-14 right-0 bottom-0 z-30 md:hidden w-64 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed top-14 right-0 bottom-0 z-40 md:hidden w-64 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           menuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{

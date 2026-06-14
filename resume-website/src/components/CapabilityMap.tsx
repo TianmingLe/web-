@@ -1005,7 +1005,7 @@ function SpiderWebSubNodes({
                   boxShadow: `0 0 4px ${node.color}`,
                 }}
               />
-              <span className="text-[6px] text-warm-ghost font-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2">
+              <span className="text-[6px] text-warm-ghost font-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2 z-10">
                 {sec.label}
               </span>
             </div>
@@ -1347,7 +1347,7 @@ export default function CapabilityMap() {
       {/* Spotlight overlay with GSAP fade */}
       <div
         ref={overlayRef}
-        className="absolute inset-0 z-[5] pointer-events-none opacity-0"
+        className="absolute inset-0 z-[1] pointer-events-none opacity-0"
         style={{
           background: 'rgba(0, 0, 0, 0.82)',
         }}
@@ -1405,7 +1405,7 @@ export default function CapabilityMap() {
 
         {/* Center node */}
         <div
-          className="absolute left-1/2 top-1/2 z-30"
+          className="absolute left-1/2 top-1/2 z-20"
           style={{
             transform: 'translate(-50%, -50%)',
             opacity: activeNodeIndex >= 0 && !showAll ? 1 : 1,
