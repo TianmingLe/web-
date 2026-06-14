@@ -18,9 +18,9 @@ const iconMap: Record<string, LucideIcon> = {
 /* ------------------------------------------------------------------ */
 /*  Shared constants (derived from container size)                     */
 /* ------------------------------------------------------------------ */
-const CONTAINER_SM = 360   // mobile base (px)
-const CONTAINER_MD = 720   // desktop base (px)
-const CONTAINER_LG = 860   // desktop large (px)
+const CONTAINER_SM = 320   // mobile base (px)
+const CONTAINER_MD = 640   // desktop base (px)
+const CONTAINER_LG = 720   // desktop large (px)
 
 function useContainerSize() {
   const isMd = useMediaQuery('(min-width: 768px)')
@@ -1120,14 +1120,14 @@ function MainNodeItem({
 }) {
   const total = capabilityData.mainNodes.length
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-  const radius = isLoaded ? (isMobile ? 140 : 260) : 0
+  const radius = isLoaded ? (isMobile ? 120 : 220) : 0
   const pos = { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
   const active = activeNodeIndex === index
   const dimmed = activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
   const Icon = iconMap[node.id]
   const labelText = useTextScramble(node.label, active)
-  const nodeRadiusWeb = isMobile ? 70 : 110
-  const webSize = isMobile ? 220 : 320
+  const nodeRadiusWeb = isMobile ? 60 : 90
+  const webSize = isMobile ? 180 : 260
 
   return (
     <div
@@ -1244,7 +1244,7 @@ export default function CapabilityMap() {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   const { size: containerSize, isMobile } = useContainerSize()
-  const nodeRadius = isMobile ? 140 : 260
+  const nodeRadius = isMobile ? 120 : 220
 
   // Spotlight sequence
   const runSpotlightSequence = useCallback(() => {
@@ -1359,7 +1359,7 @@ export default function CapabilityMap() {
       </div>
 
       <div
-        className="relative mx-auto flex items-center justify-center"
+        className="relative mx-auto"
         style={{
           width: containerSize,
           height: containerSize,
@@ -1405,8 +1405,9 @@ export default function CapabilityMap() {
 
         {/* Center node */}
         <div
-          className="relative z-30"
+          className="absolute left-1/2 top-1/2 z-30"
           style={{
+            transform: 'translate(-50%, -50%)',
             opacity: activeNodeIndex >= 0 && !showAll ? 1 : 1,
             transition: 'opacity 0.5s ease',
           }}
