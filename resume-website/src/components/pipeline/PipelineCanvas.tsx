@@ -134,7 +134,7 @@ export default function PipelineCanvas() {
           <canvas
             ref={canvasRef}
             className="relative w-full block"
-            style={{ height: isMobile ? '950px' : '580px' }}
+            style={{ height: isMobile ? '1050px' : '720px' }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           />
