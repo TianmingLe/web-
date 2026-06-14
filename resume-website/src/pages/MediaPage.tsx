@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -20,6 +20,8 @@ import {
   CheckCircle2,
   ArrowRight,
   MonitorPlay,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import DarkExpandableCard from '@components/DarkExpandableCard'
@@ -189,8 +191,139 @@ function MediaParticlesBg() {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
 }
 
+function ProjectCard({
+  proj,
+  expanded,
+  onToggle,
+  cardRef,
+}: {
+  proj: (typeof projects)[0]
+  expanded: boolean
+  onToggle: () => void
+  cardRef: React.RefObject<HTMLDivElement | null>
+}) {
+  const innerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = cardRef.current
+    const inner = innerRef.current
+    if (!el || !inner) return
+
+    if (expanded) {
+      const fullHeight = inner.scrollHeight
+      gsap.fromTo(
+        el,
+        { height: el.offsetHeight },
+        { height: fullHeight, duration: 0.4, ease: 'power2.out' }
+      )
+    } else {
+      const collapsedHeight = inner.firstElementChild
+        ? (inner.firstElementChild as HTMLElement).offsetHeight
+        : 0
+      gsap.fromTo(
+        el,
+        { height: el.offsetHeight },
+        { height: collapsedHeight, duration: 0.4, ease: 'power2.out' }
+      )
+    }
+  }, [expanded, cardRef])
+
+  return (
+    <div
+      ref={cardRef as React.Ref<HTMLDivElement>}
+      className="industrial-card p-6 hover:border-pink-400/20 transition-all overflow-hidden"
+      style={{ height: 'auto' }}
+    >
+      <div ref={innerRef}>
+        {/* Collapsed content */}
+        <div>
+          <h3 className="text-lg font-serif text-warm mb-3">{proj.title}</h3>
+          <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans line-clamp-1">
+            {proj.desc}
+          </p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {proj.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="px-2.5 py-1 text-xs rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 font-sans"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Expanded content */}
+        <div className="expanded-content">
+          {proj.workflow && (
+            <div className="mb-4">
+              <p className="text-warm-faint text-xs font-mono uppercase tracking-wider mb-2">
+                工作流
+              </p>
+              <div className="flex flex-wrap items-center gap-1">
+                {proj.workflow.map((step, i) => (
+                  <div key={i} className="flex items-center gap-1">
+                    <span className="text-warm-muted text-xs font-sans">{step}</span>
+                    {i < proj.workflow.length - 1 && (
+                      <ArrowRight size={10} className="text-warm-faint" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {proj.impact && (
+            <div className="space-y-2">
+              {proj.impact.map((imp, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <TrendingUp size={14} className="text-pink-400 mt-0.5 shrink-0" />
+                  <span className="text-warm-muted text-xs font-sans">{imp}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {proj.highlights && (
+            <div className="space-y-2">
+              {proj.highlights.map((h, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <CheckCircle2 size={14} className="text-pink-400 mt-0.5 shrink-0" />
+                  <span className="text-warm-muted text-xs font-sans">{h}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={onToggle}
+          className="mt-4 inline-flex items-center gap-1.5 text-pink-400 text-sm font-sans hover:text-pink-300 transition-colors"
+        >
+          {expanded ? (
+            <>
+              收起详情 <ChevronUp size={16} />
+            </>
+          ) : (
+            <>
+              展开详情 <ChevronDown size={16} />
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function MediaPage() {
   const contentRef = useRef<HTMLDivElement>(null)
+  const [expanded, setExpanded] = useState(false)
+  const card1Ref = useRef<HTMLDivElement>(null)
+  const card2Ref = useRef<HTMLDivElement>(null)
+
+  const toggleExpanded = useCallback(() => {
+    setExpanded((prev) => !prev)
+  }, [])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -353,65 +486,13 @@ export default function MediaPage() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {projects.map((proj, idx) => (
-                <div
+                <ProjectCard
                   key={idx}
-                  className="industrial-card p-6 hover:border-pink-400/20 transition-all"
-                >
-                  <h3 className="text-lg font-serif text-warm mb-3">{proj.title}</h3>
-                  <p className="text-warm-muted text-sm leading-relaxed mb-4 font-sans">
-                    {proj.desc}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {proj.tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 text-xs rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 font-sans"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {proj.workflow && (
-                    <div className="mb-4">
-                      <p className="text-warm-faint text-xs font-mono uppercase tracking-wider mb-2">
-                        工作流
-                      </p>
-                      <div className="flex flex-wrap items-center gap-1">
-                        {proj.workflow.map((step, i) => (
-                          <div key={i} className="flex items-center gap-1">
-                            <span className="text-warm-muted text-xs font-sans">{step}</span>
-                            {i < proj.workflow.length - 1 && (
-                              <ArrowRight size={10} className="text-warm-faint" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {proj.impact && (
-                    <div className="space-y-2">
-                      {proj.impact.map((imp, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <TrendingUp size={14} className="text-pink-400 mt-0.5 shrink-0" />
-                          <span className="text-warm-muted text-xs font-sans">{imp}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {proj.highlights && (
-                    <div className="space-y-2">
-                      {proj.highlights.map((h, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <CheckCircle2 size={14} className="text-pink-400 mt-0.5 shrink-0" />
-                          <span className="text-warm-muted text-xs font-sans">{h}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  proj={proj}
+                  expanded={expanded}
+                  onToggle={toggleExpanded}
+                  cardRef={idx === 0 ? card1Ref : card2Ref}
+                />
               ))}
             </div>
           </div>
