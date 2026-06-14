@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OtherPage - 互动式数字杂志预览</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --magazine-cream: #F5E6D3;
+      --magazine-warm: #B8A99A;
+      --copper-gold: #D4A574;
+      --magazine-bg: #0D0B0A;
+      --magazine-card: #1A1614;
+      --magazine-border: #3D3530;
+      --magazine-highlight: #E8C9A0;
+      --font-serif: 'Playfair Display', 'Instrument Serif', Georgia, serif;
+      --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--magazine-bg);
+      color: var(--magazine-cream);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ===== MagazineHero ===== */
+    .magazine-hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1rem;
+      background: linear-gradient(180deg, #0D0B0A 0%, #14110F 100%);
+    }
+
+    .magazine-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    .hero-top-line {
+      position: absolute;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8rem;
+      height: 1px;
+      background: rgba(212, 165, 116, 0.6);
+    }
+
+    .hero-volume {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-volume p {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      color: rgba(212, 165, 116, 0.7);
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      color: var(--magazine-cream);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title .char {
+      display: inline-block;
+      opacity: 0;
+      animation: charReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .hero-title .char:nth-child(1) { animation-delay: 0.3s; }
+    .hero-title .char:nth-child(2) { animation-delay: 0.35s; }
+    .hero-title .char:nth-child(3) { animation-delay: 0.4s; }
+    .hero-title .char:nth-child(4) {
+      animation-delay: 0.45s;
+      font-style: italic;
+      color: var(--copper-gold);
+    }
+    .hero-title .char:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes charReveal {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-subtitle {
+      color: var(--magazine-warm);
+      font-size: 0.875rem;
+      max-width: 28rem;
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .hero-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .hero-divider .line {
+      width: 3rem;
+      height: 1px;
+      background: rgba(212, 165, 116, 0.5);
+    }
+
+    .hero-divider .diamond {
+      width: 0.5rem;
+      height: 0.5rem;
+      border: 1px solid var(--copper-gold);
+      transform: rotate(45deg);
+    }
+
+    .hero-dots {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero-dots .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(212, 165, 116, 0.4);
+    }
+
+    .hero-footer {
+      position: absolute;
+      bottom: 2rem;
+      left: 0;
+      right: 0;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .hero-footer span {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: rgba(184, 169, 154, 0.5);
+    }
+
+    .hero-footer .badge {
+      padding: 0.25rem 0.75rem;
+      border: 1px solid rgba(212, 165, 116, 0.3);
+      border-radius: 9999px;
+      color: rgba(212, 165, 116, 0.7);
+    }
+
+    /* ===== MagazineSpread ===== */
+    .magazine-spread {
+      padding: 4rem 0;
+      perspective: 1200px;
+    }
+
+    .spread-desktop {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      display: flex;
+    }
+
+    .spread-page {
+      flex: 1;
+      padding: 2rem;
+      background: #14110F;
+      position: relative;
+      min-height: 700px;
+      opacity: 0;
+      animation: pageFlipIn 0.8s ease-out forwards;
+    }
+
+    .spread-page.left {
+      border-radius: 8px 0 0 8px;
+      border-right: 1px solid var(--magazine-border);
+      transform-origin: right center;
+      animation-delay: 0s;
+    }
+
+    .spread-page.right {
+      border-radius: 0 8px 8px 0;
+      transform-origin: left center;
+      animation-delay: 0.15s;
+    }
+
+    @keyframes pageFlipIn {
+      from {
+        opacity: 0;
+        transform: rotateY(var(--rotate-start, -8deg));
+      }
+      to {
+        opacity: 1;
+        transform: rotateY(0deg);
+      }
+    }
+
+    .spread-page.right {
+      --rotate-start: 8deg;
+    }
+
+    .spread-crease {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1.5rem;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 10;
+      background: linear-gradient(90deg, rgba(0,0,0,0.4), transparent, rgba(0,0,0,0.4));
+    }
+
+    .corner-ornament {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+    }
+
+    .corner-ornament.tl { top: -8px; left: -8px; }
+    .corner-ornament.tr { top: -8px; right: -8px; transform: rotate(90deg); }
+    .corner-ornament.bl { bottom: -8px; left: -8px; transform: rotate(-90deg); }
+    .corner-ornament.br { bottom: -8px; right: -8px; transform: rotate(180deg); }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--magazine-border);
+      margin-bottom: 1.5rem;
+    }
+
+    .page-header span {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.3em;
+      color: rgba(184, 169, 154, 0.5);
+      text-transform: uppercase;
+    }
+
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-top: 1px solid var(--magazine-border);
+      margin-top: 1.5rem;
+      position: absolute;
+      bottom: 0;
+      left: 2rem;
+      right: 2rem;
+    }
+
+    .page-footer span {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.2em;
+      color: rgba(184, 169, 154, 0.4);
+    }
+
+    .page-footer .page-num {
+      font-family: var(--font-serif);
+      font-size: 1.125rem;
+      color: rgba(212, 165, 116, 0.6);
+    }
+
+    /* ===== DropCap ===== */
+    .drop-cap {
+      color: var(--magazine-warm);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .drop-cap .first-char {
+      float: left;
+      margin-right: 0.5rem;
+      margin-top: 0.25rem;
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      color: var(--copper-gold);
+      line-height: 0.8;
+    }
+
+    /* ===== AwardItem ===== */
+    .award-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(61, 53, 48, 0.5);
+      transition: color 0.3s;
+    }
+
+    .award-item:last-child { border-bottom: none; }
+
+    .award-item:hover h4 { color: var(--copper-gold); }
+
+    .award-year {
+      flex-shrink: 0;
+      width: 3rem;
+    }
+
+    .award-year span {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: rgba(212, 165, 116, 0.6);
+      line-height: 1;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    .award-content { flex: 1; min-width: 0; }
+
+    .award-content h4 {
+      color: var(--magazine-cream);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      transition: color 0.3s;
+    }
+
+    .award-content .project {
+      color: rgba(184, 169, 154, 0.7);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      margin-bottom: 0.25rem;
+    }
+
+    .award-content .role {
+      color: rgba(184, 169, 154, 0.5);
+      font-size: 0.625rem;
+    }
+
+    .award-badge {
+      flex-shrink: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .award-badge.gold {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+    }
+
+    .award-badge.silver {
+      background: rgba(156, 163, 175, 0.2);
+      color: #d1d5db;
+    }
+
+    /* ===== CertificateCard ===== */
+    .cert-card {
+      position: relative;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background: #F5E6D3;
+      transition: all 0.3s ease-out;
+      cursor: pointer;
+    }
+
+    .cert-card:hover {
+      transform: translateY(-4px) rotate(-1deg);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .cert-card-inner {
+      border: 1px dashed rgba(146, 64, 14, 0.3);
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+    }
+
+    .cert-card .name {
+      color: #78350f;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .cert-card .desc {
+      color: rgba(146, 64, 14, 0.6);
+      font-size: 0.625rem;
+      margin-top: 0.25rem;
+    }
+
+    .cert-stamp {
+      position: absolute;
+      bottom: -0.5rem;
+      right: -0.5rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 2px solid rgba(185, 28, 28, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-15deg);
+    }
+
+    .cert-stamp span {
+      color: rgba(185, 28, 28, 0.4);
+      font-size: 0.5rem;
+      font-weight: bold;
+    }
+
+    /* ===== PolaroidFrame ===== */
+    .polaroid {
+      position: relative;
+      padding: 0.75rem;
+      padding-bottom: 2.5rem;
+      background: white;
+      border-radius: 0.25rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s;
+      transform: rotate(-2deg);
+      display: inline-block;
+    }
+
+    .polaroid:hover {
+      transform: rotate(0deg) scale(1.03);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    }
+
+    .polaroid-tape {
+      position: absolute;
+      top: -0.5rem;
+      left: 50%;
+      transform: translateX(-50%) rotate(-2deg);
+      width: 3rem;
+      height: 1.25rem;
+      background: rgba(251, 191, 36, 0.3);
+      border-radius: 0.125rem;
+    }
+
+    .polaroid-caption {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #4b5563;
+      font-size: 0.75rem;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    /* ===== StickyNote ===== */
+    .sticky-note-wrap {
+      position: relative;
+      width: 9rem;
+      height: 9rem;
+      cursor: pointer;
+      perspective: 400px;
+    }
+
+    .sticky-note {
+      width: 100%;
+      height: 100%;
+      border-radius: 0.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: transform 0.5s ease-in-out;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .sticky-note.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .sticky-note-face {
+      position: absolute;
+      inset: 0;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.25rem;
+      backface-visibility: hidden;
+    }
+
+    .sticky-note-face.back {
+      transform: rotateY(180deg);
+    }
+
+    .sticky-note-face p {
+      font-size: 0.75rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    /* ===== RadarChart ===== */
+    .radar-chart { display: block; margin: 0 auto; }
+
+    /* ===== MagazineSkills ===== */
+    .skills-section {
+      padding: 4rem 0;
+    }
+
+    .skills-card {
+      max-width: 64rem;
+      margin: 0 auto;
+      padding: 2.5rem;
+      background: #14110F;
+      border-radius: 0.5rem;
+      position: relative;
+    }
+
+    .skill-tag {
+      display: inline-block;
+      border-radius: 9999px;
+      border: 1px solid var(--magazine-border);
+      background: var(--magazine-card);
+      color: rgba(184, 169, 154, 0.7);
+      transition: all 0.2s;
+      cursor: default;
+      padding: 0.25rem 0.625rem;
+      font-size: 0.625rem;
+      margin: 0.25rem;
+    }
+
+    .skill-tag:hover {
+      border-color: rgba(212, 165, 116, 0.3);
+    }
+
+    .skill-tag.active {
+      background: rgba(212, 165, 116, 0.2);
+      color: var(--copper-gold);
+      border-color: rgba(212, 165, 116, 0.4);
+      transform: scale(1.1);
+    }
+
+    /* ===== MagazineFooter ===== */
+    .magazine-footer {
+      padding: 4rem 0;
+    }
+
+    .footer-card {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 2rem 3rem;
+      background: #14110F;
+      border-radius: 0.5rem;
+    }
+
+    .barcode {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 2.5rem;
+    }
+
+    .barcode-bar {
+      background: var(--magazine-cream);
+    }
+
+    /* ===== Utilities ===== */
+    .text-copper { color: var(--copper-gold); }
+    .text-cream { color: var(--magazine-cream); }
+    .text-warm { color: var(--magazine-warm); }
+    .text-warm-50 { color: rgba(184, 169, 154, 0.5); }
+    .text-warm-70 { color: rgba(184, 169, 154, 0.7); }
+    .bg-card { background: #14110F; }
+    .border-magazine { border-color: var(--magazine-border); }
+
+    .font-serif { font-family: var(--font-serif); }
+    .font-mono { font-family: var(--font-mono); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem; }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-1 { gap: 0.25rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+
+    .text-xs { font-size: 0.75rem; }
+    .text-sm { font-size: 0.875rem; }
+    .text-lg { font-size: 1.125rem; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-6xl { font-size: 3.75rem; }
+
+    .font-medium { font-weight: 500; }
+    .italic { font-style: italic; }
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.1em; }
+    .tracking-widest { letter-spacing: 0.3em; }
+
+    .p-2 { padding: 0.5rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-4 { padding: 1rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+    .pt-6 { padding-top: 1.5rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .pl-4 { padding-left: 1rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-4 { margin-top: 1rem; }
+    .mt-6 { margin-top: 1.5rem; }
+    .mt-8 { margin-top: 2rem; }
+    .mt-12 { margin-top: 3rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .ml-11 { margin-left: 2.75rem; }
+    .mr-2 { margin-right: 0.5rem; }
+
+    .w-px { width: 1px; }
+    .h-8 { height: 2rem; }
+    .h-32 { height: 8rem; }
+    .h-40 { height: 10rem; }
+
+    .rounded { border-radius: 0.25rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-full { border-radius: 9999px; }
+
+    .border { border-width: 1px; border-style: solid; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+    .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+    .border-l-2 { border-left-width: 2px; border-left-style: solid; }
+
+    .bg-copper-5 { background: rgba(212, 165, 116, 0.05); }
+    .bg-copper-10 { background: rgba(212, 165, 116, 0.1); }
+
+    .shrink-0 { flex-shrink: 0; }
+    .flex-1 { flex: 1; }
+    .min-w-0 { min-width: 0; }
+
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+
+    .overflow-hidden { overflow: hidden; }
+
+    .transition-colors { transition: color 0.3s; }
+
+    .cursor-pointer { cursor: pointer; }
+    .cursor-default { cursor: default; }
+
+    .leading-relaxed { line-height: 1.6; }
+    .leading-none { line-height: 1; }
+    .leading-tight { line-height: 1.3; }
+
+    .max-w-md { max-width: 28rem; }
+    .max-w-4xl { max-width: 56rem; }
+    .max-w-5xl { max-width: 64rem; }
+    .max-w-6xl { max-width: 72rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+
+    /* Mobile */
+    @media (max-width: 767px) {
+      .spread-desktop { display: none; }
+      .spread-mobile { display: block; padding: 0 1rem; }
+      .spread-mobile .mobile-page {
+        padding: 1.5rem;
+        background: #14110F;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .grid-5 { grid-template-columns: repeat(2, 1fr); }
+      .hero-title { font-size: 2.5rem; }
+      .skills-card { padding: 1.5rem; }
+      .footer-card { padding: 1.5rem; }
+    }
+
+    @media (min-width: 768px) {
+      .spread-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== MagazineHero ===== -->
+<section class="magazine-hero">
+  <div class="hero-top-line"></div>
+  <div class="hero-volume">
+    <p>Vol. 01 · June 2025</p>
+  </div>
+  <h1 class="hero-title">
+    <span class="char">荣</span><span class="char">誉</span><span class="char">与</span><span class="char">经</span><span class="char">历</span>
+  </h1>
+  <p class="hero-subtitle">
+    从学术竞赛到职业实践，从校园活动到技能积累——<br>
+    一份关于成长与探索的个人档案。
+  </p>
+  <div class="hero-divider">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
+  </div>
+  <div class="hero-dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="hero-footer">
+    <span>EDITOR: TIANMING LE</span>
+    <span class="badge">FEATURED</span>
+    <span>PRICELESS</span>
+  </div>
+</section>
+
+<!-- ===== MagazineAwards (Desktop) ===== -->
+<section class="magazine-spread">
+  <div class="spread-desktop">
+    <!-- Left Page -->
+    <div class="spread-page left">
+      <svg class="corner-ornament tl" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+        <path d="M0 30 L0 15 Q0 0 15 0 L30 0" stroke="rgba(212,165,116,0.15)" stroke-width="0.8"/>
+      </svg>
+      <svg class="corner-ornament bl" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+        <path d="M0 30 L0 15 Q0 0 15 0 L30 0" stroke="rgba(212,165,116,0.15)" stroke-width="0.8"/>
+      </svg>
+
+      <div class="page-header">
+        <span>Hall of Honor</span>
+        <span>VOL.01</span>
+      </div>
+
+      <div class="mb-6">
+        <p class="drop-cap">
+          <span class="first-char">在</span>学术竞赛与实践中不断突破，累计获得省级奖项2项、校级奖项2项，涵盖数学建模、市场调查、英语视频制作等多个领域。
+        </p>
+      </div>
+
+      <div>
+        <div class="award-item">
+          <div class="award-year"><span>2026</span></div>
+          <div class="award-content">
+            <h4>市场调查与分析大赛</h4>
+            <p class="project">《康养五寨，药韵文旅——山西五寨中医药康养旅游游客体验及文旅提升路径研究》</p>
+            <p class="role">核心成员（5人团队）</p>
+          </div>
+          <div class="award-badge gold">🥇</div>
+        </div>
+        <div class="award-item">
+          <div class="award-year"><span>2025</span></div>
+          <div class="award-content">
+            <h4>数学建模竞赛</h4>
+            <p class="project">《烟幕干扰弹的投放策略》</p>
+            <p class="role">核心成员（3人团队，负责模型构建与数据分析）</p>
+          </div>
+          <div class="award-badge gold">🥇</div>
+        </div>
+        <div class="award-item">
+          <div class="award-year"><span>2025</span></div>
+          <div class="award-content">
+            <h4>市场调查与分析大赛</h4>
+            <p class="project">《2024年LLM的市场应用及发展前景调研》</p>
+            <p class="role">核心成员（3人团队）</p>
+          </div>
+          <div class="award-badge silver">🥈</div>
+        </div>
+        <div class="award-item">
+          <div class="award-year"><span>2024</span></div>
+          <div class="award-content">
+            <h4>英语高教杯英语视频制作比赛</h4>
+            <p class="project">英语视频创意与制作</p>
+            <p class="role">核心成员（3人团队，负责视频创意与制作）</p>
+          </div>
+          <div class="award-badge silver">🥈</div>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 border rounded-lg bg-copper-5" style="border-color: rgba(212,165,116,0.2);">
+        <div class="flex items-center justify-around">
+          <div class="text-center">
+            <p class="text-2xl font-serif text-copper">4</p>
+            <p class="text-xs text-warm-50 uppercase">Total Awards</p>
+          </div>
+          <div class="w-px h-8 bg-magazine"></div>
+          <div class="text-center">
+            <p class="text-2xl font-serif text-copper">2</p>
+            <p class="text-xs text-warm-50 uppercase">Provincial</p>
+          </div>
+          <div class="w-px h-8 bg-magazine"></div>
+          <div class="text-center">
+            <p class="text-2xl font-serif text-copper">2</p>
+            <p class="text-xs text-warm-50 uppercase">School-level</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        <span>HONORS & EXPERIENCE</span>
+        <span class="page-num">02</span>
+      </div>
+    </div>
+
+    <div class="spread-crease"></div>
+
+    <!-- Right Page -->
+    <div class="spread-page right">
+      <svg class="corner-ornament tr" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+        <path d="M0 30 L0 15 Q0 0 15 0 L30 0" stroke="rgba(212,165,116,0.15)" stroke-width="0.8"/>
+      </svg>
+      <svg class="corner-ornament br" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+        <path d="M0 30 L0 15 Q0 0 15 0 L30 0" stroke="rgba(212,165,116,0.15)" stroke-width="0.8"/>
+      </svg>
+
+      <div class="page-header">
+        <span>Certificate Gallery</span>
+        <span>VOL.01</span>
+      </div>
+
+      <p class="text-warm-70 text-xs mb-4 italic">证书不仅是能力的证明，更是持续学习的见证。</p>
+
+      <div class="grid-2">
+        <div class="cert-card">
+          <div class="cert-card-inner">
+            <p class="name">大学英语四级证书（CET-4）</p>
+            <p class="desc">证明英语读写能力</p>
+          </div>
+          <div class="cert-stamp"><span>证</span></div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-card-inner">
+            <p class="name">机动车驾驶证（C1）</p>
+            <p class="desc">便于工程现场调研与出差</p>
+          </div>
+          <div class="cert-stamp"><span>证</span></div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-card-inner">
+            <p class="name">轻型无人机驾驶证</p>
+            <p class="desc">应用于电力巡检、航拍测绘等场景</p>
+          </div>
+          <div class="cert-stamp"><span>证</span></div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-card-inner">
+            <p class="name">数学建模省级一等奖证书</p>
+            <p class="desc">竞赛荣誉</p>
+          </div>
+          <div class="cert-stamp"><span>证</span></div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-card-inner">
+            <p class="name">市场调查与分析大赛证书</p>
+            <p class="desc">省级一等奖1项，校级二等奖1项</p>
+          </div>
+          <div class="cert-stamp"><span>证</span></div>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        <span>HONORS & EXPERIENCE</span>
+        <span class="page-num">03</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile -->
+  <div class="spread-mobile">
+    <div class="mobile-page">
+      <div class="page-header">
+        <span>Hall of Honor</span>
+        <span>VOL.01</span>
+      </div>
+      <p class="drop-cap mb-4">
+        <span class="first-char">在</span>学术竞赛与实践中不断突破，累计获得省级奖项2项、校级奖项2项，涵盖数学建模、市场调查、英语视频制作等多个领域。
+      </p>
+      <div class="award-item">
+        <div class="award-year"><span>2026</span></div>
+        <div class="award-content">
+          <h4>市场调查与分析大赛</h4>
+          <p class="project">省级一等奖</p>
+        </div>
+        <div class="award-badge gold">🥇</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year"><span>2025</span></div>
+        <div class="award-content">
+          <h4>数学建模竞赛</h4>
+          <p class="project">省级一等奖</p>
+        </div>
+        <div class="award-badge gold">🥇</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year"><span>2025</span></div>
+        <div class="award-content">
+          <h4>市场调查与分析大赛</h4>
+          <p class="project">校级二等奖</p>
+        </div>
+        <div class="award-badge silver">🥈</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year"><span>2024</span></div>
+        <div class="award-content">
+          <h4>英语视频制作比赛</h4>
+          <p class="project">校级二等奖</p>
+        </div>
+        <div class="award-badge silver">🥈</div>
+      </div>
+    </div>
+    <div class="mobile-page">
+      <div class="page-header">
+        <span>Certificate Gallery</span>
+        <span>VOL.01</span>
+      </div>
+      <div class="grid-2">
+        <div class="cert-card"><div class="cert-card-inner"><p class="name">CET-4</p><p class="desc">英语四级</p></div></div>
+        <div class="cert-card"><div class="cert-card-inner"><p class="name">驾驶证 C1</p><p class="desc">机动车驾驶</p></div></div>
+        <div class="cert-card"><div class="cert-card-inner"><p class="name">无人机驾驶证</p><p class="desc">轻型无人机</p></div></div>
+        <div class="cert-card"><div class="cert-card-inner"><p class="name">数学建模证书</p><p class="desc">省级一等奖</p></div></div>
+        <div class="cert-card"><div class="cert-card-inner"><p class="name">市场调查证书</p><p class="desc">省级一等奖</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MagazineExperience ===== -->
+<section class="magazine-spread">
+  <div class="spread-desktop">
+    <!-- Left Page -->
+    <div class="spread-page left">
+      <svg class="corner-ornament tl" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+      </svg>
+      <svg class="corner-ornament bl" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+      </svg>
+
+      <div class="page-header">
+        <span>Field Report</span>
+        <span>VOL.01</span>
+      </div>
+
+      <div class="mb-6 pl-4" style="border-left: 2px solid rgba(212,165,116,0.5);">
+        <p class="text-cream text-sm italic font-serif leading-relaxed">
+          "从风电场的高压设备巡检到互联网公司的校园运营，每一次实践都是对课堂知识的延伸与验证。"
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <p class="drop-cap">
+          <span class="first-char">实</span>习经历横跨能源运维与互联网运营两大领域。在山西粤电风电场，深入220kV升压站进行设备巡检；在百度网盘，负责校园大使运营与内容创作。
+        </p>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-full bg-copper-10 flex items-center justify-center shrink-0">
+              <span style="color: var(--copper-gold); font-size: 0.875rem;">🏢</span>
+            </div>
+            <div>
+              <h4 class="text-cream text-sm font-medium">山西粤电能源有限公司（盂县粤鑫风电场）</h4>
+              <p class="text-warm-50 text-xs">运维实习生 · 2025.06</p>
+            </div>
+          </div>
+          <div class="ml-11 space-y-1.5 mb-3">
+            <div class="flex items-start gap-2">
+              <span class="w-1 h-1 rounded-full mt-1.5 shrink-0" style="background: rgba(212,165,116,0.5);"></span>
+              <p class="text-warm-70 text-xs leading-relaxed">现场设备运维与安全管理：严格遵循「五防」闭锁逻辑与安全交底流程</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="w-1 h-1 rounded-full mt-1.5 shrink-0" style="background: rgba(212,165,116,0.5);"></span>
+              <p class="text-warm-70 text-xs leading-relaxed">升压站例行巡检：使用红外测温仪对母线、开关触头等易发热部位进行精准测温</p>
+            </div>
+          </div>
+          <div class="ml-11 flex flex-wrap gap-1.5">
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">巡检10+次</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">发现隐患1处</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">数据报表2份</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-full bg-copper-10 flex items-center justify-center shrink-0">
+              <span style="color: var(--copper-gold); font-size: 0.875rem;">💼</span>
+            </div>
+            <div>
+              <h4 class="text-cream text-sm font-medium">百度网盘</h4>
+              <p class="text-warm-50 text-xs">校园大使 & 小红书宣传大使 · 2024.03 - 至今</p>
+            </div>
+          </div>
+          <div class="ml-11 space-y-1.5 mb-3">
+            <div class="flex items-start gap-2">
+              <span class="w-1 h-1 rounded-full mt-1.5 shrink-0" style="background: rgba(212,165,116,0.5);"></span>
+              <p class="text-warm-70 text-xs leading-relaxed">线下活动：组织「网盘使用技巧」讲座、设立宣传展台</p>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="w-1 h-1 rounded-full mt-1.5 shrink-0" style="background: rgba(212,165,116,0.5);"></span>
+              <p class="text-warm-70 text-xs leading-relaxed">小红书内容创作：制作网盘使用攻略笔记（每周2篇）</p>
+            </div>
+          </div>
+          <div class="ml-11 flex flex-wrap gap-1.5">
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">拉新50+人</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">活动10+场</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-copper-10 text-copper border" style="border-color: rgba(212,165,116,0.2);">阅读10万+</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 grid-3">
+        <div class="text-center p-3 border rounded" style="border-color: var(--magazine-border);">
+          <p class="text-xl font-serif text-copper">2</p>
+          <p class="text-xs text-warm-50">实习单位</p>
+        </div>
+        <div class="text-center p-3 border rounded" style="border-color: var(--magazine-border);">
+          <p class="text-xl font-serif text-copper">10+</p>
+          <p class="text-xs text-warm-50">巡检次数</p>
+        </div>
+        <div class="text-center p-3 border rounded" style="border-color: var(--magazine-border);">
+          <p class="text-xl font-serif text-copper">50+</p>
+          <p class="text-xs text-warm-50">拉新人数</p>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        <span>HONORS & EXPERIENCE</span>
+        <span class="page-num">04</span>
+      </div>
+    </div>
+
+    <div class="spread-crease"></div>
+
+    <!-- Right Page -->
+    <div class="spread-page right">
+      <svg class="corner-ornament tr" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+      </svg>
+      <svg class="corner-ornament br" viewBox="0 0 40 40" fill="none">
+        <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+      </svg>
+
+      <div class="page-header">
+        <span>Campus Life</span>
+        <span>VOL.01</span>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <span style="color: var(--copper-gold); font-size: 1rem;">🎓</span>
+        <h4 class="text-cream text-sm font-medium">Campus Life</h4>
+      </div>
+
+      <div class="mb-6 flex justify-center">
+        <div class="polaroid">
+          <div class="polaroid-tape"></div>
+          <div class="w-full h-32 rounded overflow-hidden" style="background: linear-gradient(to bottom right, rgba(180,83,9,0.3), rgba(194,65,12,0.3)); display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 2.5rem; opacity: 0.3;">🎓</span>
+          </div>
+          <p class="polaroid-caption">Volunteer Team 2024</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <div class="relative pl-4" style="border-left: 1px solid rgba(212,165,116,0.2);">
+          <div class="absolute" style="left: -3px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: rgba(212,165,116,0.5);"></div>
+          <div class="flex items-center justify-between mb-1">
+            <h5 class="text-cream text-xs font-medium">军训负责人</h5>
+            <span class="text-xs text-warm-50 font-mono">2023.09</span>
+          </div>
+          <p class="text-warm-70 text-xs leading-relaxed mb-1">协助教官组织军训活动，管理连队纪律与考勤，协调后勤保障</p>
+          <p class="text-copper text-xs" style="opacity: 0.7;">连队获得教官表扬，锻炼了组织协调能力</p>
+        </div>
+        <div class="relative pl-4" style="border-left: 1px solid rgba(212,165,116,0.2);">
+          <div class="absolute" style="left: -3px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: rgba(212,165,116,0.5);"></div>
+          <div class="flex items-center justify-between mb-1">
+            <h5 class="text-cream text-xs font-medium">彩虹志愿者协会网宣部部长</h5>
+            <span class="text-xs text-warm-50 font-mono">2024.10-至今</span>
+          </div>
+          <p class="text-warm-70 text-xs leading-relaxed mb-1">负责协会新媒体运营（公众号、视频号），策划并执行志愿活动宣传</p>
+          <p class="text-copper text-xs" style="opacity: 0.7;">参与志愿活动20+次，累计时长100+小时，获得「优秀网宣部部长」称号</p>
+        </div>
+      </div>
+
+      <div class="relative h-40">
+        <div class="sticky-note-wrap" style="position: absolute; top: 0; left: 0; transform: rotate(-3deg);">
+          <div class="sticky-note" style="background: #fef3c7;" onclick="this.classList.toggle('flipped')">
+            <div class="sticky-note-face" style="background: #fef3c7;">
+              <p style="color: #92400e;">参与志愿活动20+次</p>
+            </div>
+            <div class="sticky-note-face back" style="background: #fde68a;">
+              <p style="color: #92400e;">累计时长100+小时！</p>
+            </div>
+          </div>
+        </div>
+        <div class="sticky-note-wrap" style="position: absolute; top: 1rem; right: 1rem; transform: rotate(2deg);">
+          <div class="sticky-note" style="background: #dbeafe;" onclick="this.classList.toggle('flipped')">
+            <div class="sticky-note-face" style="background: #dbeafe;">
+              <p style="color: #1e40af;">优秀网宣部部长</p>
+            </div>
+            <div class="sticky-note-face back" style="background: #bfdbfe;">
+              <p style="color: #1e40af;">获得官方认证称号</p>
+            </div>
+          </div>
+        </div>
+        <div class="sticky-note-wrap" style="position: absolute; bottom: 0; left: 2rem; transform: rotate(-1deg);">
+          <div class="sticky-note" style="background: #fce7f3;" onclick="this.classList.toggle('flipped')">
+            <div class="sticky-note-face" style="background: #fce7f3;">
+              <p style="color: #9d174d;">军训负责人</p>
+            </div>
+            <div class="sticky-note-face back" style="background: #fbcfe8;">
+              <p style="color: #9d174d;">连队获教官表扬</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-footer">
+        <span>HONORS & EXPERIENCE</span>
+        <span class="page-num">05</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile -->
+  <div class="spread-mobile">
+    <div class="mobile-page">
+      <div class="page-header"><span>Field Report</span><span>VOL.01</span></div>
+      <div class="mb-4 pl-4" style="border-left: 2px solid rgba(212,165,116,0.5);">
+        <p class="text-cream text-sm italic font-serif">"从风电场的高压设备巡检到互联网公司的校园运营..."</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <h4 class="text-cream text-sm font-medium">山西粤电能源有限公司</h4>
+          <p class="text-warm-50 text-xs">运维实习生 · 2025.06</p>
+          <p class="text-warm-70 text-xs mt-2">现场设备运维与安全管理，升压站例行巡检</p>
+        </div>
+        <div>
+          <h4 class="text-cream text-sm font-medium">百度网盘</h4>
+          <p class="text-warm-50 text-xs">校园大使 · 2024.03-至今</p>
+          <p class="text-warm-70 text-xs mt-2">线下活动组织，小红书内容创作</p>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-page">
+      <div class="page-header"><span>Campus Life</span><span>VOL.01</span></div>
+      <div class="space-y-4">
+        <div>
+          <h5 class="text-cream text-xs font-medium">军训负责人</h5>
+          <p class="text-warm-70 text-xs">协助教官组织军训活动</p>
+        </div>
+        <div>
+          <h5 class="text-cream text-xs font-medium">彩虹志愿者协会网宣部部长</h5>
+          <p class="text-warm-70 text-xs">负责协会新媒体运营</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MagazineSkills ===== -->
+<section class="skills-section">
+  <div class="skills-card">
+    <svg class="corner-ornament tl" viewBox="0 0 40 40" fill="none">
+      <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+    </svg>
+    <svg class="corner-ornament tr" viewBox="0 0 40 40" fill="none">
+      <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+    </svg>
+    <svg class="corner-ornament bl" viewBox="0 0 40 40" fill="none">
+      <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+    </svg>
+    <svg class="corner-ornament br" viewBox="0 0 40 40" fill="none">
+      <path d="M0 40 L0 20 Q0 0 20 0 L40 0" stroke="rgba(212,165,116,0.3)" stroke-width="1.5"/>
+    </svg>
+
+    <div class="text-center mb-8">
+      <p class="font-mono text-xs tracking-widest text-copper uppercase mb-2" style="opacity: 0.5;">Skills Column</p>
+      <h2 class="font-serif text-2xl md:text-3xl text-cream">技能矩阵</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; margin-bottom: 2rem;">
+      <!-- Radar Chart -->
+      <div>
+        <svg class="radar-chart" width="280" height="280" viewBox="0 0 280 280">
+          <!-- Grid rings -->
+          <polygon points="140,64 214,118 190,204 90,204 66,118" fill="none" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <polygon points="140,87 188,122 172,182 108,182 92,122" fill="none" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <polygon points="140,110 162,126 154,160 126,160 118,126" fill="none" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <!-- Axes -->
+          <line x1="140" y1="140" x2="140" y2="41" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <line x1="140" y1="140" x2="229" y2="102" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <line x1="140" y1="140" x2="206" y2="219" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <line x1="140" y1="140" x2="74" y2="219" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <line x1="140" y1="140" x2="51" y2="102" stroke="rgba(212,165,116,0.15)" stroke-width="1"/>
+          <!-- Data polygon -->
+          <polygon points="140,53 221,111 198,215 82,215 59,111" fill="rgba(212,165,116,0.15)" stroke="#D4A574" stroke-width="2" stroke-linejoin="round"/>
+          <!-- Points -->
+          <circle cx="140" cy="53" r="3" fill="#D4A574"/>
+          <circle cx="221" cy="111" r="3" fill="#D4A574"/>
+          <circle cx="198" cy="215" r="3" fill="#D4A574"/>
+          <circle cx="82" cy="215" r="3" fill="#D4A574"/>
+          <circle cx="59" cy="111" r="3" fill="#D4A574"/>
+          <!-- Labels -->
+          <text x="140" y="28" text-anchor="middle" fill="rgba(184,169,154,0.7)" font-size="10">专业技能</text>
+          <text x="244" y="95" text-anchor="middle" fill="rgba(184,169,154,0.7)" font-size="10">编程语言</text>
+          <text x="222" y="242" text-anchor="middle" fill="rgba(184,169,154,0.7)" font-size="10">AI 能力</text>
+          <text x="58" y="242" text-anchor="middle" fill="rgba(184,169,154,0.7)" font-size="10">媒体技能</text>
+          <text x="36" y="95" text-anchor="middle" fill="rgba(184,169,154,0.7)" font-size="10">工具软件</text>
+        </svg>
+        <div class="flex justify-center gap-6 mt-4">
+          <div class="text-center"><p class="text-xs text-warm-50">专业技能</p><p class="text-sm font-mono text-copper">4★</p></div>
+          <div class="text-center"><p class="text-xs text-warm-50">编程语言</p><p class="text-sm font-mono text-copper">5★</p></div>
+          <div class="text-center"><p class="text-xs text-warm-50">AI 能力</p><p class="text-sm font-mono text-copper">5★</p></div>
+          <div class="text-center"><p class="text-xs text-warm-50">媒体技能</p><p class="text-sm font-mono text-copper">4★</p></div>
+          <div class="text-center"><p class="text-xs text-warm-50">工具软件</p><p class="text-sm font-mono text-copper">4★</p></div>
+        </div>
+      </div>
+
+      <!-- Skill Cloud -->
+      <div>
+        <p class="text-warm-50 text-xs font-mono uppercase tracking-wider mb-4">Skill Cloud</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="skill-tag">ANSYS Fluent</span>
+          <span class="skill-tag">AutoCAD</span>
+          <span class="skill-tag">SolidWorks</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">C/C++</span>
+          <span class="skill-tag">Prompt工程</span>
+          <span class="skill-tag">Agent开发</span>
+          <span class="skill-tag">RAG</span>
+          <span class="skill-tag">MCP协议</span>
+          <span class="skill-tag">ComfyUI</span>
+          <span class="skill-tag">数字人</span>
+          <span class="skill-tag">AI绘画</span>
+          <span class="skill-tag">AI视频</span>
+          <span class="skill-tag">视频剪辑</span>
+          <span class="skill-tag">Photoshop</span>
+          <span class="skill-tag">内容运营</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Docker</span>
+          <span class="skill-tag">Linux</span>
+          <span class="skill-tag">Office</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t pt-6" style="border-color: var(--magazine-border);">
+      <p class="text-warm-50 text-xs font-mono uppercase tracking-wider mb-4">Skill Overview</p>
+      <div class="grid-5">
+        <div class="p-3 border rounded text-center" style="border-color: var(--magazine-border);">
+          <p class="text-warm text-xs mb-1">专业技能</p>
+          <p class="text-copper text-sm font-mono">★★★★☆</p>
+          <p class="text-warm-50 text-xs mt-1">5 项</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="border-color: var(--magazine-border);">
+          <p class="text-warm text-xs mb-1">编程语言</p>
+          <p class="text-copper text-sm font-mono">★★★★★</p>
+          <p class="text-warm-50 text-xs mt-1">7 项</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="border-color: var(--magazine-border);">
+          <p class="text-warm text-xs mb-1">AI 能力</p>
+          <p class="text-copper text-sm font-mono">★★★★★</p>
+          <p class="text-warm-50 text-xs mt-1">11 项</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="border-color: var(--magazine-border);">
+          <p class="text-warm text-xs mb-1">媒体技能</p>
+          <p class="text-copper text-sm font-mono">★★★★☆</p>
+          <p class="text-warm-50 text-xs mt-1">4 项</p>
+        </div>
+        <div class="p-3 border rounded text-center" style="border-color: var(--magazine-border);">
+          <p class="text-warm text-xs mb-1">工具软件</p>
+          <p class="text-copper text-sm font-mono">★★★★☆</p>
+          <p class="text-warm-50 text-xs mt-1">4 项</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MagazineFooter ===== -->
+<section class="magazine-footer">
+  <div class="footer-card">
+    <div class="flex items-center justify-between mb-10">
+      <div class="barcode" id="barcode"></div>
+      <span class="font-mono text-xs text-warm-50 tracking-wider">ISBN 978-0-0000000-0-0</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+      <div>
+        <p class="font-mono text-xs tracking-widest text-copper uppercase mb-4" style="opacity: 0.5;">Contact</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <span style="color: rgba(184,169,154,0.4); font-size: 0.875rem;">📞</span>
+            <span class="text-warm text-sm">19935072544</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span style="color: rgba(184,169,154,0.4); font-size: 0.875rem;">✉️</span>
+            <span class="text-warm text-sm">1767976037@qq.com</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="font-mono text-xs tracking-widest text-copper uppercase mb-4" style="opacity: 0.5;">Social Media</p>
+        <div class="flex items-center gap-3">
+          <a href="#" class="w-10 h-10 rounded-full border flex items-center justify-center text-warm-50 hover:text-copper transition-all" style="border-color: var(--magazine-border);">GH</a>
+          <a href="#" class="w-10 h-10 rounded-full border flex items-center justify-center text-warm-50 hover:text-copper transition-all" style="border-color: var(--magazine-border);">B</a>
+          <a href="#" class="w-10 h-10 rounded-full border flex items-center justify-center text-warm-50 hover:text-copper transition-all" style="border-color: var(--magazine-border);">红</a>
+          <a href="#" class="w-10 h-10 rounded-full border flex items-center justify-center text-warm-50 hover:text-copper transition-all" style="border-color: var(--magazine-border);">抖</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t flex items-end justify-between" style="border-color: var(--magazine-border);">
+      <div>
+        <p class="font-serif text-6xl" style="color: rgba(212,165,116,0.2); line-height: 1;">08</p>
+      </div>
+      <div class="text-right">
+        <p class="font-serif text-lg text-cream mb-1" style="opacity: 0.8;">HONORS & EXPERIENCE</p>
+        <p class="text-warm-50 text-xs">THANK YOU FOR READING</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Generate barcode
+  const barcode = document.getElementById('barcode');
+  for (let i = 0; i < 40; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'barcode-bar';
+    bar.style.width = Math.random() > 0.5 ? '2px' : '1px';
+    bar.style.height = Math.random() > 0.7 ? '32px' : '24px';
+    bar.style.opacity = Math.random() > 0.9 ? '0.4' : '1';
+    barcode.appendChild(bar);
+  }
+
+  // Skill tag hover effect
+  document.querySelectorAll('.skill-tag').forEach(tag => {
+    tag.addEventListener('mouseenter', () => tag.classList.add('active'));
+    tag.addEventListener('mouseleave', () => tag.classList.remove('active'));
+  });
+</script>
+
+</body>
+</html>
