@@ -357,16 +357,28 @@ function AnimatedTitle({ text }: { text: string }) {
 
 function RotatingGear() {
   const gearRef = useRef<HTMLDivElement>(null)
+  const bladeRef = useRef<SVGGElement>(null)
 
   useEffect(() => {
     if (!gearRef.current) return
     const ctx = gsap.context(() => {
+      // Outer gear slow rotation
       gsap.to(gearRef.current, {
         rotation: 360,
         duration: 20,
         repeat: -1,
         ease: 'none',
       })
+      // Inner turbine blades faster clockwise rotation
+      if (bladeRef.current) {
+        gsap.to(bladeRef.current, {
+          rotation: -360,
+          duration: 3,
+          repeat: -1,
+          ease: 'none',
+          transformOrigin: '100px 100px',
+        })
+      }
     })
     return () => ctx.revert()
   }, [])
@@ -399,15 +411,17 @@ function RotatingGear() {
           <circle cx="100" cy="100" r="65" strokeOpacity="0.4" />
           <circle cx="100" cy="100" r="55" strokeOpacity="0.3" />
           <circle cx="100" cy="100" r="20" strokeOpacity="0.5" fill="url(#gearGrad)" fillOpacity="0.15" />
-          {/* Inner turbine blades */}
-          {Array.from({ length: 8 }).map((_, i) => {
-            const angle = (i * 45 * Math.PI) / 180
-            const x1 = 100 + Math.cos(angle) * 20
-            const y1 = 100 + Math.sin(angle) * 20
-            const x2 = 100 + Math.cos(angle + 0.3) * 50
-            const y2 = 100 + Math.sin(angle + 0.3) * 50
-            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeOpacity="0.4" />
-          })}
+          {/* Inner turbine blades - auto rotating clockwise */}
+          <g ref={bladeRef}>
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i * 45 * Math.PI) / 180
+              const x1 = 100 + Math.cos(angle) * 20
+              const y1 = 100 + Math.sin(angle) * 20
+              const x2 = 100 + Math.cos(angle + 0.3) * 50
+              const y2 = 100 + Math.sin(angle + 0.3) * 50
+              return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeOpacity="0.4" />
+            })}
+          </g>
         </g>
       </svg>
       {/* Center glow */}
