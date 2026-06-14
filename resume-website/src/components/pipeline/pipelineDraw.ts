@@ -43,7 +43,7 @@ export function drawPipes({ ctx, layout, state, tier, timestamp }: DrawContext) 
     ctx.beginPath()
     const path = new Path2D(pipe.d)
     ctx.strokeStyle = 'rgba(192, 74, 26, 0.3)'
-    ctx.lineWidth = 6
+    ctx.lineWidth = 4
     ctx.lineCap = 'round'
     ctx.setLineDash([pipe.length])
     ctx.lineDashOffset = pipe.length * (1 - eased)
@@ -97,7 +97,7 @@ export function drawNodes({ ctx, layout, state, timestamp }: DrawContext) {
 
     if (isHovered) {
       ctx.beginPath()
-      ctx.arc(0, 0, 35, 0, Math.PI * 2)
+      ctx.arc(0, 0, 26, 0, Math.PI * 2)
       ctx.strokeStyle = 'rgba(192, 74, 26, 0.4)'
       ctx.lineWidth = 2
       ctx.shadowColor = '#C04A1A'
@@ -108,7 +108,7 @@ export function drawNodes({ ctx, layout, state, timestamp }: DrawContext) {
 
     if (shape === 'circle') {
       ctx.beginPath()
-      ctx.arc(0, 0, 28, 0, Math.PI * 2)
+      ctx.arc(0, 0, 20, 0, Math.PI * 2)
       ctx.fillStyle = 'rgba(15, 18, 24, 0.95)'
       ctx.fill()
       ctx.strokeStyle = isHovered ? '#C04A1A' : 'rgba(192, 74, 26, 0.4)'
@@ -116,17 +116,17 @@ export function drawNodes({ ctx, layout, state, timestamp }: DrawContext) {
       ctx.stroke()
 
       ctx.fillStyle = 'rgba(192, 74, 26, 0.5)'
-      ;[[-20, -20], [20, -20], [-20, 20], [20, 20]].forEach(([x, y]) => {
+      ;[[-14, -14], [14, -14], [-14, 14], [14, 14]].forEach(([x, y]) => {
         ctx.beginPath()
         ctx.arc(x, y, 2, 0, Math.PI * 2)
         ctx.fill()
       })
     } else {
       ctx.beginPath()
-      ctx.moveTo(0, -28)
-      ctx.lineTo(28, 0)
-      ctx.lineTo(0, 28)
-      ctx.lineTo(-28, 0)
+      ctx.moveTo(0, -20)
+      ctx.lineTo(20, 0)
+      ctx.lineTo(0, 20)
+      ctx.lineTo(-20, 0)
       ctx.closePath()
       ctx.fillStyle = 'rgba(15, 18, 24, 0.95)'
       ctx.fill()
@@ -135,17 +135,17 @@ export function drawNodes({ ctx, layout, state, timestamp }: DrawContext) {
       ctx.stroke()
 
       ctx.fillStyle = 'rgba(192, 74, 26, 0.5)'
-      ;[[-18, -18], [18, -18], [-18, 18], [18, 18]].forEach(([x, y]) => {
+      ;[[-13, -13], [13, -13], [-13, 13], [13, 13]].forEach(([x, y]) => {
         ctx.beginPath()
         ctx.arc(x, y, 2, 0, Math.PI * 2)
         ctx.fill()
       })
     }
 
-    const circumference = 2 * Math.PI * 22
+    const circumference = 2 * Math.PI * 16
     const dash = (level / 5) * circumference
     ctx.beginPath()
-    ctx.arc(0, 0, 22, -Math.PI / 2, -Math.PI / 2 + (dash / circumference) * Math.PI * 2)
+    ctx.arc(0, 0, 16, -Math.PI / 2, -Math.PI / 2 + (dash / circumference) * Math.PI * 2)
     ctx.strokeStyle = 'rgba(192, 74, 26, 0.6)'
     ctx.lineWidth = 1
     ctx.stroke()
@@ -172,7 +172,7 @@ export function drawLabels({ ctx, layout, state, timestamp }: DrawContext) {
 
     ctx.save()
     ctx.globalAlpha = eased
-    ctx.font = '500 10px sans-serif'
+    ctx.font = '500 9px sans-serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillStyle = isHovered ? '#E8703A' : '#F0E6D8'
@@ -190,7 +190,7 @@ export function drawTooltip({ ctx, layout, state }: DrawContext) {
   if (!pos || !skill) return
 
   const text = `Lv.${skill.level || 0} ${skill.label}`
-  ctx.font = '9px monospace'
+  ctx.font = '8px monospace'
   const textWidth = ctx.measureText(text).width
   const padding = 8
   const rectWidth = textWidth + padding * 2

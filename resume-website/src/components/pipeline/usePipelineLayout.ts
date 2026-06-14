@@ -39,16 +39,16 @@ export function usePipelineLayout(isMobile: boolean): LayoutConfig {
     const nodePositions = isMobile
       ? skills.map((_, i) => ({ x: 100, y: 60 + i * 90 }))
       : [
-          { x: 80, y: 100 },
-          { x: 280, y: 80 },
-          { x: 480, y: 110 },
-          { x: 680, y: 90 },
-          { x: 160, y: 280 },
-          { x: 360, y: 260 },
-          { x: 560, y: 290 },
-          { x: 260, y: 440 },
-          { x: 460, y: 420 },
-          { x: 360, y: 580 },
+          { x: 100, y: 80 },
+          { x: 260, y: 65 },
+          { x: 420, y: 85 },
+          { x: 580, y: 70 },
+          { x: 170, y: 220 },
+          { x: 330, y: 205 },
+          { x: 490, y: 230 },
+          { x: 250, y: 360 },
+          { x: 410, y: 345 },
+          { x: 330, y: 480 },
         ]
 
     const connections = isMobile

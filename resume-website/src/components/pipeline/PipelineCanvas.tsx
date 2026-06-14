@@ -15,6 +15,10 @@ export default function PipelineCanvas() {
   const [isWarm, setIsWarm] = useState(false)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [hoveredIndex, setHoveredIndex] = useState(-1)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef({ x: 0, y: 0 })
+  const dragOffsetRef = useRef({ x: 0, y: 0 })
 
   const tier = useDeviceTier()
   const layout = usePipelineLayout(isMobile)
@@ -67,6 +71,19 @@ export default function PipelineCanvas() {
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    if (isDragging) {
+      const dx = e.clientX - dragStartRef.current.x
+      const dy = e.clientY - dragStartRef.current.y
+      dragOffsetRef.current = {
+        x: dragOffset.x + dx,
+        y: dragOffset.y + dy,
+      }
+      setDragOffset(dragOffsetRef.current)
+      dragStartRef.current = { x: e.clientX, y: e.clientY }
+      return
+    }
+
     const rect = canvas.getBoundingClientRect()
     const dpr = Math.min(window.devicePixelRatio, 2)
     const x = (e.clientX - rect.left) * dpr
@@ -79,8 +96,11 @@ export default function PipelineCanvas() {
 
     for (let i = 0; i < nodePositions.length; i++) {
       const pos = nodePositions[i]
-      const dist = Math.hypot(x / scale - pos.x, y / scale - pos.y)
-      if (dist < 28) {
+      const dist = Math.hypot(
+        x / scale - pos.x - dragOffsetRef.current.x / scale,
+        y / scale - pos.y - dragOffsetRef.current.y / scale
+      )
+      if (dist < 20) {
         const skills = energyNode.subNodes ?? []
         setHoveredNode(skills[i]?.id || null)
         setHoveredIndex(i)
@@ -89,11 +109,21 @@ export default function PipelineCanvas() {
     }
     setHoveredNode(null)
     setHoveredIndex(-1)
-  }, [layout])
+  }, [layout, isDragging, dragOffset])
+
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    dragStartRef.current = { x: e.clientX, y: e.clientY }
+    setIsDragging(true)
+  }, [])
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false)
+  }, [])
 
   const handleMouseLeave = useCallback(() => {
     setHoveredNode(null)
     setHoveredIndex(-1)
+    setIsDragging(false)
   }, [])
 
   useCanvasRenderer({
@@ -104,6 +134,7 @@ export default function PipelineCanvas() {
     isWarm,
     hoveredNode,
     hoveredIndex,
+    dragOffset,
   })
 
   return (
@@ -134,8 +165,13 @@ export default function PipelineCanvas() {
           <canvas
             ref={canvasRef}
             className="relative w-full block"
-            style={{ height: isMobile ? '1050px' : '720px' }}
+            style={{
+              height: isMobile ? '1050px' : '720px',
+              cursor: isDragging ? 'grabbing' : 'grab',
+            }}
             onMouseMove={handleMouseMove}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           />
         </div>

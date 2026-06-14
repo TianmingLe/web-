@@ -1635,7 +1635,7 @@ function ControlRoomDashboard() {
    Content Pipeline: Vertical Cinema Reel
    ──────────────────────────────────────────────── */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// @ts-expect-error kept for future use
 function CinemaReel() {
   const reelRef = useRef<HTMLDivElement>(null)
 

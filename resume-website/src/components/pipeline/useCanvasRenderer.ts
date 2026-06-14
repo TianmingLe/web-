@@ -11,6 +11,7 @@ interface UseCanvasRendererOptions {
   isWarm: boolean
   hoveredNode: string | null
   hoveredIndex: number
+  dragOffset: { x: number; y: number }
 }
 
 export function useCanvasRenderer({
@@ -21,6 +22,7 @@ export function useCanvasRenderer({
   isWarm,
   hoveredNode,
   hoveredIndex,
+  dragOffset,
 }: UseCanvasRendererOptions) {
   const stateRef = useRef<AnimationState>({
     phase: 'idle',
@@ -45,6 +47,7 @@ export function useCanvasRenderer({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.save()
+    ctx.translate(dragOffset.x, dragOffset.y)
     ctx.scale(scale, scale)
 
     state.hoveredNode = hoveredNode
@@ -74,7 +77,7 @@ export function useCanvasRenderer({
     if (isVisible || state.phase !== 'done') {
       rafRef.current = requestAnimationFrame(render)
     }
-  }, [canvasRef, layout, tier, isVisible, hoveredNode, hoveredIndex])
+  }, [canvasRef, layout, tier, isVisible, hoveredNode, hoveredIndex, dragOffset])
 
   const scheduleNextFrame = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
