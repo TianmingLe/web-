@@ -581,6 +581,7 @@ function OrbitalDashboard() {
     if (!sectionRef.current || !orbitRef.current) return
 
     const ctx = gsap.context(() => {
+      if (!orbitRef.current) return
       gsap.to(orbitRef.current, {
         rotation: 360,
         duration: 60,
@@ -588,7 +589,7 @@ function OrbitalDashboard() {
         ease: 'none',
       })
 
-      const cards = orbitRef.current?.querySelectorAll('.orbit-card')
+      const cards = orbitRef.current.querySelectorAll('.orbit-card')
       if (!cards || cards.length === 0) return
       const cardArray = Array.from(cards)
       cardArray.forEach((card) => {
@@ -714,7 +715,7 @@ function IndustrialPipelineFlow() {
   const [isMobile, setIsMobile] = useState(false)
   const [pipesReady, setPipesReady] = useState(false)
 
-  const skills = energyNode.subNodes
+  const skills = energyNode.subNodes ?? []
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -736,7 +737,7 @@ function IndustrialPipelineFlow() {
       // Initial states
       gsap.set(nodes, { opacity: 0, scale: 0, transformOrigin: 'center center' })
       gsap.set(labels, { opacity: 0 })
-      gsap.set(pipes, { strokeDashoffset: (_i: number, el: SVGPathElement) => el.getTotalLength() })
+      gsap.set(pipes, { strokeDashoffset: (_i: number, el: SVGPathElement) => el.getTotalLength?.() ?? 0 })
       gsap.set(liquids, { opacity: 0 })
 
       const tl = gsap.timeline({
@@ -784,10 +785,12 @@ function IndustrialPipelineFlow() {
       // Step 4: Start liquid flow after pipes drawn
       tl.call(() => {
         setPipesReady(true)
-        gsap.to(liquids, {
-          opacity: 1,
-          duration: 0.3,
-        })
+        if (liquids.length > 0) {
+          gsap.to(liquids, {
+            opacity: 1,
+            duration: 0.3,
+          })
+        }
       })
     }, sectionRef)
     return () => ctx.revert()
@@ -873,6 +876,7 @@ function IndustrialPipelineFlow() {
             {connections.map(([from, to], i) => {
               const start = nodePositions[from]
               const end = nodePositions[to]
+              if (!start || !end) return null
               const midX = (start.x + end.x) / 2
               const midY = (start.y + end.y) / 2
               const path = isMobile
@@ -916,8 +920,9 @@ function IndustrialPipelineFlow() {
             {/* Nodes */}
             {skills.map((skill, i) => {
               const pos = nodePositions[i]
+              if (!pos) return null
               const isHovered = hoveredNode === skill.id
-              const shape = nodeShapes[i]
+              const shape = nodeShapes[i] ?? 'circle'
               const level = skill.level || 0
 
               return (
@@ -992,7 +997,7 @@ function IndustrialPipelineFlow() {
                     className="pipeline-label"
                     style={{ pointerEvents: 'none', willChange: 'opacity' }}
                   >
-                    {skill.label.length > 8 ? skill.label.slice(0, 7) + '…' : skill.label}
+                    {skill.label && skill.label.length > 8 ? skill.label.slice(0, 7) + '…' : (skill.label ?? '')}
                   </text>
 
                   {/* Hover tooltip */}
@@ -1057,6 +1062,7 @@ function MagazineSpread({
   useEffect(() => {
     if (!leftRef.current || !rightRef.current) return
     const ctx = gsap.context(() => {
+      if (!leftRef.current || !rightRef.current) return
       gsap.fromTo(
         leftRef.current,
         { x: -60, opacity: 0 },
@@ -1085,6 +1091,7 @@ function MagazineSpread({
 
   const proj1 = projects[0]
   const proj2 = projects[1]
+  if (!proj1 || !proj2) return null
 
   return (
     <div className="py-20 md:py-32">
@@ -1376,6 +1383,8 @@ function GaugeMeter({ tool, proficiency }: { tool: typeof tools[0]; proficiency:
     })
   }, [proficiency])
 
+  if (!tool) return null
+
   return (
     <div
       className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
@@ -1434,6 +1443,8 @@ function WireframeCube({ tool, proficiency }: { tool: typeof tools[0]; proficien
     })
   }, [])
 
+  if (!tool) return null
+
   return (
     <div
       className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
@@ -1491,7 +1502,8 @@ function DrawingScreen({ tool, proficiency }: { tool: typeof tools[0]; proficien
 
   useEffect(() => {
     if (!lineRef.current) return
-    const length = lineRef.current.getTotalLength()
+    const length = lineRef.current.getTotalLength?.() ?? 0
+    if (length === 0) return
     gsap.set(lineRef.current, { strokeDasharray: length, strokeDashoffset: length })
     gsap.to(lineRef.current, {
       strokeDashoffset: 0,
@@ -1503,6 +1515,8 @@ function DrawingScreen({ tool, proficiency }: { tool: typeof tools[0]; proficien
       },
     })
   }, [])
+
+  if (!tool) return null
 
   return (
     <div
@@ -1551,8 +1565,12 @@ function SevenSegment({ tool, proficiency }: { tool: typeof tools[0]; proficienc
   const [displayValue, setDisplayValue] = useState(0)
 
   useEffect(() => {
+    if (!tool?.name) return
+    const selector = `.seven-seg-${tool.name.replace(/\s+/g, '-')}`
+    const el = document.querySelector(selector)
+    if (!el) return
     const trigger = ScrollTrigger.create({
-      trigger: `.seven-seg-${tool.name.replace(/\s+/g, '-')}`,
+      trigger: el,
       start: 'top 85%',
       onEnter: () => {
         gsap.to({ val: 0 }, {
@@ -1566,7 +1584,9 @@ function SevenSegment({ tool, proficiency }: { tool: typeof tools[0]; proficienc
       },
     })
     return () => trigger.kill()
-  }, [proficiency, tool.name])
+  }, [proficiency, tool?.name])
+
+  if (!tool) return null
 
   const digits = String(displayValue).padStart(3, '0').split('')
 
@@ -1632,6 +1652,8 @@ function SevenSegment({ tool, proficiency }: { tool: typeof tools[0]; proficienc
 function Oscilloscope({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
   const [active, setActive] = useState(false)
 
+  if (!tool) return null
+
   return (
     <div
       className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
@@ -1643,16 +1665,25 @@ function Oscilloscope({ tool, proficiency }: { tool: typeof tools[0]; proficienc
       <div className="relative w-24 h-20 mx-auto mb-2 rounded border border-energy/20 bg-black/60 overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           <svg viewBox="0 0 100 60" className="w-full h-full">
-            <path
-              d="M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30"
-              fill="none"
-              stroke="#C04A1A"
-              strokeWidth="1.5"
+            <g
               className="oscilloscope-wave"
               style={{
-                animation: active ? 'waveFast 1s linear infinite' : 'waveSlow 2s linear infinite',
+                animation: active ? 'waveFast 0.5s linear infinite' : 'waveSlow 2s linear infinite',
               }}
-            />
+            >
+              <path
+                d="M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30"
+                fill="none"
+                stroke="#C04A1A"
+                strokeWidth="1.5"
+              />
+              <path
+                d="M 100 30 Q 112.5 10, 125 30 T 150 30 T 175 30 T 200 30"
+                fill="none"
+                stroke="#C04A1A"
+                strokeWidth="1.5"
+              />
+            </g>
           </svg>
         </div>
         <div className="absolute top-1 left-1 text-[6px] text-energy/40 font-mono">50Hz</div>
@@ -1677,6 +1708,8 @@ function LEDBar({ tool, proficiency }: { tool: typeof tools[0]; proficiency: num
   const [active, setActive] = useState(false)
   const leds = 10
   const litCount = Math.round((proficiency / 100) * leds)
+
+  if (!tool) return null
 
   return (
     <div
@@ -1723,7 +1756,8 @@ function FunctionPlot({ tool, proficiency }: { tool: typeof tools[0]; proficienc
 
   useEffect(() => {
     if (!pathRef.current) return
-    const length = pathRef.current.getTotalLength()
+    const length = pathRef.current.getTotalLength?.() ?? 0
+    if (length === 0) return
     gsap.set(pathRef.current, { strokeDasharray: length, strokeDashoffset: length })
     gsap.to(pathRef.current, {
       strokeDashoffset: 0,
@@ -1735,6 +1769,8 @@ function FunctionPlot({ tool, proficiency }: { tool: typeof tools[0]; proficienc
       },
     })
   }, [])
+
+  if (!tool) return null
 
   return (
     <div
@@ -1781,6 +1817,8 @@ function StatusLight({ tool, proficiency }: { tool: typeof tools[0]; proficiency
     const interval = setInterval(() => setBlink((b) => !b), 800)
     return () => clearInterval(interval)
   }, [])
+
+  if (!tool) return null
 
   return (
     <div
@@ -1840,7 +1878,7 @@ function ControlRoomDashboard() {
     const ctx = gsap.context(() => {
       if (!sectionRef.current) return
       const panels = sectionRef.current.querySelectorAll('.control-panel > div')
-      if (panels.length === 0) return
+      if (!panels || panels.length === 0) return
       gsap.fromTo(
         panels,
         { opacity: 0, y: 30 },
@@ -1924,14 +1962,12 @@ function ControlRoomDashboard() {
       {/* Oscilloscope wave animation */}
       <style>{`
         @keyframes waveSlow {
-          0% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
-          50% { d: path('M 0 30 Q 12.5 50, 25 30 T 50 30 T 75 30 T 100 30'); }
-          100% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-25px); }
         }
         @keyframes waveFast {
-          0% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
-          50% { d: path('M 0 30 Q 12.5 50, 25 30 T 50 30 T 75 30 T 100 30'); }
-          100% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-25px); }
         }
       `}</style>
     </div>
@@ -1950,7 +1986,7 @@ function CinemaReel() {
     const ctx = gsap.context(() => {
       if (!reelRef.current) return
       const frames = reelRef.current.querySelectorAll('.reel-frame')
-      if (frames.length === 0) return
+      if (!frames || frames.length === 0) return
       const frameArray = Array.from(frames)
       frameArray.forEach((frame, i) => {
         gsap.fromTo(
@@ -2127,7 +2163,7 @@ function CaseStudyStory() {
     const ctx = gsap.context(() => {
       if (!sectionRef.current) return
       const items = sectionRef.current.querySelectorAll('.timeline-item')
-      if (items.length === 0) return
+      if (!items || items.length === 0) return
       const itemArray = Array.from(items)
       itemArray.forEach((item, i) => {
         gsap.fromTo(
@@ -2237,7 +2273,7 @@ function TimelineSection() {
     const ctx = gsap.context(() => {
       if (!sectionRef.current) return
       const items = sectionRef.current.querySelectorAll('.timeline-card')
-      if (items.length === 0) return
+      if (!items || items.length === 0) return
       const itemArray = Array.from(items)
       itemArray.forEach((item, i) => {
         gsap.fromTo(
@@ -2322,17 +2358,24 @@ export default function EnergyPage() {
   }, [])
 
   useEffect(() => {
+    if (!contentRef.current) return
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.energy-hero-badge',
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.7)', delay: 0.2 }
-      )
-      gsap.fromTo(
-        '.energy-hero-sub',
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.8 }
-      )
+      const badge = contentRef.current?.querySelector('.energy-hero-badge')
+      const sub = contentRef.current?.querySelectorAll('.energy-hero-sub')
+      if (badge) {
+        gsap.fromTo(
+          badge,
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.7)', delay: 0.2 }
+        )
+      }
+      if (sub && sub.length > 0) {
+        gsap.fromTo(
+          sub,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.8 }
+        )
+      }
     }, contentRef)
 
     return () => ctx.revert()
