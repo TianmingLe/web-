@@ -18,9 +18,9 @@ const iconMap: Record<string, LucideIcon> = {
 /* ------------------------------------------------------------------ */
 /*  Shared constants (derived from container size)                     */
 /* ------------------------------------------------------------------ */
-const CONTAINER_SM = 420   // mobile base (px)
-const CONTAINER_MD = 820   // desktop base (px)
-const CONTAINER_LG = 1000  // desktop large (px)
+const CONTAINER_SM = 360   // mobile base (px)
+const CONTAINER_MD = 680   // desktop base (px)
+const CONTAINER_LG = 800   // desktop large (px)
 
 function useContainerSize() {
   const isMd = useMediaQuery('(min-width: 768px)')
@@ -1123,14 +1123,14 @@ function MainNodeItemB({
 }) {
   const total = capabilityData.mainNodes.length
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-  const radius = isLoaded ? (isMobile ? 170 : 320) : 0
+  const radius = isLoaded ? (isMobile ? 130 : 240) : 0
   const pos = { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
   const active = activeNodeIndex === index
   const dimmed = activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
   const Icon = iconMap[node.id]
   const labelText = useTextScramble(node.label, active)
-  const nodeRadiusWeb = isMobile ? 80 : 130
-  const webSize = isMobile ? 260 : 380
+  const nodeRadiusWeb = isMobile ? 65 : 100
+  const webSize = isMobile ? 200 : 300
 
   return (
     <div
@@ -1252,7 +1252,7 @@ export default function CapabilityMapB() {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   const { size: containerSize, isMobile } = useContainerSize()
-  const nodeRadius = isMobile ? 170 : 320
+  const nodeRadius = isMobile ? 130 : 240
 
   const handleNodeHover = useCallback((index: number) => {
     if (showAll || allExpanded) {
@@ -1271,7 +1271,7 @@ export default function CapabilityMapB() {
         setAllExpanded(true)
         setTimeout(() => {
           setShowAll(true)
-        }, 3000)
+        }, 5000)
         return
       }
 
@@ -1287,7 +1287,7 @@ export default function CapabilityMapB() {
       }
 
       current++
-      setTimeout(highlightNext, 2500)
+      setTimeout(highlightNext, 5000)
       setHoveredIndex(-1)
     }
 
