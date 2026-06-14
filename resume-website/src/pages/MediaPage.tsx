@@ -942,36 +942,50 @@ function MagazineSpread({
 
 function FloatingToolbox() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const orbitRef = useRef<HTMLDivElement>(null)
   const [docked, setDocked] = useState(false)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [hoveredTool, setHoveredTool] = useState<number | null>(null)
+  const orbitAngleRef = useRef(0)
+  const rafRef = useRef<number>(0)
 
+  // 3D orbit animation
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-    }
-    const container = containerRef.current
-    container?.addEventListener('mousemove', handleMouseMove)
-    return () => container?.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+    if (!orbitRef.current || docked) return
 
-  useEffect(() => {
-    if (!containerRef.current || docked) return
-    const icons = containerRef.current.querySelectorAll('.tool-icon')
-    icons.forEach((icon, i) => {
-      const el = icon as HTMLElement
-      const baseX = Math.sin(i * 1.5) * 30
-      const baseY = Math.cos(i * 1.2) * 20
-      gsap.to(el, {
-        x: baseX,
-        y: baseY,
-        duration: 3 + i * 0.5,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
+    const animate = () => {
+      orbitAngleRef.current += 0.003
+      const angle = orbitAngleRef.current
+      const icons = orbitRef.current!.querySelectorAll('.tool-icon')
+
+      icons.forEach((icon, i) => {
+        const el = icon as HTMLElement
+        const count = tools.length
+        const t = (i / count) * Math.PI * 2 + angle
+        const radiusX = 220
+        const radiusY = 80
+        const tilt = 0.4 // tilt angle for 3D effect
+
+        // 3D elliptical orbit with depth
+        const x = Math.cos(t) * radiusX
+        const y = Math.sin(t) * radiusY * Math.cos(tilt)
+        const z = Math.sin(t) * Math.sin(tilt)
+
+        // Depth scale: items in back are smaller and dimmer
+        const scale = 0.7 + (z + 1) * 0.2
+        const opacity = 0.5 + (z + 1) * 0.25
+        const zIndex = Math.round((z + 1) * 50)
+
+        el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale})`
+        el.style.opacity = `${opacity}`
+        el.style.zIndex = `${zIndex}`
+        el.style.filter = z < 0 ? 'brightness(0.6)' : 'brightness(1)'
       })
-    })
+
+      rafRef.current = requestAnimationFrame(animate)
+    }
+
+    rafRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafRef.current)
   }, [docked])
 
   return (
@@ -994,72 +1008,129 @@ function FloatingToolbox() {
         ))}
       </div>
 
-      {/* Desktop */}
+      {/* Desktop: 3D Orbit */}
       <div
         ref={containerRef}
         className="hidden md:block relative mx-auto"
-        style={{ width: '600px', height: '400px' }}
+        style={{
+          width: '700px',
+          height: '450px',
+          perspective: '800px',
+        }}
         onMouseEnter={() => setDocked(true)}
-        onMouseLeave={() => setDocked(false)}
+        onMouseLeave={() => {
+          setDocked(false)
+          setHoveredTool(null)
+        }}
       >
-        {tools.map((tool, idx) => {
-          const col = idx % 4
-          const row = Math.floor(idx / 4)
-          const dockX = 60 + col * 140
-          const dockY = 80 + row * 140
-          const randomX = 100 + Math.random() * 400
-          const randomY = 50 + Math.random() * 300
+        {/* 3D Orbit Container */}
+        <div
+          ref={orbitRef}
+          className="absolute inset-0"
+          style={{
+            transformStyle: 'preserve-3d',
+            display: docked ? 'none' : 'block',
+          }}
+        >
+          {/* Orbit rings */}
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-pink-500/10"
+            style={{ width: '440px', height: '160px' }}
+          />
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-pink-500/5"
+            style={{ width: '360px', height: '130px' }}
+          />
 
-          // Magnetic effect
-          const dx = mousePos.x - (docked ? dockX : randomX)
-          const dy = mousePos.y - (docked ? dockY : randomY)
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          const magneticStrength = Math.max(0, 1 - dist / 200) * 15
-          const magX = (dx / dist) * magneticStrength || 0
-          const magY = (dy / dist) * magneticStrength || 0
-
-          return (
+          {tools.map((tool, idx) => (
             <div
               key={idx}
-              className="tool-icon absolute transition-all duration-700 ease-out group"
-              style={{
-                left: docked ? `${dockX}px` : `${randomX}px`,
-                top: docked ? `${dockY}px` : `${randomY}px`,
-                transform: `translate(-50%, -50%) translate(${docked ? magX : 0}px, ${docked ? magY : 0}px)`,
-              }}
+              className="tool-icon absolute left-1/2 top-1/2 transition-all duration-500 group"
+              style={{ willChange: 'transform, opacity' }}
             >
-              <div
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${
-                  docked
-                    ? 'bg-surface border-border hover:border-pink-400/30'
-                    : 'bg-surface/60 border-border/30'
-                }`}
-                style={{
-                  boxShadow: docked ? '0 4px 16px rgba(0,0,0,0.3)' : 'none',
-                }}
-              >
-                <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+              <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl border bg-surface/40 border-border/20 backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400">
                   {tool.icon}
                 </div>
-                <span className="text-warm text-xs font-medium whitespace-nowrap">{tool.name}</span>
-                <span className="text-warm-faint text-[10px]">{tool.category}</span>
-              </div>
-
-              {/* Tooltip */}
-              <div
-                className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-base-elevated border border-border text-warm-muted text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-              >
-                {tool.desc}
+                <span className="text-warm text-[10px] font-medium whitespace-nowrap">{tool.name}</span>
               </div>
             </div>
-          )
-        })}
+          ))}
+        </div>
+
+        {/* 2D Docked Grid (shown on hover) */}
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{
+            display: docked ? 'flex' : 'none',
+            opacity: docked ? 1 : 0,
+            transition: 'opacity 0.6s ease',
+          }}
+        >
+          <div className="grid grid-cols-4 gap-6">
+            {tools.map((tool, idx) => {
+              const col = idx % 4
+              const row = Math.floor(idx / 4)
+              return (
+                <div
+                  key={idx}
+                  className="group"
+                  onMouseEnter={() => setHoveredTool(idx)}
+                  onMouseLeave={() => setHoveredTool(null)}
+                  style={{
+                    animation: docked ? `dockIn 0.5s ease ${idx * 0.05}s both` : 'none',
+                  }}
+                >
+                  <div
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                      hoveredTool === idx
+                        ? 'bg-surface border-pink-400/30 scale-110'
+                        : 'bg-surface/80 border-border/40'
+                    }`}
+                    style={{
+                      boxShadow: hoveredTool === idx ? '0 8px 32px rgba(0,0,0,0.4)' : 'none',
+                    }}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 group-hover:scale-110 transition-transform">
+                      {tool.icon}
+                    </div>
+                    <span className="text-warm text-xs font-medium whitespace-nowrap">{tool.name}</span>
+                    <span className="text-warm-faint text-[10px]">{tool.category}</span>
+                  </div>
+
+                  {/* Tooltip */}
+                  <div
+                    className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-base-elevated border border-border text-warm-muted text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                  >
+                    {tool.desc}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         {/* Hint */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-warm-faint text-xs font-mono">
-          {docked ? '图标已停靠' : '悬停以停靠工具'}
+        <div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 text-warm-faint text-xs font-mono transition-opacity duration-500"
+          style={{ opacity: docked ? 0 : 0.6 }}
+        >
+          悬停以展开工具
         </div>
       </div>
+
+      <style>{`
+        @keyframes dockIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
     </div>
   )
 }
