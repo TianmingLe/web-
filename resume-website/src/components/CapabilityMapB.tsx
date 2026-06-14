@@ -18,9 +18,9 @@ const iconMap: Record<string, LucideIcon> = {
 /* ------------------------------------------------------------------ */
 /*  Shared constants (derived from container size)                     */
 /* ------------------------------------------------------------------ */
-const CONTAINER_SM = 380   // mobile base (px)
-const CONTAINER_MD = 760   // desktop base (px)
-const CONTAINER_LG = 920   // desktop large (px)
+const CONTAINER_SM = 420   // mobile base (px)
+const CONTAINER_MD = 820   // desktop base (px)
+const CONTAINER_LG = 1000  // desktop large (px)
 
 function useContainerSize() {
   const isMd = useMediaQuery('(min-width: 768px)')
@@ -1120,14 +1120,14 @@ function MainNodeItemB({
 }) {
   const total = capabilityData.mainNodes.length
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-  const radius = isLoaded ? (isMobile ? 150 : 280) : 0
+  const radius = isLoaded ? (isMobile ? 170 : 320) : 0
   const pos = { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
   const active = activeNodeIndex === index
   const dimmed = activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
   const Icon = iconMap[node.id]
   const labelText = useTextScramble(node.label, active)
-  const nodeRadiusWeb = isMobile ? 70 : 110
-  const webSize = isMobile ? 220 : 320
+  const nodeRadiusWeb = isMobile ? 80 : 130
+  const webSize = isMobile ? 260 : 380
 
   return (
     <div
@@ -1241,7 +1241,7 @@ export default function CapabilityMapB() {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   const { size: containerSize, isMobile } = useContainerSize()
-  const nodeRadius = isMobile ? 150 : 280
+  const nodeRadius = isMobile ? 170 : 320
 
   // Spotlight sequence
   const runSpotlightSequence = useCallback(() => {
@@ -1254,7 +1254,7 @@ export default function CapabilityMapB() {
         setAllExpanded(true)
         setTimeout(() => {
           setShowAll(true)
-        }, 5000)
+        }, 3000)
         return
       }
 
@@ -1270,7 +1270,7 @@ export default function CapabilityMapB() {
       }
 
       current++
-      setTimeout(highlightNext, 5000)
+      setTimeout(highlightNext, 2500)
     }
 
     highlightNext()
