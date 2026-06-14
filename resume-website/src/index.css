@@ -1,5 +1,42 @@
 @import "tailwindcss";
 
+/* 狂派手书 - 力量感 */
+@font-face {
+  font-family: 'KuangPai';
+  src: url('/AaKuangPaiShouShu-2.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 半醉半醒半浮生 - 文艺飘逸 */
+@font-face {
+  font-family: 'BanZui';
+  src: url('/BanZuiBanXingBanFuSheng-2.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 北岛的心物 - 现代简洁 */
+@font-face {
+  font-family: 'BeiDao';
+  src: url('/BeiDaoDeXinWu-2.ttf') format('truetype');
+  font-weight: 400;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* F1 Black - 运动速度感 */
+@font-face {
+  font-family: 'F1Black';
+  src: url('/Formula1-Black.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-base: #0D1117;
   --color-base-elevated: #161B22;
@@ -54,6 +91,17 @@
   --font-b-serif: 'Playfair Display', 'Instrument Serif', Georgia, serif;
   --font-b-sans: 'Source Sans 3', 'Geist', -apple-system, sans-serif;
   --font-b-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+
+  /* Page-specific title fonts */
+  --font-energy-title: 'KuangPai', 'Instrument Serif', Georgia, serif;
+  --font-media-title: 'BanZui', 'Playfair Display', Georgia, serif;
+  --font-other-title: 'BanZui', 'Playfair Display', Georgia, serif;
+  --font-ai-title: 'BeiDao', 'Geist', -apple-system, sans-serif;
+  --font-home-title: 'F1Black', 'Geist', -apple-system, sans-serif;
+
+  /* Body font - modern Chinese */
+  --font-body: 'BeiDao', 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
@@ -81,6 +129,7 @@
   body {
     background-color: var(--color-base);
     color: var(--color-warm);
+    font-family: var(--font-body);
     font-weight: 400;
     letter-spacing: -0.01em;
     overflow-x: hidden;
@@ -742,6 +791,30 @@
 
   .font-b-mono {
     font-family: var(--font-b-mono);
+  }
+
+  .font-energy-title {
+    font-family: var(--font-energy-title);
+  }
+
+  .font-media-title {
+    font-family: var(--font-media-title);
+  }
+
+  .font-other-title {
+    font-family: var(--font-other-title);
+  }
+
+  .font-ai-title {
+    font-family: var(--font-ai-title);
+  }
+
+  .font-home-title {
+    font-family: var(--font-home-title);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
   }
 
   .letter-spacing-tight {

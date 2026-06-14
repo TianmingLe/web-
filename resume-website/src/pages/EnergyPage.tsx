@@ -342,7 +342,7 @@ function AnimatedTitle({ text }: { text: string }) {
       {text.split('').map((char, i) => (
         <span
           key={i}
-          className="char inline-block text-5xl md:text-7xl lg:text-8xl font-serif text-warm tracking-tight"
+          className="char inline-block text-5xl md:text-7xl lg:text-8xl font-energy-title text-warm tracking-tight"
           style={{ transformStyle: 'preserve-3d' }}
         >
           {char === ' ' ? '\u00A0' : char}
@@ -616,7 +616,7 @@ function OrbitalDashboard() {
     <div ref={sectionRef} className="relative py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <BarChart3 size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">平台数据仪表盘</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">平台数据仪表盘</h2>
       </div>
 
       {/* Mobile: simple grid */}
@@ -754,7 +754,7 @@ function MagazineSpread({
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <HardHat size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">项目展示</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">项目展示</h2>
       </div>
 
       {/* Mobile */}
@@ -1559,7 +1559,7 @@ function ControlRoomDashboard() {
     <div ref={sectionRef} className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Wrench size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">控制室仪表盘</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">控制室仪表盘</h2>
       </div>
 
       {/* Mobile */}
@@ -1670,7 +1670,7 @@ function CinemaReel() {
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Film size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">内容流水线</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">内容流水线</h2>
       </div>
 
       {/* Mobile */}
@@ -1848,7 +1848,7 @@ function CaseStudyStory() {
     <div ref={sectionRef} className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <PenTool size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">案例研究</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">案例研究</h2>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 md:px-6">
@@ -1958,7 +1958,7 @@ function TimelineSection() {
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Clock size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">项目时间轴</h2>
+        <h2 className="text-2xl md:text-3xl font-energy-title text-warm">项目时间轴</h2>
       </div>
 
       <div ref={sectionRef} className="relative max-w-4xl mx-auto px-4 md:px-6">

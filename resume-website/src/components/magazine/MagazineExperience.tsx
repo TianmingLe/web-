@@ -188,8 +188,8 @@ export default function MagazineExperience() {
 
   return (
     <MagazineSpread
-      leftTitle="Field Report"
-      rightTitle="Campus Life"
+      leftTitle={<span className="font-other-title">Field Report</span>}
+      rightTitle={<span className="font-other-title">Campus Life</span>}
       leftContent={leftContent}
       rightContent={rightContent}
       pageNum={4}

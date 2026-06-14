@@ -58,7 +58,7 @@ export default function MagazineSkills() {
             <p className="font-mono text-[10px] tracking-[0.3em] text-copper-gold/50 uppercase mb-2">
               Skills Column
             </p>
-            <h2 className="font-serif text-2xl md:text-3xl text-magazine-cream">
+            <h2 className="font-other-title text-2xl md:text-3xl text-magazine-cream">
               技能矩阵
             </h2>
           </div>

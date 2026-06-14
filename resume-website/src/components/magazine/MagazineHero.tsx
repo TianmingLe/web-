@@ -48,7 +48,7 @@ export default function MagazineHero() {
 
       {/* 大标题 - 逐字动画 */}
       <div ref={titleRef} className="text-center mb-6">
-        <h1 className="font-serif text-6xl md:text-7xl text-magazine-cream tracking-tight">
+        <h1 className="font-other-title text-6xl md:text-7xl text-magazine-cream tracking-tight">
           {titleText.split('').map((char, i) => (
             <span
               key={i}

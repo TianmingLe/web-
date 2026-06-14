@@ -141,7 +141,7 @@ export default function MagazineAwards() {
 
   return (
     <MagazineSpread
-      leftTitle="Hall of Honor"
+      leftTitle={<span className="font-other-title">Hall of Honor</span>}
       rightTitle="Certificate Gallery"
       leftContent={leftContent}
       rightContent={rightContent}

@@ -3,8 +3,8 @@ import { gsap } from 'gsap'
 import { CornerOrnament, PageHeader, PageFooter } from './MagazineDecorations'
 
 interface MagazineSpreadProps {
-  leftTitle: string
-  rightTitle: string
+  leftTitle: ReactNode
+  rightTitle: ReactNode
   leftContent: ReactNode
   rightContent: ReactNode
   pageNum: number

@@ -142,7 +142,7 @@ export default function HomePage() {
         </p>
 
         {/* Name */}
-        <h1 className="home-name text-4xl md:text-7xl lg:text-8xl font-serif font-normal text-warm mb-4 md:mb-6 tracking-tight leading-[0.95]">
+        <h1 className="home-name text-4xl md:text-7xl lg:text-8xl font-home-title font-normal text-warm mb-4 md:mb-6 tracking-tight leading-[0.95]">
           <span className="text-gradient-warm">{profile.name}</span>
         </h1>
 

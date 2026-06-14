@@ -114,7 +114,7 @@ export default function MagazineFooter() {
               </p>
             </div>
             <div className="text-right">
-              <p className="font-serif text-lg text-magazine-cream/80 mb-1">
+              <p className="font-other-title text-lg text-magazine-cream/80 mb-1">
                 HONORS & EXPERIENCE
               </p>
               <p className="text-magazine-warm/40 text-xs">

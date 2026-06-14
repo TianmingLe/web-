@@ -251,7 +251,7 @@ export default function AIPage() {
               人工智能前沿探索
             </span>
           </div>
-          <h1 className="ai-hero-title text-5xl md:text-7xl font-serif text-warm mb-6 tracking-tight">
+          <h1 className="ai-hero-title text-5xl md:text-7xl font-ai-title text-warm mb-6 tracking-tight">
             AI特种技术
           </h1>
           <p className="ai-hero-sub text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">
@@ -275,7 +275,7 @@ export default function AIPage() {
           <div className="ai-animate mb-20">
             <div className="flex items-center gap-3 mb-8">
               <BarChart3 size={24} className="text-ai-light" />
-              <h2 className="text-2xl md:text-3xl font-serif text-warm">核心指标</h2>
+              <h2 className="text-2xl md:text-3xl font-ai-title text-warm">核心指标</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {stats.map((stat, idx) => (
@@ -297,7 +297,7 @@ export default function AIPage() {
           <div className="ai-animate mb-20">
             <div className="flex items-center gap-3 mb-8">
               <Network size={24} className="text-ai-light" />
-              <h2 className="text-2xl md:text-3xl font-serif text-warm">技能矩阵</h2>
+              <h2 className="text-2xl md:text-3xl font-ai-title text-warm">技能矩阵</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {aiNode.subNodes.map((skill) => (
@@ -337,7 +337,7 @@ export default function AIPage() {
           <div className="ai-animate mb-20">
             <div className="flex items-center gap-3 mb-8">
               <Bot size={24} className="text-ai-light" />
-              <h2 className="text-2xl md:text-3xl font-serif text-warm">项目展示</h2>
+              <h2 className="text-2xl md:text-3xl font-ai-title text-warm">项目展示</h2>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {projects.map((proj, idx) => (
@@ -376,7 +376,7 @@ export default function AIPage() {
           <div className="ai-animate mb-20">
             <div className="flex items-center gap-3 mb-8">
               <Layers size={24} className="text-ai-light" />
-              <h2 className="text-2xl md:text-3xl font-serif text-warm">技术栈</h2>
+              <h2 className="text-2xl md:text-3xl font-ai-title text-warm">技术栈</h2>
             </div>
             <div className="industrial-card p-6">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -410,7 +410,7 @@ export default function AIPage() {
               <div className="industrial-card industrial-card-ai p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-4">
                   <Eye size={24} className="text-ai-light" />
-                  <h3 className="text-xl font-serif text-warm">{aiNode.caseStudy.title}</h3>
+                  <h3 className="text-xl font-ai-title text-warm">{aiNode.caseStudy.title}</h3>
                 </div>
                 <p className="text-warm-muted text-sm leading-relaxed mb-6 font-sans">
                   {aiNode.caseStudy.description}

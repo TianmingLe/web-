@@ -57,7 +57,7 @@ export function MagazineDivider() {
   )
 }
 
-export function PageHeader({ title }: { title: string }) {
+export function PageHeader({ title }: { title: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between py-4 border-b border-magazine-border mb-6">
       <span className="font-mono text-[10px] tracking-[0.3em] text-magazine-warm/50 uppercase">

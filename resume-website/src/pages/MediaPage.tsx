@@ -303,7 +303,7 @@ function AnimatedTitle({ text }: { text: string }) {
       {text.split('').map((char, i) => (
         <span
           key={i}
-          className="char inline-block text-5xl md:text-7xl lg:text-8xl font-serif text-warm tracking-tight"
+          className="char inline-block text-5xl md:text-7xl lg:text-8xl font-media-title text-warm tracking-tight"
           style={{ transformStyle: 'preserve-3d' }}
         >
           {char === ' ' ? '\u00A0' : char}
@@ -456,7 +456,7 @@ function OrbitalDashboard() {
     <div ref={sectionRef} className="relative py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <BarChart3 size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">平台数据</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">平台数据</h2>
       </div>
 
       {/* Mobile: simple grid */}
@@ -633,7 +633,7 @@ function SkillsHoneycomb() {
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Sparkles size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">技能矩阵</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">技能矩阵</h2>
       </div>
 
       {/* Mobile: simple list */}
@@ -726,7 +726,7 @@ function MagazineSpread({
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Clapperboard size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">项目展示</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">项目展示</h2>
       </div>
 
       {/* Mobile */}
@@ -992,7 +992,7 @@ function FloatingToolbox() {
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Wand2 size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">工具栈</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">工具栈</h2>
       </div>
 
       {/* Mobile */}
@@ -1069,8 +1069,6 @@ function FloatingToolbox() {
         >
           <div className="grid grid-cols-4 gap-6">
             {tools.map((tool, idx) => {
-              const col = idx % 4
-              const row = Math.floor(idx / 4)
               return (
                 <div
                   key={idx}
@@ -1171,7 +1169,7 @@ function CinemaReel() {
     <div className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Film size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">内容生产流水线</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">内容生产流水线</h2>
       </div>
 
       {/* Mobile */}
@@ -1343,7 +1341,7 @@ function CaseStudyStory() {
     <div ref={sectionRef} className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <MonitorPlay size={24} className="text-pink-400" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">案例研究</h2>
+        <h2 className="text-2xl md:text-3xl font-media-title text-warm">案例研究</h2>
       </div>
 
       {mediaNode.caseStudy && (
