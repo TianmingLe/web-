@@ -705,12 +705,13 @@ function OrbitingLabelsB({ node, active, dimmed }: {
       {labels.map((text, i) => (
         <div
           key={i}
-          className="orbit-label-b absolute left-1/2 top-1/2 opacity-0"
+          className="orbit-label-b absolute left-1/2 top-1/2"
           style={{
             marginLeft: '-3px',
             marginTop: '-3px',
             opacity: active ? 0.5 : dimmed ? 0.05 : 0.2,
             transition: 'opacity 0.7s ease',
+            zIndex: 3,
           }}
         >
           <span
@@ -1201,7 +1202,11 @@ function MainNodeItemB({
         )}
       </button>
 
-      {/* Label with scramble */}
+      {/* Label with scramble - moved below orbit labels */}
+
+      {/* Orbiting labels */}
+      <OrbitingLabelsB node={node} active={active} dimmed={dimmed} />
+
       <span
         className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-all duration-700"
         style={{
@@ -1209,13 +1214,14 @@ function MainNodeItemB({
           opacity: dimmed ? 0.3 : 1,
           transform: active ? 'scale(1.15)' : 'scale(1)',
           textShadow: active ? `0 0 10px ${node.glowColor}` : 'none',
+          zIndex: 5,
+          backgroundColor: 'rgba(250, 248, 245, 0.85)',
+          padding: '2px 6px',
+          borderRadius: '4px',
         }}
       >
         {labelText}
       </span>
-
-      {/* Orbiting labels */}
-      <OrbitingLabelsB node={node} active={active} dimmed={dimmed} />
 
       {/* Spider web */}
       <SpiderWebSubNodesB
