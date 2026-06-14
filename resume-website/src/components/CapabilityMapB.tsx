@@ -1107,6 +1107,7 @@ function MainNodeItemB({
   nodeRefs,
   setSelectedNode,
   isMobile,
+  onHover,
 }: {
   node: MainNode
   index: number
@@ -1117,6 +1118,7 @@ function MainNodeItemB({
   nodeRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>
   setSelectedNode: (node: MainNode | null) => void
   isMobile: boolean
+  onHover: (index: number) => void
 }) {
   const total = capabilityData.mainNodes.length
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2
@@ -1139,6 +1141,8 @@ function MainNodeItemB({
         transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
         zIndex: active ? 25 : 10,
       }}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(-1)}
     >
       <svg
         className="absolute pointer-events-none transition-opacity duration-700"
@@ -1235,6 +1239,7 @@ export default function CapabilityMapB() {
   const [allExpanded, setAllExpanded] = useState(false)
   const [showAll, setShowAll] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number>(-1)
   const containerRef = useRef<HTMLDivElement>(null)
   const hasAnimated = useRef(false)
   const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
@@ -1242,6 +1247,12 @@ export default function CapabilityMapB() {
 
   const { size: containerSize, isMobile } = useContainerSize()
   const nodeRadius = isMobile ? 170 : 320
+
+  const handleNodeHover = useCallback((index: number) => {
+    if (showAll || allExpanded) {
+      setHoveredIndex(index)
+    }
+  }, [showAll, allExpanded])
 
   // Spotlight sequence
   const runSpotlightSequence = useCallback(() => {
@@ -1271,6 +1282,7 @@ export default function CapabilityMapB() {
 
       current++
       setTimeout(highlightNext, 2500)
+      setHoveredIndex(-1)
     }
 
     highlightNext()
@@ -1442,12 +1454,13 @@ export default function CapabilityMapB() {
             node={node}
             index={index}
             isLoaded={isLoaded}
-            activeNodeIndex={activeNodeIndex}
+            activeNodeIndex={activeNodeIndex >= 0 ? activeNodeIndex : hoveredIndex}
             allExpanded={allExpanded}
             showAll={showAll}
             nodeRefs={nodeRefs}
             setSelectedNode={setSelectedNode}
             isMobile={isMobile}
+            onHover={handleNodeHover}
           />
         ))}
       </div>
