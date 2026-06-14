@@ -19,6 +19,15 @@
   --color-warm-faint: rgba(240, 230, 216, 0.35);
   --color-warm-ghost: rgba(240, 230, 216, 0.12);
 
+  /* Magazine color system */
+  --color-magazine-cream: #F5E6D3;
+  --color-magazine-warm: #B8A99A;
+  --color-copper-gold: #D4A574;
+  --color-magazine-bg: #0D0B0A;
+  --color-magazine-card: #1A1614;
+  --color-magazine-border: #3D3530;
+  --color-magazine-highlight: #E8C9A0;
+
   --color-b-cream: #FAF6F0;
   --color-b-cream-dark: #F0EBE3;
   --color-b-sand: #E2DDD5;
