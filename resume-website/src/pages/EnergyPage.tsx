@@ -712,6 +712,7 @@ function IndustrialPipelineFlow() {
   const svgRef = useRef<SVGSVGElement>(null)
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [pipesReady, setPipesReady] = useState(false)
 
   const skills = energyNode.subNodes
 
@@ -727,34 +728,66 @@ function IndustrialPipelineFlow() {
     const ctx = gsap.context(() => {
       if (!svgRef.current) return
       const nodes = svgRef.current.querySelectorAll('.pipeline-node')
-      const pipes = svgRef.current.querySelectorAll('.pipeline-path')
+      const pipes = svgRef.current.querySelectorAll('.pipeline-path-bg')
+      const liquids = svgRef.current.querySelectorAll('.pipeline-path-liquid')
+      const labels = svgRef.current.querySelectorAll('.pipeline-label')
       if (nodes.length === 0 || pipes.length === 0) return
 
-      gsap.set(nodes, { opacity: 0, scale: 0 })
-      gsap.set(pipes, { strokeDashoffset: 1000 })
+      // Initial states
+      gsap.set(nodes, { opacity: 0, scale: 0, transformOrigin: 'center center' })
+      gsap.set(labels, { opacity: 0 })
+      gsap.set(pipes, { strokeDashoffset: (_i: number, el: SVGPathElement) => el.getTotalLength() })
+      gsap.set(liquids, { opacity: 0 })
 
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top 75%',
-        onEnter: () => {
-          pipes.forEach((pipe, i) => {
-            gsap.to(pipe, {
-              strokeDashoffset: 0,
-              duration: 2,
-              delay: i * 0.3,
-              ease: 'power2.inOut',
-            })
-          })
-          nodes.forEach((node, i) => {
-            gsap.to(node, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.6,
-              delay: 0.5 + i * 0.15,
-              ease: 'back.out(1.7)',
-            })
-          })
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
         },
+      })
+
+      // Step 1: Draw pipes with stagger
+      tl.to(pipes, {
+        strokeDashoffset: 0,
+        duration: 2,
+        stagger: 0.2,
+        ease: 'power2.inOut',
+      })
+
+      // Step 2: Pop in nodes with stagger after pipes start
+      tl.to(
+        nodes,
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: 'back.out(1.7)',
+          force3D: true,
+        },
+        '-=1.2'
+      )
+
+      // Step 3: Fade in labels after nodes
+      tl.to(
+        labels,
+        {
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.08,
+          ease: 'power2.out',
+        },
+        '-=0.6'
+      )
+
+      // Step 4: Start liquid flow after pipes drawn
+      tl.call(() => {
+        setPipesReady(true)
+        gsap.to(liquids, {
+          opacity: 1,
+          duration: 0.3,
+        })
       })
     }, sectionRef)
     return () => ctx.revert()
@@ -848,18 +881,19 @@ function IndustrialPipelineFlow() {
 
               return (
                 <g key={`pipe-${i}`}>
+                  {/* Background pipe (drawn animation) */}
                   <path
                     d={path}
                     fill="none"
                     stroke="url(#pipeGrad)"
                     strokeWidth="6"
                     strokeLinecap="round"
-                    className="pipeline-path"
+                    className="pipeline-path-bg"
                     style={{
-                      strokeDasharray: 1000,
-                      strokeDashoffset: 1000,
+                      willChange: 'stroke-dashoffset',
                     }}
                   />
+                  {/* Liquid flow (appears after pipe drawn) */}
                   <path
                     d={path}
                     fill="none"
@@ -867,11 +901,12 @@ function IndustrialPipelineFlow() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeDasharray="8 6"
-                    className="pipeline-path"
+                    className="pipeline-path-liquid"
                     style={{
-                      strokeDasharray: 1000,
-                      strokeDashoffset: 1000,
-                      animation: hoveredNode ? 'flowFast 0.5s linear infinite' : 'flowSlow 2s linear infinite',
+                      opacity: 0,
+                      animation: pipesReady
+                        ? (hoveredNode ? 'flowFast 0.5s linear infinite' : 'flowSlow 2s linear infinite')
+                        : 'none',
                     }}
                   />
                 </g>
@@ -892,7 +927,7 @@ function IndustrialPipelineFlow() {
                   transform={`translate(${pos.x}, ${pos.y})`}
                   onMouseEnter={() => setHoveredNode(skill.id)}
                   onMouseLeave={() => setHoveredNode(null)}
-                  style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
+                  style={{ transformOrigin: 'center center', willChange: 'transform, opacity' }}
                 >
                   {/* Glow effect */}
                   {isHovered && (
@@ -954,7 +989,8 @@ function IndustrialPipelineFlow() {
                     fill={isHovered ? '#E8703A' : '#F0E6D8'}
                     fontSize="10"
                     fontWeight="500"
-                    style={{ pointerEvents: 'none' }}
+                    className="pipeline-label"
+                    style={{ pointerEvents: 'none', willChange: 'opacity' }}
                   >
                     {skill.label.length > 8 ? skill.label.slice(0, 7) + '…' : skill.label}
                   </text>
