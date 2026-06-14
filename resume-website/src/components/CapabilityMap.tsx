@@ -1138,6 +1138,8 @@ function MainNodeItem({
         transform: 'translate(-50%, -50%)',
         transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
         zIndex: active ? 25 : 10,
+        marginLeft: 0,
+        marginTop: 0,
       }}
     >
       {/* Connection line to center */}
@@ -1357,7 +1359,7 @@ export default function CapabilityMap() {
       </div>
 
       <div
-        className="relative mx-auto"
+        className="relative mx-auto flex items-center justify-center"
         style={{
           width: containerSize,
           height: containerSize,
@@ -1403,7 +1405,7 @@ export default function CapabilityMap() {
 
         {/* Center node */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
+          className="relative z-30"
           style={{
             opacity: activeNodeIndex >= 0 && !showAll ? 1 : 1,
             transition: 'opacity 0.5s ease',
