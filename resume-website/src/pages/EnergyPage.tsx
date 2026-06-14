@@ -591,131 +591,298 @@ function OrbitalDashboard() {
 }
 
 /* ────────────────────────────────────────────────
-   Skills Matrix: Hexagonal Honeycomb
+   Skills Matrix: Industrial Pipeline Flow
    ──────────────────────────────────────────────── */
 
-function HexagonSkill({
-  skill,
-  index,
-}: {
-  skill: { id: string; label: string; level?: number }
-  index: number
-}) {
-  const hexRef = useRef<HTMLDivElement>(null)
-  const [hovered, setHovered] = useState(false)
+function IndustrialPipelineFlow() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  const skills = energyNode.subNodes
 
   useEffect(() => {
-    if (!hexRef.current) return
-    gsap.fromTo(
-      hexRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 0.5,
-        delay: index * 0.08,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: hexRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none none',
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
+    if (!sectionRef.current || !svgRef.current) return
+    const ctx = gsap.context(() => {
+      const nodes = svgRef.current!.querySelectorAll('.pipeline-node')
+      const pipes = svgRef.current!.querySelectorAll('.pipeline-path')
+
+      gsap.set(nodes, { opacity: 0, scale: 0 })
+      gsap.set(pipes, { strokeDashoffset: 1000 })
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top 75%',
+        onEnter: () => {
+          pipes.forEach((pipe, i) => {
+            gsap.to(pipe, {
+              strokeDashoffset: 0,
+              duration: 2,
+              delay: i * 0.3,
+              ease: 'power2.inOut',
+            })
+          })
+          nodes.forEach((node, i) => {
+            gsap.to(node, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.6,
+              delay: 0.5 + i * 0.15,
+              ease: 'back.out(1.7)',
+            })
+          })
         },
-      }
-    )
-  }, [index])
+      })
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [isMobile])
 
-  const level = skill.level || 0
+  const nodePositions = isMobile
+    ? skills.map((_, i) => ({ x: 100, y: 60 + i * 90 }))
+    : [
+        { x: 80, y: 80 },
+        { x: 280, y: 60 },
+        { x: 480, y: 90 },
+        { x: 680, y: 70 },
+        { x: 160, y: 220 },
+        { x: 360, y: 200 },
+        { x: 560, y: 230 },
+        { x: 260, y: 360 },
+        { x: 460, y: 340 },
+        { x: 360, y: 480 },
+      ]
 
-  return (
-    <div
-      ref={hexRef}
-      className="relative cursor-pointer group"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        width: '140px',
-        height: '160px',
-        margin: '-20px 4px',
-      }}
-    >
-      <div
-        className="absolute inset-0 flex flex-col items-center justify-center transition-all duration-300"
-        style={{
-          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-          background: hovered
-            ? 'linear-gradient(135deg, rgba(192,74,26,0.25), rgba(192,74,26,0.1))'
-            : 'rgba(28, 33, 40, 0.9)',
-          border: hovered ? '1px solid rgba(192,74,26,0.5)' : '1px solid rgba(240,230,216,0.08)',
-          transform: hovered ? 'scale(1.1)' : 'scale(1)',
-          zIndex: hovered ? 10 : 1,
-        }}
-      >
-        <span className="text-warm text-xs font-medium text-center px-4 leading-tight">{skill.label}</span>
-        {hovered && (
-          <div className="mt-2 flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-1.5 h-1.5 rounded-full ${i < level ? 'bg-energy-light' : 'bg-warm-ghost/20'}`}
-              />
-            ))}
-          </div>
-        )}
-        {hovered && (
-          <span className="text-energy-light text-[10px] font-mono mt-1">Lv.{level}</span>
-        )}
-      </div>
-    </div>
-  )
-}
+  const connections = isMobile
+    ? skills.map((_, i) => (i < skills.length - 1 ? [i, i + 1] : null)).filter(Boolean) as number[][]
+    : [
+        [0, 1], [1, 2], [2, 3],
+        [0, 4], [1, 5], [2, 6], [3, 6],
+        [4, 7], [5, 7], [5, 8], [6, 8],
+        [7, 9], [8, 9],
+      ]
 
-function SkillsHoneycomb() {
-  const skills = energyNode.subNodes
-  const rows: typeof skills[] = []
-  let idx = 0
-  const rowLengths = [3, 4, 3]
-  for (const len of rowLengths) {
-    rows.push(skills.slice(idx, idx + len))
-    idx += len
-  }
+  const nodeShapes = ['circle', 'diamond', 'circle', 'diamond', 'circle', 'circle', 'diamond', 'circle', 'diamond', 'circle']
 
   return (
-    <div className="py-20 md:py-32">
+    <div ref={sectionRef} className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Gauge size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">技能矩阵</h2>
+        <h2 className="text-2xl md:text-3xl font-serif text-warm">技能流程图</h2>
       </div>
 
-      {/* Mobile: simple list */}
-      <div className="md:hidden px-4 space-y-3">
-        {skills.map((skill) => (
-          <div key={skill.id} className="industrial-card p-4 flex items-center justify-between">
-            <span className="text-warm text-sm">{skill.label}</span>
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full ${i < (skill.level || 0) ? 'bg-energy-light' : 'bg-warm-ghost/20'}`}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="max-w-5xl mx-auto px-4">
+        <div
+          className="relative rounded-xl border border-warm-ghost/10 overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #0f1218 0%, #1a1f28 100%)',
+          }}
+        >
+          {/* Engineering grid background */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(192,74,26,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(192,74,26,0.03) 1px, transparent 1px)
+              `,
+              backgroundSize: '40px 40px',
+            }}
+          />
 
-      {/* Desktop: Honeycomb */}
-      <div className="hidden md:flex flex-col items-center">
-        {rows.map((row, rowIdx) => (
-          <div key={rowIdx} className="flex justify-center">
-            {row.map((skill, skillIdx) => (
-              <HexagonSkill
-                key={skill.id}
-                skill={skill}
-                index={rowIdx * 4 + skillIdx}
-              />
-            ))}
-          </div>
-        ))}
+          <svg
+            ref={svgRef}
+            viewBox={isMobile ? '0 0 200 950' : '0 0 800 580'}
+            className="relative w-full"
+            style={{ height: isMobile ? '950px' : '580px' }}
+          >
+            <defs>
+              <linearGradient id="pipeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#C04A1A" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="#C04A1A" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#C04A1A" stopOpacity="0.3" />
+              </linearGradient>
+              <filter id="nodeGlow">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#C04A1A" opacity="0.6" />
+              </marker>
+            </defs>
+
+            {/* Pipes */}
+            {connections.map(([from, to], i) => {
+              const start = nodePositions[from]
+              const end = nodePositions[to]
+              const midX = (start.x + end.x) / 2
+              const midY = (start.y + end.y) / 2
+              const path = isMobile
+                ? `M ${start.x} ${start.y + 25} L ${end.x} ${end.y - 25}`
+                : `M ${start.x} ${start.y} Q ${midX + (i % 2 === 0 ? 30 : -30)} ${midY + (i % 2 === 0 ? -20 : 20)} ${end.x} ${end.y}`
+
+              return (
+                <g key={`pipe-${i}`}>
+                  <path
+                    d={path}
+                    fill="none"
+                    stroke="url(#pipeGrad)"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    className="pipeline-path"
+                    style={{
+                      strokeDasharray: 1000,
+                      strokeDashoffset: 1000,
+                    }}
+                  />
+                  <path
+                    d={path}
+                    fill="none"
+                    stroke="#C04A1A"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="8 6"
+                    className="pipeline-path"
+                    style={{
+                      strokeDasharray: 1000,
+                      strokeDashoffset: 1000,
+                      animation: hoveredNode ? 'flowFast 0.5s linear infinite' : 'flowSlow 2s linear infinite',
+                    }}
+                  />
+                </g>
+              )
+            })}
+
+            {/* Nodes */}
+            {skills.map((skill, i) => {
+              const pos = nodePositions[i]
+              const isHovered = hoveredNode === skill.id
+              const shape = nodeShapes[i]
+              const level = skill.level || 0
+
+              return (
+                <g
+                  key={skill.id}
+                  className="pipeline-node cursor-pointer"
+                  transform={`translate(${pos.x}, ${pos.y})`}
+                  onMouseEnter={() => setHoveredNode(skill.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
+                  style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
+                >
+                  {/* Glow effect */}
+                  {isHovered && (
+                    <circle
+                      r="35"
+                      fill="none"
+                      stroke="#C04A1A"
+                      strokeWidth="2"
+                      opacity="0.4"
+                      filter="url(#nodeGlow)"
+                    />
+                  )}
+
+                  {/* Node shape */}
+                  {shape === 'circle' ? (
+                    <>
+                      <circle
+                        r="28"
+                        fill="rgba(15, 18, 24, 0.95)"
+                        stroke={isHovered ? '#C04A1A' : 'rgba(192, 74, 26, 0.4)'}
+                        strokeWidth="2"
+                      />
+                      {/* Screw decorations */}
+                      <circle cx="-20" cy="-20" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="20" cy="-20" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="-20" cy="20" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="20" cy="20" r="2" fill="#C04A1A" opacity="0.5" />
+                    </>
+                  ) : (
+                    <>
+                      <polygon
+                        points="0,-28 28,0 0,28 -28,0"
+                        fill="rgba(15, 18, 24, 0.95)"
+                        stroke={isHovered ? '#C04A1A' : 'rgba(192, 74, 26, 0.4)'}
+                        strokeWidth="2"
+                      />
+                      <circle cx="-18" cy="-18" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="18" cy="-18" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="-18" cy="18" r="2" fill="#C04A1A" opacity="0.5" />
+                      <circle cx="18" cy="18" r="2" fill="#C04A1A" opacity="0.5" />
+                    </>
+                  )}
+
+                  {/* Level indicator ring */}
+                  <circle
+                    r="22"
+                    fill="none"
+                    stroke="#C04A1A"
+                    strokeWidth="1"
+                    strokeDasharray={`${level * 13.8} ${69 - level * 13.8}`}
+                    opacity="0.6"
+                    transform="rotate(-90)"
+                  />
+
+                  {/* Label */}
+                  <text
+                    y="4"
+                    textAnchor="middle"
+                    fill={isHovered ? '#E8703A' : '#F0E6D8'}
+                    fontSize="10"
+                    fontWeight="500"
+                    style={{ pointerEvents: 'none' }}
+                  >
+                    {skill.label.length > 8 ? skill.label.slice(0, 7) + '…' : skill.label}
+                  </text>
+
+                  {/* Hover tooltip */}
+                  {isHovered && (
+                    <g transform="translate(0, -45)">
+                      <rect
+                        x="-60"
+                        y="-20"
+                        width="120"
+                        height="24"
+                        rx="4"
+                        fill="rgba(192, 74, 26, 0.15)"
+                        stroke="#C04A1A"
+                        strokeWidth="1"
+                      />
+                      <text
+                        y="-4"
+                        textAnchor="middle"
+                        fill="#E8703A"
+                        fontSize="9"
+                        fontFamily="monospace"
+                      >
+                        Lv.{level} {skill.label}
+                      </text>
+                    </g>
+                  )}
+                </g>
+              )
+            })}
+          </svg>
+
+          {/* CSS animations for liquid flow */}
+          <style>{`
+            @keyframes flowSlow {
+              to { stroke-dashoffset: -28; }
+            }
+            @keyframes flowFast {
+              to { stroke-dashoffset: -28; }
+            }
+          `}</style>
+        </div>
       </div>
     </div>
   )
@@ -1027,127 +1194,593 @@ function MagazineSpread({
 }
 
 /* ────────────────────────────────────────────────
-   Tool Stack: Animated Floating Toolbox
+   Tool Stack: Control Room Dashboard
    ──────────────────────────────────────────────── */
 
-function FloatingToolbox() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [docked, setDocked] = useState(false)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+function ScrewCorners() {
+  return (
+    <>
+      <div className="absolute top-2 left-2 w-2 h-2 rounded-full bg-warm-ghost/20" />
+      <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-warm-ghost/20" />
+      <div className="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-warm-ghost/20" />
+      <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-warm-ghost/20" />
+    </>
+  )
+}
+
+function GaugeMeter({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const needleRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return
-      const rect = containerRef.current.getBoundingClientRect()
-      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top })
-    }
-    const container = containerRef.current
-    container?.addEventListener('mousemove', handleMouseMove)
-    return () => container?.removeEventListener('mousemove', handleMouseMove)
-  }, [])
-
-  useEffect(() => {
-    if (!containerRef.current || docked) return
-    const icons = containerRef.current.querySelectorAll('.tool-icon')
-    if (!icons || icons.length === 0) return
-    icons.forEach((icon, i) => {
-      const el = icon as HTMLElement
-      const baseX = Math.sin(i * 1.5) * 30
-      const baseY = Math.cos(i * 1.2) * 20
-      gsap.to(el, {
-        x: baseX,
-        y: baseY,
-        duration: 3 + i * 0.5,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-      })
+    if (!needleRef.current) return
+    gsap.to(needleRef.current, {
+      rotation: -90 + (proficiency / 100) * 180,
+      duration: 2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: needleRef.current,
+        start: 'top 85%',
+      },
     })
-  }, [docked])
+  }, [proficiency])
 
   return (
-    <div className="py-20 md:py-32">
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="relative w-24 h-12 mx-auto mb-2 overflow-hidden">
+        <svg viewBox="0 0 100 50" className="w-full h-full">
+          <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(192,74,26,0.2)" strokeWidth="8" />
+          <path
+            d="M 10 50 A 40 40 0 0 1 90 50"
+            fill="none"
+            stroke="#C04A1A"
+            strokeWidth="8"
+            strokeDasharray={`${(proficiency / 100) * 126} 126`}
+            style={{ transition: 'stroke-dasharray 2s ease-out' }}
+          />
+        </svg>
+        <div
+          ref={needleRef}
+          className="absolute bottom-0 left-1/2 w-0.5 h-10 bg-energy-light origin-bottom transition-transform"
+          style={{ transform: 'translateX(-50%) rotate(-90deg)' }}
+        />
+        <div className="absolute bottom-0 left-1/2 w-2 h-2 rounded-full bg-energy -translate-x-1/2 translate-y-1/2" />
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function WireframeCube({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const cubeRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!cubeRef.current) return
+    gsap.to(cubeRef.current, {
+      rotationX: 360,
+      rotationY: 360,
+      duration: 8,
+      repeat: -1,
+      ease: 'none',
+    })
+  }, [])
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="relative w-24 h-24 mx-auto mb-2" style={{ perspective: '200px' }}>
+        <div
+          ref={cubeRef}
+          className="w-full h-full relative"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {['front', 'back', 'left', 'right', 'top', 'bottom'].map((face) => (
+            <div
+              key={face}
+              className="absolute inset-0 border border-energy/30 flex items-center justify-center"
+              style={{
+                background: 'rgba(192,74,26,0.05)',
+                transform: {
+                  front: 'translateZ(48px)',
+                  back: 'translateZ(-48px) rotateY(180deg)',
+                  left: 'translateX(-48px) rotateY(-90deg)',
+                  right: 'translateX(48px) rotateY(90deg)',
+                  top: 'translateY(-48px) rotateX(90deg)',
+                  bottom: 'translateY(48px) rotateX(-90deg)',
+                }[face],
+              }}
+            >
+              <span className="text-energy/20 text-[8px] font-mono">{face.toUpperCase()}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function DrawingScreen({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const lineRef = useRef<SVGPathElement>(null)
+
+  useEffect(() => {
+    if (!lineRef.current) return
+    const length = lineRef.current.getTotalLength()
+    gsap.set(lineRef.current, { strokeDasharray: length, strokeDashoffset: length })
+    gsap.to(lineRef.current, {
+      strokeDashoffset: 0,
+      duration: 3,
+      ease: 'power2.inOut',
+      scrollTrigger: {
+        trigger: lineRef.current,
+        start: 'top 85%',
+      },
+    })
+  }, [])
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="relative w-24 h-20 mx-auto mb-2 rounded border border-energy/20 bg-black/40 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(192,74,26,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(192,74,26,0.05) 1px, transparent 1px)',
+            backgroundSize: '8px 8px',
+          }}
+        />
+        <svg viewBox="0 0 100 80" className="w-full h-full">
+          <path
+            ref={lineRef}
+            d="M 10 60 L 30 40 L 50 50 L 70 20 L 90 30"
+            fill="none"
+            stroke="#C04A1A"
+            strokeWidth="1.5"
+          />
+        </svg>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function SevenSegment({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const [displayValue, setDisplayValue] = useState(0)
+
+  useEffect(() => {
+    const trigger = ScrollTrigger.create({
+      trigger: `.seven-seg-${tool.name.replace(/\s+/g, '-')}`,
+      start: 'top 85%',
+      onEnter: () => {
+        gsap.to({ val: 0 }, {
+          val: proficiency,
+          duration: 2,
+          ease: 'power3.out',
+          onUpdate: function () {
+            setDisplayValue(Math.floor(this.targets()[0].val))
+          },
+        })
+      },
+    })
+    return () => trigger.kill()
+  }, [proficiency, tool.name])
+
+  const digits = String(displayValue).padStart(3, '0').split('')
+
+  const segMap: Record<string, string> = {
+    '0': '1111110', '1': '0110000', '2': '1101101', '3': '1111001',
+    '4': '0110011', '5': '1011011', '6': '1011111', '7': '1110000',
+    '8': '1111111', '9': '1111011',
+  }
+
+  return (
+    <div
+      className={`relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30 seven-seg-${tool.name.replace(/\s+/g, '-')}`}
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="flex items-center justify-center gap-1 mb-2">
+        {digits.map((digit, i) => (
+          <div key={i} className="relative w-6 h-10">
+            {['top', 'topRight', 'bottomRight', 'bottom', 'bottomLeft', 'topLeft', 'middle'].map((seg, si) => {
+              const isOn = segMap[digit]?.[si] === '1'
+              const styles: Record<string, React.CSSProperties> = {
+                top: { top: 0, left: 2, right: 2, height: 2 },
+                topRight: { top: 2, right: 0, width: 2, height: 3 },
+                bottomRight: { bottom: 2, right: 0, width: 2, height: 3 },
+                bottom: { bottom: 0, left: 2, right: 2, height: 2 },
+                bottomLeft: { bottom: 2, left: 0, width: 2, height: 3 },
+                topLeft: { top: 2, left: 0, width: 2, height: 3 },
+                middle: { top: '50%', left: 2, right: 2, height: 2, transform: 'translateY(-50%)' },
+              }
+              return (
+                <div
+                  key={seg}
+                  className="absolute rounded-sm transition-all"
+                  style={{
+                    ...styles[seg],
+                    background: isOn ? (active ? '#E8703A' : '#C04A1A') : 'rgba(192,74,26,0.1)',
+                    boxShadow: isOn && active ? '0 0 6px rgba(192,74,26,0.5)' : 'none',
+                  }}
+                />
+              )
+            })}
+          </div>
+        ))}
+        <span className="text-energy-light text-lg font-mono font-bold ml-1">%</span>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function Oscilloscope({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="relative w-24 h-20 mx-auto mb-2 rounded border border-energy/20 bg-black/60 overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <svg viewBox="0 0 100 60" className="w-full h-full">
+            <path
+              d="M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30"
+              fill="none"
+              stroke="#C04A1A"
+              strokeWidth="1.5"
+              className="oscilloscope-wave"
+              style={{
+                animation: active ? 'waveFast 1s linear infinite' : 'waveSlow 2s linear infinite',
+              }}
+            />
+          </svg>
+        </div>
+        <div className="absolute top-1 left-1 text-[6px] text-energy/40 font-mono">50Hz</div>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function LEDBar({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const leds = 10
+  const litCount = Math.round((proficiency / 100) * leds)
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="flex items-end justify-center gap-0.5 h-20 mb-2">
+        {Array.from({ length: leds }).map((_, i) => (
+          <div
+            key={i}
+            className="w-2 rounded-sm transition-all duration-300"
+            style={{
+              height: `${12 + i * 3}%`,
+              background: i < litCount
+                ? (active ? '#E8703A' : '#C04A1A')
+                : 'rgba(192,74,26,0.1)',
+              boxShadow: i < litCount && active ? '0 0 8px rgba(192,74,26,0.4)' : 'none',
+            }}
+          />
+        ))}
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function FunctionPlot({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const pathRef = useRef<SVGPathElement>(null)
+
+  useEffect(() => {
+    if (!pathRef.current) return
+    const length = pathRef.current.getTotalLength()
+    gsap.set(pathRef.current, { strokeDasharray: length, strokeDashoffset: length })
+    gsap.to(pathRef.current, {
+      strokeDashoffset: 0,
+      duration: 2.5,
+      ease: 'power2.inOut',
+      scrollTrigger: {
+        trigger: pathRef.current,
+        start: 'top 85%',
+      },
+    })
+  }, [])
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="relative w-24 h-20 mx-auto mb-2 rounded border border-energy/20 bg-black/40 overflow-hidden">
+        <svg viewBox="0 0 100 80" className="w-full h-full">
+          <path
+            ref={pathRef}
+            d="M 10 70 Q 30 70, 40 40 Q 50 10, 60 40 Q 70 70, 90 70"
+            fill="none"
+            stroke="#C04A1A"
+            strokeWidth="2"
+          />
+          <line x1="10" y1="70" x2="90" y2="70" stroke="rgba(192,74,26,0.2)" strokeWidth="1" />
+          <line x1="10" y1="10" x2="10" y2="70" stroke="rgba(192,74,26,0.2)" strokeWidth="1" />
+        </svg>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function StatusLight({ tool, proficiency }: { tool: typeof tools[0]; proficiency: number }) {
+  const [active, setActive] = useState(false)
+  const [blink, setBlink] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => setBlink((b) => !b), 800)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div
+      className="relative p-4 rounded-lg border border-warm-ghost/10 bg-surface/80 backdrop-blur-sm transition-all duration-300 hover:border-energy/30"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <ScrewCorners />
+      <div className="text-warm-faint text-[10px] font-mono uppercase tracking-wider mb-2 text-center">{tool.category}</div>
+      <div className="flex flex-col items-center justify-center h-20 mb-2 gap-3">
+        <div
+          className="w-8 h-8 rounded-full border-2 transition-all duration-300"
+          style={{
+            background: blink ? 'rgba(192,74,26,0.8)' : 'rgba(192,74,26,0.3)',
+            borderColor: active ? '#E8703A' : '#C04A1A',
+            boxShadow: blink
+              ? (active ? '0 0 20px rgba(192,74,26,0.6)' : '0 0 12px rgba(192,74,26,0.3)')
+              : 'none',
+          }}
+        />
+        <span className="text-energy-light text-[10px] font-mono uppercase tracking-wider">
+          {blink ? 'RUNNING' : 'STANDBY'}
+        </span>
+      </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <span className="text-energy-light">{tool.icon}</span>
+          <span className="text-warm text-xs font-medium">{tool.name}</span>
+        </div>
+        <span className="text-energy-light text-lg font-mono font-bold">{proficiency}%</span>
+      </div>
+      {active && (
+        <div className="absolute inset-0 rounded-lg border border-energy/20 pointer-events-none"
+          style={{ boxShadow: '0 0 20px rgba(192,74,26,0.1)' }}
+        />
+      )}
+    </div>
+  )
+}
+
+function ControlRoomDashboard() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  const toolConfigs = [
+    { tool: tools[0], proficiency: 92, component: GaugeMeter },
+    { tool: tools[1], proficiency: 88, component: WireframeCube },
+    { tool: tools[2], proficiency: 85, component: DrawingScreen },
+    { tool: tools[3], proficiency: 80, component: SevenSegment },
+    { tool: tools[4], proficiency: 78, component: Oscilloscope },
+    { tool: tools[5], proficiency: 75, component: LEDBar },
+    { tool: tools[6], proficiency: 82, component: FunctionPlot },
+    { tool: tools[7], proficiency: 79, component: StatusLight },
+  ]
+
+  useEffect(() => {
+    if (!sectionRef.current) return
+    const ctx = gsap.context(() => {
+      const panels = sectionRef.current!.querySelectorAll('.control-panel > div')
+      gsap.fromTo(
+        panels,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 75%',
+          },
+        }
+      )
+    }, sectionRef)
+    return () => ctx.revert()
+  }, [])
+
+  return (
+    <div ref={sectionRef} className="py-20 md:py-32">
       <div className="flex items-center justify-center gap-3 mb-12 md:mb-16">
         <Wrench size={24} className="text-energy-light" />
-        <h2 className="text-2xl md:text-3xl font-serif text-warm">工具栈</h2>
+        <h2 className="text-2xl md:text-3xl font-serif text-warm">控制室仪表盘</h2>
       </div>
 
       {/* Mobile */}
       <div className="md:hidden px-4 grid grid-cols-2 gap-3">
-        {tools.map((tool, idx) => (
+        {toolConfigs.map(({ tool, proficiency }, idx) => (
           <div key={idx} className="industrial-card p-4 text-center">
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-energy-dim flex items-center justify-center text-energy-light">
               {tool.icon}
             </div>
             <p className="text-warm text-sm">{tool.name}</p>
             <p className="text-warm-faint text-xs">{tool.category}</p>
+            <p className="text-energy-light text-lg font-mono font-bold mt-1">{proficiency}%</p>
           </div>
         ))}
       </div>
 
-      {/* Desktop */}
-      <div
-        ref={containerRef}
-        className="hidden md:block relative mx-auto"
-        style={{ width: '600px', height: '400px' }}
-        onMouseEnter={() => setDocked(true)}
-        onMouseLeave={() => setDocked(false)}
-      >
-        {tools.map((tool, idx) => {
-          const col = idx % 4
-          const row = Math.floor(idx / 4)
-          const dockX = 60 + col * 140
-          const dockY = 80 + row * 140
-          const randomX = 100 + Math.random() * 400
-          const randomY = 50 + Math.random() * 300
+      {/* Desktop: Control Room Wall */}
+      <div className="hidden md:block max-w-5xl mx-auto px-4">
+        <div
+          className="control-panel relative rounded-xl border border-warm-ghost/10 p-6 md:p-8"
+          style={{
+            background: 'linear-gradient(135deg, #0f1218 0%, #1a1f28 100%)',
+          }}
+        >
+          {/* Panel frame screws */}
+          <div className="absolute top-3 left-3 w-3 h-3 rounded-full bg-warm-ghost/10" />
+          <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-warm-ghost/10" />
+          <div className="absolute bottom-3 left-3 w-3 h-3 rounded-full bg-warm-ghost/10" />
+          <div className="absolute bottom-3 right-3 w-3 h-3 rounded-full bg-warm-ghost/10" />
 
-          const dx = mousePos.x - (docked ? dockX : randomX)
-          const dy = mousePos.y - (docked ? dockY : randomY)
-          const dist = Math.sqrt(dx * dx + dy * dy)
-          const magneticStrength = Math.max(0, 1 - dist / 200) * 15
-          const magX = (dx / dist) * magneticStrength || 0
-          const magY = (dy / dist) * magneticStrength || 0
+          {/* Dashboard grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {toolConfigs.map(({ tool, proficiency, component: Component }, idx) => (
+              <Component key={idx} tool={tool} proficiency={proficiency} />
+            ))}
+          </div>
 
-          return (
-            <div
-              key={idx}
-              className="tool-icon absolute transition-all duration-700 ease-out group"
-              style={{
-                left: docked ? `${dockX}px` : `${randomX}px`,
-                top: docked ? `${dockY}px` : `${randomY}px`,
-                transform: `translate(-50%, -50%) translate(${docked ? magX : 0}px, ${docked ? magY : 0}px)`,
-              }}
-            >
-              <div
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all duration-300 ${
-                  docked
-                    ? 'bg-surface border-border hover:border-energy/30'
-                    : 'bg-surface/60 border-border/30'
-                }`}
-                style={{
-                  boxShadow: docked ? '0 4px 16px rgba(0,0,0,0.3)' : 'none',
-                }}
-              >
-                <div className="w-12 h-12 rounded-xl bg-energy-dim flex items-center justify-center text-energy-light group-hover:scale-110 transition-transform">
-                  {tool.icon}
-                </div>
-                <span className="text-warm text-xs font-medium whitespace-nowrap">{tool.name}</span>
-                <span className="text-warm-faint text-[10px]">{tool.category}</span>
+          {/* Bottom status bar */}
+          <div className="mt-6 pt-4 border-t border-warm-ghost/10 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-energy animate-pulse" />
+                <span className="text-warm-faint text-[10px] font-mono uppercase">System Online</span>
               </div>
-
-              {/* Tooltip */}
-              <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-base-elevated border border-border text-warm-muted text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                {tool.desc}
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-energy/50" />
+                <span className="text-warm-faint text-[10px] font-mono uppercase">All Instruments Nominal</span>
               </div>
             </div>
-          )
-        })}
-
-        {/* Hint */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-warm-faint text-xs font-mono">
-          {docked ? '图标已停靠' : '悬停以停靠工具'}
+            <span className="text-warm-faint text-[10px] font-mono">
+              {new Date().toLocaleTimeString('zh-CN', { hour12: false })}
+            </span>
+          </div>
         </div>
       </div>
+
+      {/* Oscilloscope wave animation */}
+      <style>{`
+        @keyframes waveSlow {
+          0% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+          50% { d: path('M 0 30 Q 12.5 50, 25 30 T 50 30 T 75 30 T 100 30'); }
+          100% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+        }
+        @keyframes waveFast {
+          0% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+          50% { d: path('M 0 30 Q 12.5 50, 25 30 T 50 30 T 75 30 T 100 30'); }
+          100% { d: path('M 0 30 Q 12.5 10, 25 30 T 50 30 T 75 30 T 100 30'); }
+        }
+      `}</style>
     </div>
   )
 }
@@ -1596,9 +2229,9 @@ export default function EnergyPage() {
       <div className="relative pt-16 pb-20 px-4 md:px-6">
         <div className="max-w-6xl mx-auto">
           <OrbitalDashboard />
-          <SkillsHoneycomb />
+          <IndustrialPipelineFlow />
           <MagazineSpread expanded={expanded} onToggle={toggleExpanded} />
-          <FloatingToolbox />
+          <ControlRoomDashboard />
           <CinemaReel />
           <CaseStudyStory />
           <TimelineSection />
