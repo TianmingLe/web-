@@ -413,43 +413,54 @@ function RadialProgress({ percentage, color, size = 80 }: { percentage: number; 
 function OrbitalDashboard() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const orbitRef = useRef<HTMLDivElement>(null)
+  const localTimelineRef = useRef<gsap.core.Timeline | null>(null)
 
   useEffect(() => {
     if (!sectionRef.current || !orbitRef.current) return
 
     const ctx = gsap.context(() => {
-      gsap.to(orbitRef.current, {
+      const tl = gsap.timeline({ repeat: -1 })
+      tl.to(orbitRef.current, {
         rotation: 360,
         duration: 60,
-        repeat: -1,
         ease: 'none',
       })
 
       // Counter-rotate cards so they stay upright
       const cards = orbitRef.current?.querySelectorAll('.orbit-card')
-      if (!cards) return
-      cards.forEach((card) => {
-        gsap.to(card, {
-          rotation: -360,
-          duration: 60,
-          repeat: -1,
-          ease: 'none',
+      if (cards) {
+        cards.forEach((card) => {
+          tl.to(
+            card,
+            {
+              rotation: -360,
+              duration: 60,
+              ease: 'none',
+            },
+            0
+          )
         })
-      })
+      }
+
+      localTimelineRef.current = tl
 
       // ScrollTrigger pause/resume
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top bottom',
         end: 'bottom top',
-        onEnter: () => gsap.globalTimeline.play(),
-        onLeave: () => gsap.globalTimeline.pause(),
-        onEnterBack: () => gsap.globalTimeline.play(),
-        onLeaveBack: () => gsap.globalTimeline.pause(),
+        onEnter: () => localTimelineRef.current?.play(),
+        onLeave: () => localTimelineRef.current?.pause(),
+        onEnterBack: () => localTimelineRef.current?.play(),
+        onLeaveBack: () => localTimelineRef.current?.pause(),
       })
     }, sectionRef)
 
-    return () => ctx.revert()
+    return () => {
+      localTimelineRef.current?.kill()
+      localTimelineRef.current = null
+      ctx.revert()
+    }
   }, [])
 
   return (
@@ -659,7 +670,7 @@ function SkillsHoneycomb() {
           <div
             key={rowIdx}
             className="flex justify-center"
-            style={{ marginLeft: rowIdx % 2 === 1 ? '0px' : '0px' }}
+            style={{ marginLeft: rowIdx % 2 === 1 ? '70px' : '0' }}
           >
             {row.map((skill, skillIdx) => (
               <HexagonSkill
@@ -945,14 +956,29 @@ function FloatingToolbox() {
   const orbitRef = useRef<HTMLDivElement>(null)
   const [docked, setDocked] = useState(false)
   const [hoveredTool, setHoveredTool] = useState<number | null>(null)
+  const [isVisible, setIsVisible] = useState(true)
   const orbitAngleRef = useRef(0)
   const rafRef = useRef<number>(0)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   // 3D orbit animation
   useEffect(() => {
     if (!orbitRef.current || docked) return
 
     const animate = () => {
+      if (!isVisible) {
+        rafRef.current = requestAnimationFrame(animate)
+        return
+      }
+
       orbitAngleRef.current += 0.003
       const angle = orbitAngleRef.current
       const icons = orbitRef.current!.querySelectorAll('.tool-icon')
@@ -986,7 +1012,7 @@ function FloatingToolbox() {
 
     rafRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [docked])
+  }, [docked, isVisible])
 
   return (
     <div className="py-20 md:py-32">

@@ -1635,6 +1635,7 @@ function ControlRoomDashboard() {
    Content Pipeline: Vertical Cinema Reel
    ──────────────────────────────────────────────── */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CinemaReel() {
   const reelRef = useRef<HTMLDivElement>(null)
 
@@ -2088,12 +2089,11 @@ export default function EnergyPage() {
       <div className="relative pt-16 pb-20 px-4 md:px-6">
         <div className="max-w-6xl mx-auto">
           <OrbitalDashboard />
-          <PipelineCanvas />
           <MagazineSpread expanded={expanded} onToggle={toggleExpanded} />
-          <ControlRoomDashboard />
-          <CinemaReel />
           <CaseStudyStory />
           <TimelineSection />
+          <ControlRoomDashboard />
+          <PipelineCanvas />
         </div>
       </div>
     </div>

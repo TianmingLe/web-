@@ -109,7 +109,8 @@ export default function Nav() {
                             }`}
                             aria-hidden="true"
                           />
-                          <span className={`relative z-10 ${isVersionB ? 'font-b-serif' : 'font-sans'}`}>{item.label}</span>
+                          <span className={`relative z-10 hidden md:inline ${isVersionB ? 'font-b-serif' : 'font-sans'}`}>{item.shortLabel || item.label}</span>
+                          <span className={`relative z-10 md:hidden ${isVersionB ? 'font-b-serif' : 'font-sans'}`}>{item.label}</span>
                         </>
                       )}
                     </NavLink>

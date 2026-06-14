@@ -257,7 +257,7 @@ export default function DevPage() {
               全栈开发能力
             </span>
           </div>
-          <h1 className="dev-hero-title text-5xl md:text-7xl font-serif text-warm mb-6 tracking-tight">
+          <h1 className="dev-hero-title text-5xl md:text-7xl font-ai-title text-warm mb-6 tracking-tight">
             编程开发
           </h1>
           <p className="dev-hero-sub text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">

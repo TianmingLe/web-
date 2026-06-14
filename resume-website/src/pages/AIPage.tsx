@@ -241,7 +241,7 @@ export default function AIPage() {
   return (
     <div ref={contentRef} className="relative">
       {/* Hero */}
-      <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <NeuralNetworkBg />
         <div className="hero-glow hero-glow-ai absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="relative z-10 text-center px-4">

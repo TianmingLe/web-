@@ -234,7 +234,7 @@ export default function ThoughtPage() {
               认知升级与方法论沉淀
             </span>
           </div>
-          <h1 className="thought-hero-title text-5xl md:text-7xl font-serif text-warm mb-6 tracking-tight">
+          <h1 className="thought-hero-title text-5xl md:text-7xl font-media-title text-warm mb-6 tracking-tight">
             思想领域高度
           </h1>
           <p className="thought-hero-sub text-warm-muted text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-sans">

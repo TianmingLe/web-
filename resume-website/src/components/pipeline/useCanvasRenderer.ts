@@ -76,6 +76,13 @@ export function useCanvasRenderer({
     }
   }, [canvasRef, layout, tier, isVisible, hoveredNode, hoveredIndex])
 
+  const scheduleNextFrame = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    if (isVisible) {
+      rafRef.current = requestAnimationFrame(render)
+    }
+  }, [isVisible, render])
+
   useEffect(() => {
     if (isWarm && stateRef.current.phase === 'idle') {
       stateRef.current.phase = 'playing'
@@ -84,11 +91,9 @@ export function useCanvasRenderer({
   }, [isWarm])
 
   useEffect(() => {
-    if (isVisible) {
-      rafRef.current = requestAnimationFrame(render)
-    }
+    scheduleNextFrame()
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [isVisible, render])
+  }, [scheduleNextFrame])
 }
