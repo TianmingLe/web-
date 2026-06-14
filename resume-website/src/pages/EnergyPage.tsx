@@ -324,7 +324,7 @@ function AnimatedTitle({ text }: { text: string }) {
   useEffect(() => {
     if (!containerRef.current) return
     const chars = containerRef.current.querySelectorAll('.char')
-    if (!chars || chars.length === 0) return
+    if (chars.length === 0) return
     gsap.fromTo(
       chars,
       { opacity: 0, y: 40, rotateX: -90 },
@@ -356,82 +356,180 @@ function AnimatedTitle({ text }: { text: string }) {
 }
 
 function RotatingGear() {
-  const gearRef = useRef<HTMLDivElement>(null)
-  const bladeRef = useRef<SVGGElement>(null)
+  // Generate 16 gear teeth as precise paths
+  const teeth = 16
+  const cx = 100
+  const cy = 100
+  const outerR = 85
+  const innerR = 70
+  const toothWidthAngle = (Math.PI * 2) / teeth
+  const toothTipAngle = toothWidthAngle * 0.35
 
-  useEffect(() => {
-    if (!gearRef.current) return
-    const ctx = gsap.context(() => {
-      // Outer gear slow rotation
-      gsap.to(gearRef.current, {
-        rotation: 360,
-        duration: 20,
-        repeat: -1,
-        ease: 'none',
-      })
-      // Inner turbine blades faster clockwise rotation
-      if (bladeRef.current) {
-        gsap.to(bladeRef.current, {
-          rotation: -360,
-          duration: 3,
-          repeat: -1,
-          ease: 'none',
-          transformOrigin: '100px 100px',
-        })
-      }
-    })
-    return () => ctx.revert()
-  }, [])
+  let gearPath = ''
+  for (let i = 0; i < teeth; i++) {
+    const baseAngle = i * toothWidthAngle - Math.PI / 2
+    const a1 = baseAngle
+    const a2 = baseAngle + toothTipAngle
+    const a3 = baseAngle + toothWidthAngle - toothTipAngle
+    const a4 = baseAngle + toothWidthAngle
+
+    const x1 = cx + Math.cos(a1) * innerR
+    const y1 = cy + Math.sin(a1) * innerR
+    const x2 = cx + Math.cos(a2) * outerR
+    const y2 = cy + Math.sin(a2) * outerR
+    const x3 = cx + Math.cos(a3) * outerR
+    const y3 = cy + Math.sin(a3) * outerR
+    const x4 = cx + Math.cos(a4) * innerR
+    const y4 = cy + Math.sin(a4) * innerR
+
+    if (i === 0) {
+      gearPath += `M ${x1} ${y1}`
+    } else {
+      gearPath += ` L ${x1} ${y1}`
+    }
+    gearPath += ` L ${x2} ${y2} L ${x3} ${y3} L ${x4} ${y4}`
+  }
+  gearPath += ' Z'
+
+  // Generate 8 curved turbine blades
+  const blades = 8
+  const bladeInnerR = 18
+  const bladeOuterR = 55
+
+  const bladePaths = Array.from({ length: blades }).map((_, i) => {
+    const angle = (i * 360) / blades
+    const sweep = 28 // degrees of arc sweep
+
+    const r1 = bladeInnerR
+    const r2 = bladeOuterR
+
+    const startA = angle - sweep / 2
+    const endA = angle + sweep / 2
+
+    const startRad = (startA * Math.PI) / 180
+    const endRad = (endA * Math.PI) / 180
+    const midRad = (angle * Math.PI) / 180
+
+    const x1 = cx + Math.cos(startRad) * r1
+    const y1 = cy + Math.sin(startRad) * r1
+    const x2 = cx + Math.cos(endRad) * r2
+    const y2 = cy + Math.sin(endRad) * r2
+    const x3 = cx + Math.cos(endRad) * r1
+    const y3 = cy + Math.sin(endRad) * r1
+    const x4 = cx + Math.cos(startRad) * r2
+    const y4 = cy + Math.sin(startRad) * r2
+
+    // Curved blade using quadratic bezier
+    const cpX = cx + Math.cos(midRad) * (r2 + 12)
+    const cpY = cy + Math.sin(midRad) * (r2 + 12)
+
+    return `M ${x1} ${y1} Q ${cpX} ${cpY} ${x2} ${y2} L ${x3} ${y3} Q ${cx + Math.cos(midRad) * (r1 - 6)} ${cy + Math.sin(midRad) * (r1 - 6)} ${x4} ${y4} Z`
+  })
+
+  // Tick marks around outer ring
+  const tickCount = 32
+  const ticks = Array.from({ length: tickCount }).map((_, i) => {
+    const angle = (i * 360) / tickCount
+    const rad = (angle * Math.PI) / 180
+    const r1 = outerR + 4
+    const r2 = outerR + (i % 4 === 0 ? 10 : 7)
+    const x1 = cx + Math.cos(rad) * r1
+    const y1 = cy + Math.sin(rad) * r1
+    const x2 = cx + Math.cos(rad) * r2
+    const y2 = cy + Math.sin(rad) * r2
+    return { x1, y1, x2, y2, bold: i % 4 === 0 }
+  })
+
+  // Direction arrows on outer ring
+  const arrowPositions = [0, 120, 240]
+  const arrows = arrowPositions.map((deg) => {
+    const rad = ((deg - 90) * Math.PI) / 180
+    const r = outerR + 14
+    const ax = cx + Math.cos(rad) * r
+    const ay = cy + Math.sin(rad) * r
+    return { cx: ax, cy: ay, rot: deg }
+  })
 
   return (
-    <div ref={gearRef} className="relative w-64 h-64 md:w-80 md:h-80">
-      <svg viewBox="0 0 200 200" className="w-full h-full">
+    <div className="relative w-64 h-64 md:w-80 md:h-80">
+      <svg viewBox="0 0 200 200" className="w-full h-full" style={{ overflow: 'visible' }}>
         <defs>
           <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#C04A1A" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#E8703A" stopOpacity="0.2" />
           </linearGradient>
+          <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#E8703A" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#C04A1A" stopOpacity="0.3" />
+          </linearGradient>
         </defs>
-        {/* Outer gear */}
-        <g fill="none" stroke="url(#gearGrad)" strokeWidth="1.5">
-          {Array.from({ length: 16 }).map((_, i) => {
-            const angle = (i * 22.5 * Math.PI) / 180
-            const x1 = 100 + Math.cos(angle) * 70
-            const y1 = 100 + Math.sin(angle) * 70
-            const x2 = 100 + Math.cos(angle) * 85
-            const y2 = 100 + Math.sin(angle) * 85
-            const x3 = 100 + Math.cos(angle + 0.15) * 85
-            const y3 = 100 + Math.sin(angle + 0.15) * 85
-            const x4 = 100 + Math.cos(angle + 0.15) * 70
-            const y4 = 100 + Math.sin(angle + 0.15) * 70
-            return (
-              <polygon key={i} points={`${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}`} fill="url(#gearGrad)" fillOpacity="0.3" />
-            )
-          })}
-          <circle cx="100" cy="100" r="65" strokeOpacity="0.4" />
-          <circle cx="100" cy="100" r="55" strokeOpacity="0.3" />
-          <circle cx="100" cy="100" r="20" strokeOpacity="0.5" fill="url(#gearGrad)" fillOpacity="0.15" />
-          {/* Inner turbine blades - auto rotating clockwise */}
-          <g ref={bladeRef}>
-            {Array.from({ length: 8 }).map((_, i) => {
-              const angle = (i * 45 * Math.PI) / 180
-              const x1 = 100 + Math.cos(angle) * 20
-              const y1 = 100 + Math.sin(angle) * 20
-              const x2 = 100 + Math.cos(angle + 0.3) * 50
-              const y2 = 100 + Math.sin(angle + 0.3) * 50
-              return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeOpacity="0.4" />
-            })}
-          </g>
+
+        {/* Outer gear ring - rotates CW */}
+        <g style={{ transformOrigin: '100px 100px', animation: 'rotate-cw 20s linear infinite' }}>
+          <path d={gearPath} fill="url(#gearGrad)" fillOpacity="0.25" stroke="url(#gearGrad)" strokeWidth="1.5" />
+          <circle cx={cx} cy={cy} r="65" fill="none" stroke="url(#gearGrad)" strokeOpacity="0.3" strokeWidth="1" />
+          <circle cx={cx} cy={cy} r="58" fill="none" stroke="url(#gearGrad)" strokeOpacity="0.2" strokeWidth="0.5" strokeDasharray="4 4" />
+
+          {/* Tick marks */}
+          {ticks.map((t, i) => (
+            <line
+              key={`tick-${i}`}
+              x1={t.x1}
+              y1={t.y1}
+              x2={t.x2}
+              y2={t.y2}
+              stroke="#C04A1A"
+              strokeWidth={t.bold ? 1.5 : 0.8}
+              strokeOpacity={0.5}
+            />
+          ))}
+
+          {/* Direction arrows */}
+          {arrows.map((a, i) => (
+            <g key={`arrow-${i}`} transform={`translate(${a.cx}, ${a.cy}) rotate(${a.rot + 90})`}>
+              <polygon points="0,-4 3,2 -3,2" fill="#C04A1A" fillOpacity="0.6" />
+            </g>
+          ))}
+        </g>
+
+        {/* Inner turbine blades - rotates CCW */}
+        <g style={{ transformOrigin: '100px 100px', animation: 'rotate-ccw 3s linear infinite' }}>
+          {bladePaths.map((d, i) => (
+            <path key={`blade-${i}`} d={d} fill="url(#bladeGrad)" stroke="#C04A1A" strokeWidth="0.8" strokeOpacity="0.4" />
+          ))}
+        </g>
+
+        {/* Center hub - static */}
+        <g>
+          <circle cx={cx} cy={cy} r="15" fill="rgba(15,18,24,0.9)" stroke="#C04A1A" strokeWidth="2" strokeOpacity="0.6" />
+          <circle cx={cx} cy={cy} r="10" fill="none" stroke="#C04A1A" strokeWidth="0.5" strokeOpacity="0.4" />
+          {/* Screw cross */}
+          <line x1={cx - 6} y1={cy} x2={cx + 6} y2={cy} stroke="#C04A1A" strokeWidth="1.5" strokeOpacity="0.7" />
+          <line x1={cx} y1={cy - 6} x2={cx} y2={cy + 6} stroke="#C04A1A" strokeWidth="1.5" strokeOpacity="0.7" />
+          <circle cx={cx} cy={cy} r="2" fill="#C04A1A" fillOpacity="0.5" />
         </g>
       </svg>
+
       {/* Center glow */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(192,74,26,0.3) 0%, transparent 70%)',
           filter: 'blur(20px)',
         }}
       />
+
+      {/* CSS animations */}
+      <style>{`
+        @keyframes rotate-cw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes rotate-ccw {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+      `}</style>
     </div>
   )
 }
@@ -492,7 +590,8 @@ function OrbitalDashboard() {
 
       const cards = orbitRef.current?.querySelectorAll('.orbit-card')
       if (!cards || cards.length === 0) return
-      cards.forEach((card) => {
+      const cardArray = Array.from(cards)
+      cardArray.forEach((card) => {
         gsap.to(card, {
           rotation: -360,
           duration: 60,
@@ -626,8 +725,10 @@ function IndustrialPipelineFlow() {
   useEffect(() => {
     if (!sectionRef.current || !svgRef.current) return
     const ctx = gsap.context(() => {
-      const nodes = svgRef.current!.querySelectorAll('.pipeline-node')
-      const pipes = svgRef.current!.querySelectorAll('.pipeline-path')
+      if (!svgRef.current) return
+      const nodes = svgRef.current.querySelectorAll('.pipeline-node')
+      const pipes = svgRef.current.querySelectorAll('.pipeline-path')
+      if (nodes.length === 0 || pipes.length === 0) return
 
       gsap.set(nodes, { opacity: 0, scale: 0 })
       gsap.set(pipes, { strokeDashoffset: 1000 })
@@ -1701,7 +1802,9 @@ function ControlRoomDashboard() {
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
-      const panels = sectionRef.current!.querySelectorAll('.control-panel > div')
+      if (!sectionRef.current) return
+      const panels = sectionRef.current.querySelectorAll('.control-panel > div')
+      if (panels.length === 0) return
       gsap.fromTo(
         panels,
         { opacity: 0, y: 30 },
@@ -1809,9 +1912,11 @@ function CinemaReel() {
   useEffect(() => {
     if (!reelRef.current) return
     const ctx = gsap.context(() => {
-      const frames = reelRef.current!.querySelectorAll('.reel-frame')
-      if (!frames || frames.length === 0) return
-      frames.forEach((frame, i) => {
+      if (!reelRef.current) return
+      const frames = reelRef.current.querySelectorAll('.reel-frame')
+      if (frames.length === 0) return
+      const frameArray = Array.from(frames)
+      frameArray.forEach((frame, i) => {
         gsap.fromTo(
           frame,
           { x: i % 2 === 0 ? -40 : 40, opacity: 0 },
@@ -1984,9 +2089,11 @@ function CaseStudyStory() {
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
-      const items = sectionRef.current!.querySelectorAll('.timeline-item')
-      if (!items || items.length === 0) return
-      items.forEach((item, i) => {
+      if (!sectionRef.current) return
+      const items = sectionRef.current.querySelectorAll('.timeline-item')
+      if (items.length === 0) return
+      const itemArray = Array.from(items)
+      itemArray.forEach((item, i) => {
         gsap.fromTo(
           item,
           { x: -30, opacity: 0 },
@@ -2092,9 +2199,11 @@ function TimelineSection() {
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
-      const items = sectionRef.current!.querySelectorAll('.timeline-card')
-      if (!items || items.length === 0) return
-      items.forEach((item, i) => {
+      if (!sectionRef.current) return
+      const items = sectionRef.current.querySelectorAll('.timeline-card')
+      if (items.length === 0) return
+      const itemArray = Array.from(items)
+      itemArray.forEach((item, i) => {
         gsap.fromTo(
           item,
           { y: 40, opacity: 0 },
