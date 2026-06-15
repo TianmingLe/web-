@@ -1260,13 +1260,53 @@ export default function CapabilityMapB() {
     }
   }, [showAll, allExpanded])
 
-  // Spotlight sequence
+  // Spotlight sequence with smooth transitions
   const runSpotlightSequence = useCallback(() => {
     const nodes = capabilityData.mainNodes
     let current = 0
+    const FOCUS_DURATION = 4000
+    const TRANSITION_DURATION = 800
+
+    const transitionToNext = (prevIndex: number, nextIndex: number) => {
+      const prevBtn = nodeRefs.current[prevIndex]
+      if (prevBtn) {
+        gsap.to(prevBtn, {
+          scale: 0.9,
+          opacity: 0.6,
+          rotation: -5,
+          duration: TRANSITION_DURATION / 1000,
+          ease: 'power2.inOut',
+        })
+      }
+
+      setTimeout(() => {
+        setActiveNodeIndex(nextIndex)
+        const nextBtn = nodeRefs.current[nextIndex]
+        if (nextBtn) {
+          gsap.fromTo(
+            nextBtn,
+            { scale: 0.5, opacity: 0.3, rotation: 10 },
+            { scale: 1.2, opacity: 1, rotation: 0, duration: 0.8, ease: 'back.out(1.5)' }
+          )
+        }
+      }, TRANSITION_DURATION * 0.6)
+    }
 
     const highlightNext = () => {
       if (current >= nodes.length) {
+        // Graceful exit: shrink all nodes back to normal with stagger
+        nodeRefs.current.forEach((btn, i) => {
+          if (btn) {
+            gsap.to(btn, {
+              scale: 1,
+              opacity: 1,
+              rotation: 0,
+              duration: 0.6,
+              delay: i * 0.08,
+              ease: 'power2.out',
+            })
+          }
+        })
         setActiveNodeIndex(-1)
         setAllExpanded(true)
         setTimeout(() => {
@@ -1275,19 +1315,22 @@ export default function CapabilityMapB() {
         return
       }
 
-      setActiveNodeIndex(current)
-
-      const btn = nodeRefs.current[current]
-      if (btn) {
-        gsap.fromTo(
-          btn,
-          { scale: 0.5, opacity: 0.3 },
-          { scale: 1.2, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' }
-        )
+      if (current > 0) {
+        transitionToNext(current - 1, current)
+      } else {
+        setActiveNodeIndex(current)
+        const btn = nodeRefs.current[current]
+        if (btn) {
+          gsap.fromTo(
+            btn,
+            { scale: 0.5, opacity: 0.3, rotation: 10 },
+            { scale: 1.2, opacity: 1, rotation: 0, duration: 0.8, ease: 'back.out(1.5)' }
+          )
+        }
       }
 
       current++
-      setTimeout(highlightNext, 5000)
+      setTimeout(highlightNext, FOCUS_DURATION + TRANSITION_DURATION)
       setHoveredIndex(-1)
     }
 
