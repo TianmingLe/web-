@@ -23,21 +23,21 @@ import LazyImage from '@components/LazyImage'
 /* ─── 媒体数据 ─── */
 const projectMedia: Record<string, { src: string; type: 'image' | 'video'; caption?: string }[]> = {
   smart_glasses: [
-    { src: 'https://s1.ax1x.com/2023/06/10/pm1KAd1.png', type: 'image', caption: '智能眼镜硬件原型' },
+    { src: 'https://s41.ax1x.com/2026/06/16/pm1KAd1.png', type: 'image', caption: '智能眼镜硬件原型' },
   ],
   zhixin_ai: [
-    { src: 'https://s1.ax1x.com/2023/06/10/pm1KZi6.png', type: 'image', caption: '知心AI对话界面' },
+    { src: 'https://s41.ax1x.com/2026/06/16/pm1KZi6.png', type: 'image', caption: '知心AI对话界面' },
   ],
   internlm_finetune: [
-    { src: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png', type: 'image', caption: '书生·浦语大模型实战营证书' },
+    { src: 'https://s41.ax1x.com/2026/06/16/pm1KEIx.jpg', type: 'image', caption: '书生·浦语大模型实战营证书' },
   ],
 }
 
 /* ─── 图片资源映射 ─── */
 const projectImages: Record<string, string> = {
-  smart_glasses: 'https://s1.ax1x.com/2023/06/10/pm1KAd1.png',
-  zhixin_ai: 'https://s1.ax1x.com/2023/06/10/pm1KZi6.png',
-  internlm_finetune: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png',
+  smart_glasses: 'https://s41.ax1x.com/2026/06/16/pm1KAd1.png',
+  zhixin_ai: 'https://s41.ax1x.com/2026/06/16/pm1KZi6.png',
+  internlm_finetune: 'https://s41.ax1x.com/2026/06/16/pm1KEIx.jpg',
 }
 
 interface Phase {

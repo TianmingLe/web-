@@ -35,9 +35,9 @@
   "certificates": [
     { "name": "大学英语四级证书（CET-4）", "desc": "证明英语读写能力" },
     { "name": "机动车驾驶证（C1）", "desc": "便于工程现场调研与出差" },
-    { "name": "轻型无人机驾驶证", "desc": "应用于电力巡检、航拍测绘等场景", "image": "https://s1.ax1x.com/2023/06/10/pm1KAd1.png" },
-    { "name": "数学建模省级一等奖证书", "desc": "竞赛荣誉", "image": "https://s1.ax1x.com/2023/06/10/pm1KkZR.png" },
-    { "name": "市场调查与分析大赛证书", "desc": "省级一等奖1项，校级二等奖1项", "images": ["https://s1.ax1x.com/2023/06/10/pm1KZi6.png", "https://s1.ax1x.com/2023/06/10/pm1KmRO.png"] }
+    { "name": "轻型无人机驾驶证", "desc": "应用于电力巡检、航拍测绘等场景", "image": "https://s41.ax1x.com/2026/06/16/pm1KAd1.png" },
+    { "name": "数学建模省级一等奖证书", "desc": "竞赛荣誉", "image": "https://s41.ax1x.com/2026/06/16/pm1KkZR.jpg" },
+    { "name": "市场调查与分析大赛证书", "desc": "省级一等奖1项，校级二等奖1项", "images": ["https://s41.ax1x.com/2026/06/16/pm1KZi6.png", "https://s41.ax1x.com/2026/06/16/pm1KmRO.png"] }
   ],
   "campus": [
     {
@@ -83,7 +83,7 @@
         "社群运营：建立「学习资源分享群」（200+人），定期分享优质资源，解答用户问题"
       ],
       "achievements": ["累计拉新50+人", "举办活动10+场", "笔记总阅读量10万+", "单篇最高点赞500+", "社群活跃度>30%"],
-      "image": "https://s1.ax1x.com/2023/06/10/pm1KeJK.png"
+      "image": "https://s41.ax1x.com/2026/06/16/pm1KeJK.jpg"
     }
   ],
   "skills": {
