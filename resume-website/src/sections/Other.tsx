@@ -75,7 +75,7 @@ export default function Other() {
           <h3 className="text-2xl font-serif text-warm">实习经历</h3>
         </div>
         <div className="space-y-6">
-          {otherData.internship.map((intern: any, idx: number) => (
+          {otherData.internship.map((intern: { company: string; role: string; period: string; work: string[]; achievements: string[] }, idx: number) => (
             <GlassCard key={idx} glowColor="ai">
               <div className="flex items-center justify-between mb-3">
                 <div>
@@ -85,7 +85,7 @@ export default function Other() {
                 <span className="text-xs text-warm-faint font-mono">{intern.period}</span>
               </div>
               <div className="space-y-2 mb-4">
-                {intern.work.map((item: string, i: number) => (
+                {intern.work.map((item, i) => (
                   <div key={i} className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-ai/50 mt-1.5 shrink-0" />
                     <p className="text-warm-muted text-sm font-sans">{item}</p>

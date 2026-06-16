@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import {
   Play,
   Pause,
@@ -17,7 +17,7 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-export default function MusicDock() {
+const MusicDock = memo(function MusicDock() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -309,4 +309,6 @@ export default function MusicDock() {
       </div>
     </div>
   )
-}
+})
+
+export default MusicDock
