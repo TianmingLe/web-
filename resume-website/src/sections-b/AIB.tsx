@@ -64,6 +64,7 @@ interface Project {
   abilities?: Ability[]
   scenarios?: string[]
   topics?: string[]
+  images?: string[]
 }
 
 /* ─── 进化时间线数据 ─── */
@@ -522,6 +523,7 @@ function ShimmerCard({ children, className = '' }: { children: React.ReactNode; 
 function MajorProjectCard({ project }: { project: Project }) {
   const media = projectMedia[project.id]
   const coverImage = projectImages[project.id]
+  const dataImages = project.images || []
 
   return (
     <div>
@@ -572,8 +574,18 @@ function MajorProjectCard({ project }: { project: Project }) {
               <div className="absolute top-0 right-0 w-16 h-16 bg-b-slate/[0.05] rotate-45 translate-x-8 -translate-y-8" />
             </div>
 
-            {/* 项目封面图 */}
-            {coverImage && (
+            {/* 项目封面图 - 优先使用 JSON 数据中的 images */}
+            {dataImages.length > 0 ? (
+              <div className="mb-5 rounded-xl overflow-hidden border border-b-border">
+                <LazyImage
+                  src={dataImages[0]}
+                  alt={project.title}
+                  aspectRatio="16/9"
+                  objectFit="cover"
+                  className="w-full"
+                />
+              </div>
+            ) : coverImage ? (
               <div className="mb-5 rounded-xl overflow-hidden border border-b-border">
                 <LazyImage
                   src={coverImage}
@@ -583,7 +595,7 @@ function MajorProjectCard({ project }: { project: Project }) {
                   className="w-full"
                 />
               </div>
-            )}
+            ) : null}
 
             {/* 项目媒体展示 */}
             {media && media.length > 0 && (
@@ -666,6 +678,7 @@ function MajorProjectCard({ project }: { project: Project }) {
 /* ─── 次要项目卡片 ─── */
 function MinorProjectCard({ project }: { project: Project }) {
   const coverImage = projectImages[project.id]
+  const dataImages = project.images || []
 
   return (
     <div>
@@ -699,8 +712,18 @@ function MinorProjectCard({ project }: { project: Project }) {
               <div className="absolute top-0 right-0 w-12 h-12 bg-b-sage/[0.05] rotate-45 translate-x-6 -translate-y-6" />
             </div>
 
-            {/* 项目封面图 */}
-            {coverImage && (
+            {/* 项目封面图 - 优先使用 JSON 数据中的 images */}
+            {dataImages.length > 0 ? (
+              <div className="mb-4 rounded-xl overflow-hidden border border-b-border">
+                <LazyImage
+                  src={dataImages[0]}
+                  alt={project.title}
+                  aspectRatio="16/10"
+                  objectFit="cover"
+                  className="w-full"
+                />
+              </div>
+            ) : coverImage ? (
               <div className="mb-4 rounded-xl overflow-hidden border border-b-border">
                 <LazyImage
                   src={coverImage}
@@ -710,7 +733,7 @@ function MinorProjectCard({ project }: { project: Project }) {
                   className="w-full"
                 />
               </div>
-            )}
+            ) : null}
 
             {project.period && (
               <div className="flex items-center gap-1.5 mb-3">
