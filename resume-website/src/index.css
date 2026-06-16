@@ -808,6 +808,16 @@
     }
   }
 
+  /* 伪3D环绕旋转 */
+  @keyframes orbitRotate {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
   /* 3D 卡片倾斜基础 */
   .tilt-card {
     transform-style: preserve-3d;

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import {
   Calendar,
   Layers,
@@ -17,29 +17,15 @@ import {
 import aiData from '@data/ai.json'
 import ExpandableCard from '@components/ExpandableCard'
 import { useIntersection } from '@hooks/useIntersection'
-import ParticleGrid from '@components/ParticleGrid'
-import TextScramble from '@components/TextScramble'
-import CursorGlow from '@components/CursorGlow'
-import ParallaxLayer from '@components/ParallaxLayer'
-import GlitchText from '@components/GlitchText'
-import MediaBackground from '@components/MediaBackground'
 import ProjectShowcase from '@components/ProjectShowcase'
 
-/* ─── 示例媒体数据 ─── */
-const heroMedia = {
-  src: '/images/ai-hero-bg.jpg',
-  type: 'image' as const,
-}
-
+/* ─── 媒体数据 ─── */
 const projectMedia: Record<string, { src: string; type: 'image' | 'video'; caption?: string }[]> = {
   smart_glasses: [
-    { src: '/images/smart-glasses-1.jpg', type: 'image', caption: '智能眼镜硬件原型' },
-    { src: '/images/smart-glasses-demo.mp4', type: 'video', caption: '实时演示视频' },
-    { src: '/images/smart-glasses-2.jpg', type: 'image', caption: '系统架构图' },
+    { src: 'https://s1.ax1x.com/2023/06/10/pm1KAd1.png', type: 'image', caption: '智能眼镜硬件原型' },
   ],
   zhixin_ai: [
-    { src: '/images/zhixin-ai-1.jpg', type: 'image', caption: '知心AI对话界面' },
-    { src: '/images/zhixin-ai-2.jpg', type: 'image', caption: 'RAG检索流程' },
+    { src: 'https://s1.ax1x.com/2023/06/10/pm1KZi6.png', type: 'image', caption: '知心AI对话界面' },
   ],
   internlm_finetune: [
     { src: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png', type: 'image', caption: '书生·浦语大模型实战营证书' },
@@ -179,55 +165,33 @@ function CircularIndicator({
   )
 }
 
-/* ─── 杂志风格 Hero ─── */
+/* ─── 杂志风格 Hero（性能优化版） ─── */
 function MagazineHero() {
   return (
-    <div className="relative mb-16 md:mb-24 b-fade-up">
-      {/* 图片/视频背景层 - 替换粒子网格 */}
-      <MediaBackground
-        src={heroMedia.src}
-        type={heroMedia.type}
-        overlay
-        overlayOpacity={0.85}
-        overlayColor="var(--color-b-cream)"
-        parallax
-        parallaxSpeed={0.3}
+    <div className="relative mb-16 md:mb-24 overflow-hidden rounded-2xl">
+      {/* CSS渐变背景替代图片 */}
+      <div
         className="absolute inset-0 rounded-2xl"
+        style={{
+          background: `
+            radial-gradient(ellipse at 20% 50%, rgba(181,101,78,0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 20%, rgba(122,139,111,0.06) 0%, transparent 50%),
+            linear-gradient(135deg, var(--color-b-cream) 0%, var(--color-b-cream-dark) 100%)
+          `,
+        }}
       />
 
-      {/* 粒子网格叠加 */}
-      <ParticleGrid />
-
-      {/* 浮动装饰元素 */}
+      {/* 静态装饰元素 */}
       <div className="absolute -top-8 -left-4 md:left-0 w-24 h-24 md:w-32 md:h-32 rounded-full bg-b-terracotta/[0.04] blur-2xl pointer-events-none" />
       <div className="absolute top-1/2 -right-8 md:-right-12 w-32 h-32 md:w-48 md:h-48 rounded-full bg-b-sage/[0.05] blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-4 left-1/3 w-20 h-20 rounded-full bg-b-slate/[0.04] blur-2xl pointer-events-none" />
-
-      {/* 几何装饰 */}
-      <div className="absolute top-0 right-0 md:right-8 w-16 h-16 md:w-24 md:h-24 border border-b-terracotta/10 rotate-12 pointer-events-none animate-float-slow" />
-      <div className="absolute bottom-4 left-0 md:left-4 w-10 h-10 border border-b-sage/15 -rotate-12 pointer-events-none animate-float-slow-reverse" />
-      <div className="absolute top-8 right-1/4 w-2 h-2 rounded-full bg-b-terracotta/20 pointer-events-none animate-pulse-soft" />
-      <div className="absolute bottom-8 right-1/3 w-1.5 h-1.5 rounded-full bg-b-sage/25 pointer-events-none animate-pulse-soft" style={{ animationDelay: '1s' }} />
-
-      {/* 扫描线效果 */}
-      <div className="scanline-overlay rounded-2xl" />
 
       {/* 装饰性边框容器 */}
-      <div className="relative border border-b-border/60 bg-b-card/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 overflow-hidden breathing-border">
+      <div className="relative border border-b-border/60 bg-b-card/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 overflow-hidden">
         {/* 角落装饰 */}
         <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-b-terracotta/20 rounded-tl-2xl pointer-events-none" />
         <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-b-terracotta/20 rounded-tr-2xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-b-terracotta/20 rounded-bl-2xl pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-b-terracotta/20 rounded-br-2xl pointer-events-none" />
-
-        {/* 内部纹理线条 */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, var(--color-b-terracotta) 35px, var(--color-b-terracotta) 36px)`
-        }} />
-
-        {/* 数据流装饰线 */}
-        <div className="absolute top-4 left-0 right-0 h-px data-stream opacity-30" />
-        <div className="absolute bottom-4 left-0 right-0 h-px data-stream opacity-30" style={{ animationDelay: '1s' }} />
 
         <div className="relative z-10">
           {/* 顶部标签栏 */}
@@ -235,13 +199,13 @@ function MagazineHero() {
             <div className="flex items-center gap-3">
               <span className="b-ornament" />
               <span className="font-b-mono text-[10px] md:text-[11px] tracking-[0.25em] text-b-muted uppercase">
-                <TextScramble text={aiData.subtitle} delay={200} duration={800} />
+                {aiData.subtitle}
               </span>
             </div>
             <div className="hidden md:flex items-center gap-2">
               <span className="w-8 h-px bg-b-sand" />
               <span className="font-b-mono text-[10px] text-b-muted">
-                <TextScramble text="Vol. 01" delay={600} duration={600} />
+                Vol. 01
               </span>
             </div>
           </div>
@@ -249,15 +213,13 @@ function MagazineHero() {
           {/* 大号标题 */}
           <div className="mb-6 md:mb-8">
             <h1 className="font-b-serif text-5xl md:text-7xl lg:text-8xl text-b-ink leading-[1.05] tracking-tight mb-4">
-              <GlitchText
-                text={aiData.title}
-                as="span"
-                className="block"
-              />
+              <span className="block text-gradient-magazine">
+                {aiData.title}
+              </span>
             </h1>
             <div className="flex items-center gap-4">
               <span className="block w-12 md:w-20 h-0.5 bg-gradient-to-r from-b-terracotta to-b-terracotta-light" />
-              <span className="font-b-mono text-[10px] text-b-muted tracking-widest uppercase typewriter-cursor">
+              <span className="font-b-mono text-[10px] text-b-muted tracking-widest uppercase">
                 Artificial Intelligence Frontier
               </span>
             </div>
@@ -275,9 +237,9 @@ function MagazineHero() {
 
           {/* 底部装饰线 */}
           <div className="flex items-center gap-3 mt-8">
-            <span className="w-2 h-2 rounded-full bg-b-terracotta/30 ripple-effect" />
+            <span className="w-2 h-2 rounded-full bg-b-terracotta/30" />
             <span className="flex-1 h-px bg-gradient-to-r from-b-sand via-b-border to-transparent" />
-            <span className="w-2 h-2 rounded-full bg-b-sage/30 ripple-effect" />
+            <span className="w-2 h-2 rounded-full bg-b-sage/30" />
           </div>
         </div>
       </div>
@@ -290,7 +252,7 @@ function StatsSection() {
   const [ref, isVisible] = useIntersection<HTMLDivElement>({ threshold: 0.2 })
 
   return (
-    <div ref={ref} className="b-fade-up mb-16 md:mb-20">
+    <div ref={ref} className="mb-16 md:mb-20">
       <div className="relative border border-b-border/50 rounded-2xl p-6 md:p-10 bg-gradient-to-br from-b-card/80 to-b-cream-dark/30 overflow-hidden">
         {/* 背景装饰 */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-b-terracotta/[0.02] rounded-full blur-3xl pointer-events-none" />
@@ -309,12 +271,12 @@ function StatsSection() {
 
           {/* 大号数字统计 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10">
-            {stats.map((stat, i) => {
+            {stats.map((stat) => {
               const Icon = stat.icon
               return (
                 <div
                   key={stat.label}
-                  className={`text-center b-fade-up b-stagger-${i + 1}`}
+                  className="text-center"
                 >
                   <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-b-cream-dark border border-b-border mx-auto mb-3">
                     <Icon size={20} className="text-b-terracotta" />
@@ -337,8 +299,8 @@ function StatsSection() {
 
           {/* 进度条 */}
           <div className="space-y-4 mb-10">
-            {skillBars.map((skill, i) => (
-              <div key={skill.label} className={`b-fade-up b-stagger-${i + 1}`}>
+            {skillBars.map((skill) => (
+              <div key={skill.label}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-b-sans text-sm text-b-ink">{skill.label}</span>
                   <span className="font-b-mono text-xs text-b-muted">{skill.value}%</span>
@@ -391,36 +353,30 @@ function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
 /* ─── 杂志风格引用块 ─── */
 function MagazineQuote() {
   return (
-    <ParallaxLayer speed={0.3}>
-      <div className="b-fade-up my-16 md:my-20">
-        <div className="relative max-w-3xl mx-auto px-6 md:px-12">
-          {/* 大引号装饰 */}
-          <div className="absolute -top-4 left-0 md:-left-4 text-b-terracotta/10 pointer-events-none">
-            <Quote size={80} strokeWidth={1} />
-          </div>
-          <div className="absolute -bottom-4 right-0 md:-right-4 text-b-terracotta/10 pointer-events-none rotate-180">
-            <Quote size={80} strokeWidth={1} />
-          </div>
-
-          <blockquote className="relative z-10 text-center">
-            <p className="font-b-serif text-xl md:text-2xl lg:text-3xl text-b-ink leading-relaxed italic mb-6">
-              <TextScramble
-                text="在算法与工程的交汇处，构建能够理解世界、辅助决策的智能系统"
-                delay={400}
-                duration={1500}
-              />
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <span className="w-8 h-px bg-b-terracotta/30" />
-              <span className="font-b-mono text-[10px] text-b-muted tracking-[0.2em] uppercase">
-                <TextScramble text="AI Engineering Philosophy" delay={800} duration={800} />
-              </span>
-              <span className="w-8 h-px bg-b-terracotta/30" />
-            </div>
-          </blockquote>
+    <div className="my-16 md:my-20">
+      <div className="relative max-w-3xl mx-auto px-6 md:px-12">
+        {/* 大引号装饰 */}
+        <div className="absolute -top-4 left-0 md:-left-4 text-b-terracotta/10 pointer-events-none">
+          <Quote size={80} strokeWidth={1} />
         </div>
+        <div className="absolute -bottom-4 right-0 md:-right-4 text-b-terracotta/10 pointer-events-none rotate-180">
+          <Quote size={80} strokeWidth={1} />
+        </div>
+
+        <blockquote className="relative z-10 text-center">
+          <p className="font-b-serif text-xl md:text-2xl lg:text-3xl text-b-ink leading-relaxed italic mb-6">
+            在算法与工程的交汇处，构建能够理解世界、辅助决策的智能系统
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <span className="w-8 h-px bg-b-terracotta/30" />
+            <span className="font-b-mono text-[10px] text-b-muted tracking-[0.2em] uppercase">
+              AI Engineering Philosophy
+            </span>
+            <span className="w-8 h-px bg-b-terracotta/30" />
+          </div>
+        </blockquote>
       </div>
-    </ParallaxLayer>
+    </div>
   )
 }
 
@@ -444,7 +400,7 @@ function EvolutionTimeline() {
   const [lineRef, lineVisible] = useIntersection<HTMLDivElement>({ threshold: 0.1 })
 
   return (
-    <div className="b-fade-up mb-16">
+    <div className="mb-16">
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-b-terracotta-dim">
           <Layers size={18} className="text-b-terracotta" />
@@ -469,7 +425,8 @@ function EvolutionTimeline() {
           return (
             <div
               key={step.label}
-              className={`relative pb-8 last:pb-0 b-fade-up b-stagger-${i + 1}`}
+              className="relative pb-8 last:pb-0"
+              style={{ animationDelay: `${i * 0.15}s` }}
             >
               {/* 脉冲节点 */}
               <div className="absolute left-[11px] top-[4px]">
@@ -508,7 +465,7 @@ function EvolutionTimeline() {
 function TiltCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current
     if (!card) return
     const rect = card.getBoundingClientRect()
@@ -519,13 +476,13 @@ function TiltCard({ children, className = '' }: { children: React.ReactNode; cla
     const rotateX = (y - centerY) / 20
     const rotateY = (centerX - x) / 20
     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`
-  }
+  }, [])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     const card = cardRef.current
     if (!card) return
     card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)'
-  }
+  }, [])
 
   return (
     <div
@@ -554,11 +511,11 @@ function ShimmerCard({ children, className = '' }: { children: React.ReactNode; 
 }
 
 /* ─── 重点项目卡片 ─── */
-function MajorProjectCard({ project, index }: { project: Project; index: number }) {
+function MajorProjectCard({ project }: { project: Project }) {
   const media = projectMedia[project.id]
 
   return (
-    <div className={`b-fade-up b-stagger-${index + 1}`}>
+    <div>
       <TiltCard>
         <ShimmerCard>
           <ExpandableCard
@@ -685,9 +642,9 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
 }
 
 /* ─── 次要项目卡片 ─── */
-function MinorProjectCard({ project, index }: { project: Project; index: number }) {
+function MinorProjectCard({ project }: { project: Project }) {
   return (
-    <div className={`b-fade-up b-stagger-${(index % 4) + 1}`}>
+    <div>
       <TiltCard>
         <ShimmerCard>
           <ExpandableCard
@@ -827,7 +784,7 @@ function MinorProjectCard({ project, index }: { project: Project; index: number 
 /* ─── 技术栈云 ─── */
 function SkillTagsSection() {
   return (
-    <div className="b-fade-up">
+    <div>
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-full bg-b-terracotta-dim">
@@ -839,10 +796,10 @@ function SkillTagsSection() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-2.5 max-w-3xl mx-auto">
-        {aiData.skillTags.map((tag, index) => (
+        {aiData.skillTags.map((tag) => (
           <span
-            key={index}
-            className={`b-tag b-tag-terracotta b-fade-up b-stagger-${(index % 8) + 1} cursor-default hover:shadow-sm transition-all duration-300 hover:-translate-y-0.5`}
+            key={tag}
+            className="b-tag b-tag-terracotta cursor-default hover:shadow-sm transition-all duration-300 hover:-translate-y-0.5"
           >
             <Hash size={10} className="shrink-0 opacity-60" />
             {tag}
@@ -856,7 +813,7 @@ function SkillTagsSection() {
 /* ─── 分栏布局特色内容 ─── */
 function FeatureColumns() {
   return (
-    <div className="b-fade-up my-16 md:my-20">
+    <div className="my-16 md:my-20">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {/* 左栏：首字下沉段落 */}
         <div className="relative">
@@ -913,9 +870,6 @@ export default function AIB() {
 
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto relative">
-      {/* 鼠标跟随光斑 */}
-      <CursorGlow />
-
       {/* 纹理背景 */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, var(--color-b-ink) 1px, transparent 0)`,
@@ -931,9 +885,7 @@ export default function AIB() {
         <MagazineHero />
 
         {/* 数据可视化统计 */}
-        <ParallaxLayer speed={-0.2}>
-          <StatsSection />
-        </ParallaxLayer>
+        <StatsSection />
 
         {/* 杂志引用块 */}
         <MagazineQuote />
@@ -950,7 +902,7 @@ export default function AIB() {
 
         {/* 重点项目 */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 b-fade-up">
+          <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-b-slate-dim">
               <Cpu size={16} className="text-b-slate" />
             </div>
@@ -960,9 +912,9 @@ export default function AIB() {
             </div>
           </div>
 
-          <div className="space-y-8 card-stack-3d">
-            {majorProjects.map((project, index) => (
-              <MajorProjectCard key={project.id} project={project} index={index} />
+          <div className="space-y-8">
+            {majorProjects.map((project) => (
+              <MajorProjectCard key={project.id} project={project} />
             ))}
           </div>
         </div>
@@ -971,7 +923,7 @@ export default function AIB() {
 
         {/* 更多探索 */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 b-fade-up">
+          <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-b-sage-dim">
               <Sparkles size={16} className="text-b-sage" />
             </div>
@@ -982,8 +934,8 @@ export default function AIB() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {minorProjects.map((project, index) => (
-              <MinorProjectCard key={project.id} project={project} index={index} />
+            {minorProjects.map((project) => (
+              <MinorProjectCard key={project.id} project={project} />
             ))}
           </div>
         </div>
