@@ -70,11 +70,13 @@ function SkillProgressBar({ level, index }: { level: number; index: number }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true)
+          requestAnimationFrame(() => {
+            setVisible(true)
+          })
           observer.unobserve(el)
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+      { threshold: 0.05, rootMargin: '0px 0px -10px 0px' }
     )
     observer.observe(el)
     return () => observer.disconnect()
@@ -86,7 +88,8 @@ function SkillProgressBar({ level, index }: { level: number; index: number }) {
         className="b-progress-fill-animated"
         style={{
           width: visible ? `${(level / 5) * 100}%` : '0%',
-          transitionDelay: `${index * 60}ms`,
+          transitionDelay: `${Math.min(index * 40, 200)}ms`,
+          transitionDuration: '0.6s',
         }}
       />
     </div>
@@ -178,11 +181,12 @@ function SkillCard({ skill, index }: { skill: typeof energyData.skills[0]; index
                   ))}
                 </div>
 
-                <div className="space-y-3 mb-6">
+                {/* Optimized skill items with will-change and content-visibility */}
+                <div className="space-y-3 mb-6" style={{ contentVisibility: 'auto' }}>
                   {skill.items.map((item, i) => {
                     const level = itemProficiency[item.name] ?? 3
                     return (
-                      <div key={i} className="group/item">
+                      <div key={i} className="group/item" style={{ willChange: 'auto' }}>
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-b-sans text-sm font-medium text-b-ink b-underline-hover cursor-default">
                             {item.name}
