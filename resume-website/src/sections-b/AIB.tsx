@@ -18,6 +18,7 @@ import aiData from '@data/ai.json'
 import ExpandableCard from '@components/ExpandableCard'
 import { useIntersection } from '@hooks/useIntersection'
 import ProjectShowcase from '@components/ProjectShowcase'
+import LazyImage from '@components/LazyImage'
 
 /* ─── 媒体数据 ─── */
 const projectMedia: Record<string, { src: string; type: 'image' | 'video'; caption?: string }[]> = {
@@ -30,6 +31,13 @@ const projectMedia: Record<string, { src: string; type: 'image' | 'video'; capti
   internlm_finetune: [
     { src: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png', type: 'image', caption: '书生·浦语大模型实战营证书' },
   ],
+}
+
+/* ─── 图片资源映射 ─── */
+const projectImages: Record<string, string> = {
+  smart_glasses: 'https://s1.ax1x.com/2023/06/10/pm1KAd1.png',
+  zhixin_ai: 'https://s1.ax1x.com/2023/06/10/pm1KZi6.png',
+  internlm_finetune: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png',
 }
 
 interface Phase {
@@ -513,6 +521,7 @@ function ShimmerCard({ children, className = '' }: { children: React.ReactNode; 
 /* ─── 重点项目卡片 ─── */
 function MajorProjectCard({ project }: { project: Project }) {
   const media = projectMedia[project.id]
+  const coverImage = projectImages[project.id]
 
   return (
     <div>
@@ -562,6 +571,19 @@ function MajorProjectCard({ project }: { project: Project }) {
             <div className="absolute top-0 right-0 w-10 h-10 overflow-hidden rounded-tr-[var(--radius-lg)] pointer-events-none">
               <div className="absolute top-0 right-0 w-16 h-16 bg-b-slate/[0.05] rotate-45 translate-x-8 -translate-y-8" />
             </div>
+
+            {/* 项目封面图 */}
+            {coverImage && (
+              <div className="mb-5 rounded-xl overflow-hidden border border-b-border">
+                <LazyImage
+                  src={coverImage}
+                  alt={project.title}
+                  aspectRatio="16/9"
+                  objectFit="cover"
+                  className="w-full"
+                />
+              </div>
+            )}
 
             {/* 项目媒体展示 */}
             {media && media.length > 0 && (
@@ -643,6 +665,8 @@ function MajorProjectCard({ project }: { project: Project }) {
 
 /* ─── 次要项目卡片 ─── */
 function MinorProjectCard({ project }: { project: Project }) {
+  const coverImage = projectImages[project.id]
+
   return (
     <div>
       <TiltCard>
@@ -674,6 +698,19 @@ function MinorProjectCard({ project }: { project: Project }) {
             <div className="absolute top-0 right-0 w-8 h-8 overflow-hidden rounded-tr-[var(--radius-lg)] pointer-events-none">
               <div className="absolute top-0 right-0 w-12 h-12 bg-b-sage/[0.05] rotate-45 translate-x-6 -translate-y-6" />
             </div>
+
+            {/* 项目封面图 */}
+            {coverImage && (
+              <div className="mb-4 rounded-xl overflow-hidden border border-b-border">
+                <LazyImage
+                  src={coverImage}
+                  alt={project.title}
+                  aspectRatio="16/10"
+                  objectFit="cover"
+                  className="w-full"
+                />
+              </div>
+            )}
 
             {project.period && (
               <div className="flex items-center gap-1.5 mb-3">

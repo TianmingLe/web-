@@ -64,6 +64,8 @@ function SocialIcon({ icon }: { icon: string }) {
   }
 }
 
+import LazyImage from '@components/LazyImage'
+
 /* ─── 图片展示组件 ─── */
 function ImageGallery({ images, caption }: { images: string[]; caption?: string }) {
   if (!images || images.length === 0) return null
@@ -71,15 +73,13 @@ function ImageGallery({ images, caption }: { images: string[]; caption?: string 
     <div className="mt-4">
       <div className={`grid gap-3 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
         {images.map((src, i) => (
-          <div key={i} className="relative rounded-xl overflow-hidden border border-b-border bg-b-cream-dark">
-            <img
+          <div key={i} className="relative rounded-xl overflow-hidden border border-b-border bg-b-cream-dark hover:scale-[1.02] transition-transform duration-500">
+            <LazyImage
               src={src}
               alt={caption || `图片 ${i + 1}`}
-              className="w-full h-40 object-cover hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none'
-              }}
+              aspectRatio="16/10"
+              objectFit="cover"
+              className="w-full"
             />
           </div>
         ))}

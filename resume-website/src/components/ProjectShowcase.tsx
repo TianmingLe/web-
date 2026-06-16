@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Play, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import LazyImage from '@components/LazyImage'
 
 interface MediaItem {
   src: string
@@ -84,10 +85,12 @@ export default function ProjectShowcase({ items, className = '' }: ProjectShowca
               </div>
             </>
           ) : (
-            <img
+            <LazyImage
               src={activeItem.src}
               alt={activeItem.caption || ''}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              aspectRatio="16/9"
+              objectFit="cover"
+              className="w-full h-full transition-transform duration-700 group-hover:scale-105"
             />
           )}
 
@@ -124,10 +127,12 @@ export default function ProjectShowcase({ items, className = '' }: ProjectShowca
                     <Play size={16} className="text-b-slate" />
                   </div>
                 ) : (
-                  <img
+                  <LazyImage
                     src={item.src}
                     alt=""
-                    className="w-full h-full object-cover"
+                    aspectRatio="1/1"
+                    objectFit="cover"
+                    className="w-full h-full"
                   />
                 )}
               </button>
@@ -188,10 +193,12 @@ export default function ProjectShowcase({ items, className = '' }: ProjectShowca
                 autoPlay
               />
             ) : (
-              <img
+              <LazyImage
                 src={items[lightboxIndex].src}
                 alt={items[lightboxIndex].caption || ''}
-                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                aspectRatio="auto"
+                objectFit="contain"
+                className="max-w-full max-h-[85vh] rounded-lg"
               />
             )}
           </div>

@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Monitor, Code, Cpu, FlaskConical, ClipboardList } from 'lucide-react'
-import ExpandableCard from '@components/ExpandableCard'
+import AnimatedList, { AnimatedListItem } from '@components/AnimatedList'
 import energyData from '@data/energy.json'
+import LazyImage from '@components/LazyImage'
 
 const iconMap: Record<string, React.ReactNode> = {
   monitor: <Monitor size={22} strokeWidth={1.5} />,
@@ -59,41 +60,243 @@ function SkillMeter({ level }: { level: number }) {
   )
 }
 
-function truncate(str: string, max: number) {
-  return str.length > max ? str.slice(0, max) + '…' : str
-}
+function SkillProgressBar({ level, index }: { level: number; index: number }) {
+  const [visible, setVisible] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
 
-export default function EnergyB() {
-  const sectionRef = useRef<HTMLElement>(null)
   useEffect(() => {
+    const el = ref.current
+    if (!el) return
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const elements = entry.target.querySelectorAll('.b-progress-fill-animated')
-            elements.forEach((el, index) => {
-              const htmlEl = el as HTMLElement
-              const targetWidth = htmlEl.dataset.targetWidth || htmlEl.style.width
-              htmlEl.dataset.targetWidth = targetWidth
-              htmlEl.style.width = '0'
-              // 错开动画触发时间，避免同时触发导致卡顿
-              setTimeout(() => {
-                requestAnimationFrame(() => {
-                  htmlEl.style.width = targetWidth
-                })
-              }, index * 80)
-            })
-          }
-        })
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(el)
+        }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
     )
-    if (sectionRef.current) observer.observe(sectionRef.current)
+    observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
+    <div ref={ref} className="b-progress-bar mt-2">
+      <div
+        className="b-progress-fill-animated"
+        style={{
+          width: visible ? `${(level / 5) * 100}%` : '0%',
+          transitionDelay: `${index * 60}ms`,
+        }}
+      />
+    </div>
+  )
+}
+
+function SkillCard({ skill, index }: { skill: typeof energyData.skills[0]; index: number }) {
+  const [expanded, setExpanded] = useState(false)
+  const categoryLevel = proficiencyMap[skill.category] ?? 3
+  const keywordList = skill.keywords.split('、')
+  const displayKeywords = keywordList.slice(0, 3)
+
+  const handleToggle = useCallback(() => setExpanded((v) => !v), [])
+
+  return (
+    <AnimatedListItem index={index}>
+      <div
+        className="b-card b-card-terracotta overflow-hidden cursor-pointer group"
+        onClick={handleToggle}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            handleToggle()
+          }
+        }}
+      >
+        <div className="p-5 md:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-b-terracotta-dim text-b-terracotta">
+                    {iconMap[skill.icon]}
+                  </span>
+                  <div>
+                    <h3 className="font-b-serif text-xl text-b-ink leading-tight">
+                      {skill.category}
+                    </h3>
+                    <SkillMeter level={categoryLevel} />
+                  </div>
+                </div>
+              </div>
+              <p className="font-b-sans text-sm text-b-muted leading-relaxed mt-1.5">
+                {skill.summary.length > 60 ? skill.summary.slice(0, 60) + '…' : skill.summary}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {displayKeywords.map((kw, i) => (
+                  <span key={i} className="b-tag b-tag-terracotta">
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <span
+              className={`shrink-0 mt-1 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 ${
+                expanded
+                  ? 'bg-b-terracotta-dim text-b-terracotta rotate-180'
+                  : 'bg-b-cream-dark text-b-muted group-hover:bg-b-sand/50 group-hover:text-b-ink-light group-hover:scale-110'
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </div>
+
+          <div
+            className="transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              display: 'grid',
+              gridTemplateRows: expanded ? '1fr' : '0fr',
+            }}
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div className={`pt-5 mt-5 border-t border-b-border transition-opacity duration-300 ${expanded ? '' : 'opacity-0'}`}>
+                <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-5">
+                  {skill.summary}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {keywordList.map((kw, i) => (
+                    <span key={i} className="b-tag b-tag-terracotta">
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="space-y-3 mb-6">
+                  {skill.items.map((item, i) => {
+                    const level = itemProficiency[item.name] ?? 3
+                    return (
+                      <div key={i} className="group/item">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-b-sans text-sm font-medium text-b-ink b-underline-hover cursor-default">
+                            {item.name}
+                          </span>
+                          <SkillMeter level={level} />
+                        </div>
+                        <p className="font-b-sans text-xs text-b-muted leading-relaxed pl-0">
+                          {item.desc}
+                        </p>
+                        <SkillProgressBar level={level} index={i} />
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {skill.scenarios && skill.scenarios.length > 0 && (
+                  <div className="border-t border-b-border pt-5 mt-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="b-ornament" />
+                      <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                        应用场景
+                      </h4>
+                    </div>
+                    <div className="space-y-2">
+                      {skill.scenarios.map((s, i) => (
+                        <div
+                          key={i}
+                          className="b-card p-3 border-l-2 border-l-b-terracotta/30"
+                        >
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {s}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {skill.practices && skill.practices.length > 0 && (
+                  <div className="border-t border-b-border pt-5 mt-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="b-ornament" />
+                      <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                        实践经验
+                      </h4>
+                    </div>
+                    <div className="space-y-2">
+                      {skill.practices.map((p, i) => (
+                        <div
+                          key={i}
+                          className="b-card p-3 border-l-2 border-l-b-terracotta/30"
+                        >
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {p}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {skill.projects && skill.projects.length > 0 && (
+                  <div className="border-t border-b-border pt-5 mt-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="b-ornament" />
+                      <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
+                        项目作品
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 gap-3">
+                      {skill.projects.map((proj, i) => (
+                        <div
+                          key={i}
+                          className="b-card b-card-terracotta p-4 group overflow-hidden"
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="b-number-accent text-2xl leading-none mt-0.5">
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <h5 className="font-b-serif text-sm font-medium text-b-ink mb-1">
+                                {proj.name}
+                              </h5>
+                              <p className="font-b-sans text-xs text-b-muted leading-relaxed mb-3">
+                                {proj.desc}
+                              </p>
+                              {'image' in proj && proj.image && (
+                                <LazyImage
+                                  src={proj.image as string}
+                                  alt={proj.name}
+                                  aspectRatio="16/9"
+                                  objectFit="cover"
+                                  className="rounded-lg"
+                                />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AnimatedListItem>
+  )
+}
+
+export default function EnergyB() {
+  return (
+    <section className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
       <div className="b-section-header">
         <p className="font-b-mono text-xs text-b-terracotta tracking-[0.2em] uppercase mb-3">
           Core Competencies
@@ -111,160 +314,11 @@ export default function EnergyB() {
 
       <div className="b-divider" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-        {energyData.skills.map((skill, index) => {
-          const categoryLevel = proficiencyMap[skill.category] ?? 3
-          const keywordList = skill.keywords.split('、')
-          const displayKeywords = keywordList.slice(0, 3)
-
-          return (
-            <ExpandableCard
-              key={index}
-              cardClass="b-card b-card-terracotta"
-              title={
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-b-terracotta-dim text-b-terracotta">
-                    {iconMap[skill.icon]}
-                  </span>
-                  <div>
-                    <h3 className="font-b-serif text-xl text-b-ink leading-tight">
-                      {skill.category}
-                    </h3>
-                    <SkillMeter level={categoryLevel} />
-                  </div>
-                </div>
-              }
-              subtitle={truncate(skill.summary, 60)}
-              keywords={
-                <>
-                  {displayKeywords.map((kw, i) => (
-                    <span key={i} className="b-tag b-tag-terracotta">
-                      {kw}
-                    </span>
-                  ))}
-                </>
-              }
-            >
-              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-5">
-                {skill.summary}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {keywordList.map((kw, i) => (
-                  <span key={i} className="b-tag b-tag-terracotta">
-                    {kw}
-                  </span>
-                ))}
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {skill.items.map((item, i) => {
-                  const level = itemProficiency[item.name] ?? 3
-                  return (
-                    <div key={i} className="group">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-b-sans text-sm font-medium text-b-ink b-underline-hover cursor-default">
-                          {item.name}
-                        </span>
-                        <SkillMeter level={level} />
-                      </div>
-                      <p className="font-b-sans text-xs text-b-muted leading-relaxed pl-0">
-                        {item.desc}
-                      </p>
-                      <div className="b-progress-bar mt-2">
-                        <div
-                          className="b-progress-fill-animated"
-                          data-target-width={`${(level / 5) * 100}%`}
-                          style={{ width: `${(level / 5) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {skill.scenarios && skill.scenarios.length > 0 && (
-                <div className="border-t border-b-border pt-5 mt-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="b-ornament" />
-                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-                      应用场景
-                    </h4>
-                  </div>
-                  <div className="space-y-2">
-                    {skill.scenarios.map((s, i) => (
-                      <div
-                        key={i}
-                        className="b-card p-3 border-l-2 border-l-b-terracotta/30"
-                      >
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {s}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {skill.practices && skill.practices.length > 0 && (
-                <div className="border-t border-b-border pt-5 mt-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="b-ornament" />
-                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-                      实践经验
-                    </h4>
-                  </div>
-                  <div className="space-y-2">
-                    {skill.practices.map((p, i) => (
-                      <div
-                        key={i}
-                        className="b-card p-3 border-l-2 border-l-b-terracotta/30"
-                      >
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {p}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {skill.projects && skill.projects.length > 0 && (
-                <div className="border-t border-b-border pt-5 mt-2">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="b-ornament" />
-                    <h4 className="font-b-serif text-sm text-b-terracotta tracking-wide">
-                      项目作品
-                    </h4>
-                  </div>
-                  <div className="grid grid-cols-1 gap-2">
-                    {skill.projects.map((proj, i) => (
-                      <div
-                        key={i}
-                        className="b-card b-card-terracotta p-4 group"
-                      >
-                        <div className="flex items-start gap-3">
-                          <span className="b-number-accent text-2xl leading-none mt-0.5">
-                            {String(i + 1).padStart(2, '0')}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <h5 className="font-b-serif text-sm font-medium text-b-ink mb-1">
-                              {proj.name}
-                            </h5>
-                            <p className="font-b-sans text-xs text-b-muted leading-relaxed">
-                              {proj.desc}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </ExpandableCard>
-          )
-        })}
-      </div>
+      <AnimatedList className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8" staggerDelay={0.1}>
+        {energyData.skills.map((skill, index) => (
+          <SkillCard key={skill.category} skill={skill} index={index} />
+        ))}
+      </AnimatedList>
 
       <div className="b-divider" />
 
