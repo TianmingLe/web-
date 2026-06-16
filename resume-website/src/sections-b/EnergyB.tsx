@@ -70,13 +70,18 @@ export default function EnergyB() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.querySelectorAll('.b-progress-fill-animated').forEach((el) => {
+            const elements = entry.target.querySelectorAll('.b-progress-fill-animated')
+            elements.forEach((el, index) => {
               const htmlEl = el as HTMLElement
-              const targetWidth = htmlEl.style.width
+              const targetWidth = htmlEl.dataset.targetWidth || htmlEl.style.width
+              htmlEl.dataset.targetWidth = targetWidth
               htmlEl.style.width = '0'
-              requestAnimationFrame(() => {
-                htmlEl.style.width = targetWidth
-              })
+              // 错开动画触发时间，避免同时触发导致卡顿
+              setTimeout(() => {
+                requestAnimationFrame(() => {
+                  htmlEl.style.width = targetWidth
+                })
+              }, index * 80)
             })
           }
         })
@@ -89,7 +94,7 @@ export default function EnergyB() {
 
   return (
     <section ref={sectionRef} className="relative px-6 md:px-12 lg:px-20 pt-24 pb-16 md:pt-32 md:pb-24 max-w-7xl mx-auto">
-      <div className="b-section-header b-fade-up">
+      <div className="b-section-header">
         <p className="font-b-mono text-xs text-b-terracotta tracking-[0.2em] uppercase mb-3">
           Core Competencies
         </p>
@@ -104,7 +109,7 @@ export default function EnergyB() {
         </p>
       </div>
 
-      <div className="b-divider b-fade-in b-stagger-1" />
+      <div className="b-divider" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         {energyData.skills.map((skill, index) => {
@@ -116,7 +121,6 @@ export default function EnergyB() {
             <ExpandableCard
               key={index}
               cardClass="b-card b-card-terracotta"
-              className={`b-fade-up b-stagger-${index + 1}`}
               title={
                 <div className="flex items-center gap-3">
                   <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-b-terracotta-dim text-b-terracotta">
@@ -170,6 +174,7 @@ export default function EnergyB() {
                       <div className="b-progress-bar mt-2">
                         <div
                           className="b-progress-fill-animated"
+                          data-target-width={`${(level / 5) * 100}%`}
                           style={{ width: `${(level / 5) * 100}%` }}
                         />
                       </div>
@@ -261,9 +266,9 @@ export default function EnergyB() {
         })}
       </div>
 
-      <div className="b-divider b-fade-in" />
+      <div className="b-divider" />
 
-      <div className="b-fade-up b-stagger-5">
+      <div>
         <div className="b-card b-card-terracotta p-6 md:p-8">
           <div className="flex items-center gap-3 mb-6">
             <span className="b-ornament" />
@@ -296,9 +301,9 @@ export default function EnergyB() {
         </div>
       </div>
 
-      <div className="b-divider b-fade-in" />
+      <div className="b-divider" />
 
-      <div className="b-fade-up b-stagger-6">
+      <div>
         <div className="b-card p-6 md:p-8">
           <div className="flex items-center gap-3 mb-6">
             <span className="b-ornament" />

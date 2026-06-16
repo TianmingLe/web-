@@ -111,14 +111,23 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    // Load energy flow canvas script
+    // Load energy flow canvas script with error handling
     const existing = document.getElementById('energy-flow-script')
     if (!existing) {
       const script = document.createElement('script')
       script.id = 'energy-flow-script'
       script.src = '/energy-flow-canvas.js'
       script.async = true
+      script.onerror = () => {
+        console.warn('Failed to load energy flow canvas script')
+      }
       document.body.appendChild(script)
+    }
+    return () => {
+      const script = document.getElementById('energy-flow-script')
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script)
+      }
     }
   }, [])
 

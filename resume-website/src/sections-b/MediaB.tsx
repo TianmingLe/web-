@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from 'react'
 import { Video, MessageSquare, TrendingUp, Play, Eye, Users } from 'lucide-react'
 import mediaData from '@data/media.json'
 import ExpandableCard from '@components/ExpandableCard'
@@ -8,28 +9,143 @@ function truncate(str: string, max: number) {
   return str.length > max ? str.slice(0, max) + '…' : str
 }
 
+/* ─── 滚动渐现Hook ─── */
+function useScrollReveal<T extends HTMLElement>(options: { threshold?: number; rootMargin?: string } = {}) {
+  const { threshold = 0.1, rootMargin = '0px 0px -50px 0px' } = options
+  const ref = useRef<T>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true)
+          observer.unobserve(el)
+        }
+      },
+      { threshold, rootMargin }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold, rootMargin])
+
+  return { ref, visible }
+}
+
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const { ref, visible } = useScrollReveal<HTMLDivElement>()
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+/* ─── 伪3D环绕平台卡片 ─── */
+function PlatformOrbit() {
+  const platforms = mediaData.platforms
+  const count = platforms.length
+
+  return (
+    <div className="relative py-12 mb-8" style={{ perspective: '1000px' }}>
+      <div
+        className="relative mx-auto"
+        style={{
+          width: '280px',
+          height: '280px',
+          transformStyle: 'preserve-3d',
+          animation: 'orbitRotate 12s linear infinite',
+        }}
+      >
+        {platforms.map((platform, index) => {
+          const Icon = platformIcons[index % platformIcons.length]
+          const angle = (360 / count) * index
+          return (
+            <div
+              key={index}
+              className="absolute top-1/2 left-1/2"
+              style={{
+                transform: `rotateY(${angle}deg) translateZ(140px) translate(-50%, -50%)`,
+                transformStyle: 'preserve-3d',
+                backfaceVisibility: 'hidden',
+              }}
+            >
+              <div
+                className="b-card b-card-terracotta p-4 w-40"
+                style={{
+                  transform: `rotateY(-${angle}deg)`,
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-7 h-7 rounded-full bg-b-terracotta-dim flex items-center justify-center flex-shrink-0">
+                    <Icon size={13} className="text-b-terracotta" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-b-serif text-sm text-b-ink truncate">{platform.name}</h3>
+                  </div>
+                </div>
+                <p className="font-b-mono text-[10px] text-b-muted mb-1">{platform.nameEn}</p>
+                <p className="font-b-sans text-xs text-b-ink-light leading-relaxed mb-2">
+                  {platform.content}
+                </p>
+                <span className="b-number-accent text-lg">{platform.followers}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* 中心装饰 */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+        <div className="w-20 h-20 rounded-full bg-b-terracotta/[0.04] blur-xl" />
+      </div>
+    </div>
+  )
+}
+
 export default function MediaB() {
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto">
-      <div className="b-section-header b-fade-up">
-        <p className="font-b-mono text-xs tracking-[0.2em] uppercase text-b-terracotta mb-3">
-          {mediaData.subtitle}
-        </p>
-        <h2 className="font-b-serif text-4xl md:text-5xl text-b-ink leading-tight">
-          {mediaData.title}
-        </h2>
-        <p className="font-b-sans text-b-ink-light mt-4 max-w-2xl leading-relaxed text-base">
-          {mediaData.description}
-        </p>
-      </div>
+      <Reveal>
+        <div className="b-section-header">
+          <p className="font-b-mono text-xs tracking-[0.2em] uppercase text-b-terracotta mb-3">
+            {mediaData.subtitle}
+          </p>
+          <h2 className="font-b-serif text-4xl md:text-5xl text-b-ink leading-tight">
+            {mediaData.title}
+          </h2>
+          <p className="font-b-sans text-b-ink-light mt-4 max-w-2xl leading-relaxed text-base">
+            {mediaData.description}
+          </p>
+        </div>
+      </Reveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+      {/* 伪3D环绕平台展示 */}
+      <Reveal delay={0.1}>
+        <div className="hidden md:block">
+          <PlatformOrbit />
+        </div>
+      </Reveal>
+
+      {/* 移动端：普通网格 */}
+      <div className="md:hidden grid grid-cols-1 gap-4 mb-2">
         {mediaData.platforms.map((platform, index) => {
           const Icon = platformIcons[index % platformIcons.length]
           return (
             <div
               key={index}
-              className={`b-card b-card-terracotta p-4 b-fade-up b-stagger-${index + 1}`}
+              className="b-card b-card-terracotta p-4"
             >
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-b-terracotta-dim flex items-center justify-center flex-shrink-0">
@@ -55,201 +171,204 @@ export default function MediaB() {
 
       <div className="b-divider" />
 
-      <div className="b-fade-up b-stagger-4">
-        <ExpandableCard
-          title={
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-b-sage-dim flex items-center justify-center">
-                <Users size={15} className="text-b-sage" />
+      <Reveal delay={0.1}>
+        <div>
+          <ExpandableCard
+            title={
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-b-sage-dim flex items-center justify-center">
+                  <Users size={15} className="text-b-sage" />
+                </div>
+                <h3 className="font-b-serif text-2xl text-b-ink">内容策略</h3>
               </div>
-              <h3 className="font-b-serif text-2xl text-b-ink">内容策略</h3>
-            </div>
-          }
-          keywords={mediaData.contentStrategy.map((strategy) => {
-            const colonIdx = strategy.indexOf('：')
-            const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
-            return (
-              <span key={label} className="b-tag b-tag-sage">
-                {label}
-              </span>
-            )
-          })}
-          cardClass="b-card b-card-sage"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mediaData.contentStrategy.map((strategy, index) => {
+            }
+            keywords={mediaData.contentStrategy.map((strategy) => {
               const colonIdx = strategy.indexOf('：')
               const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
-              const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
-              const icons = [TrendingUp, MessageSquare, Play, Eye]
-              const StrategyIcon = icons[index % icons.length]
               return (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-lg bg-b-sage-dim flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <StrategyIcon size={16} className="text-b-sage" />
-                  </div>
-                  <div>
-                    <p className="font-b-sans text-sm font-semibold text-b-ink mb-1">{label}</p>
-                    {desc && (
-                      <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
-                        {desc}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <span key={label} className="b-tag b-tag-sage">
+                  {label}
+                </span>
               )
             })}
-          </div>
-        </ExpandableCard>
-      </div>
-
-      <div className="b-divider" />
-
-      <div className="b-fade-up b-stagger-5">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-full bg-b-slate-dim flex items-center justify-center">
-            <Video size={15} className="text-b-slate" />
-          </div>
-          <h3 className="font-b-serif text-2xl text-b-ink">项目作品</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {mediaData.projects.map((project, index) => (
-            <ExpandableCard
-              key={project.id}
-              title={project.title}
-              badges={
-                <span className="b-tag b-tag-terracotta flex-shrink-0 text-[11px]">
-                  {project.period}
-                </span>
-              }
-              subtitle={truncate(project.summary, 50)}
-              keywords={project.tags?.slice(0, 3).map((tag) => (
-                <span key={tag} className="b-tag b-tag-terracotta">
-                  {tag}
-                </span>
-              ))}
-              cardClass="b-card b-card-slate"
-              className={`b-fade-up b-stagger-${index + 5}`}
-            >
-              <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-4">
-                {project.summary}
-              </p>
-
-              {project.tags && project.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag) => (
-                    <span key={tag} className="b-tag b-tag-terracotta">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {project.highlights && project.highlights.length > 0 && (
-                <div className="pt-4 border-t border-b-border">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
-                    Highlights
-                  </p>
-                  <ul className="space-y-2">
-                    {project.highlights.map((highlight, hIdx) => (
-                      <li key={hIdx} className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 flex-shrink-0" />
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {highlight}
+            cardClass="b-card b-card-sage"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {mediaData.contentStrategy.map((strategy, index) => {
+                const colonIdx = strategy.indexOf('：')
+                const label = colonIdx > -1 ? strategy.slice(0, colonIdx) : strategy
+                const desc = colonIdx > -1 ? strategy.slice(colonIdx + 1) : ''
+                const icons = [TrendingUp, MessageSquare, Play, Eye]
+                const StrategyIcon = icons[index % icons.length]
+                return (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="w-9 h-9 rounded-lg bg-b-sage-dim flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <StrategyIcon size={16} className="text-b-sage" />
+                    </div>
+                    <div>
+                      <p className="font-b-sans text-sm font-semibold text-b-ink mb-1">{label}</p>
+                      {desc && (
+                        <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
+                          {desc}
                         </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {project.outcomes && project.outcomes.length > 0 && (
-                <div className="pt-4 border-t border-b-border">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
-                    Outcomes
-                  </p>
-                  <ul className="space-y-2">
-                    {project.outcomes.map((outcome, oIdx) => (
-                      <li key={oIdx} className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-b-sage mt-1.5 flex-shrink-0" />
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {outcome}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {project.impact && project.impact.length > 0 && (
-                <div className="pt-4 border-t border-b-border">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
-                    Impact
-                  </p>
-                  <ul className="space-y-2">
-                    {project.impact.map((item, iIdx) => (
-                      <li key={iIdx} className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 flex-shrink-0" />
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {item}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {project.activities && project.activities.length > 0 && (
-                <div className="pt-4 border-t border-b-border">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
-                    Activities
-                  </p>
-                  <ul className="space-y-2">
-                    {project.activities.map((activity, aIdx) => (
-                      <li key={aIdx} className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-b-slate mt-1.5 flex-shrink-0" />
-                        <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                          {activity}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {project.lessons && (
-                <div className="pt-4 border-t border-b-border mt-4">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-2">
-                    Lessons
-                  </p>
-                  <p className="font-b-sans text-xs text-b-ink-light leading-relaxed italic">
-                    {project.lessons}
-                  </p>
-                </div>
-              )}
-
-              {project.workflow && project.workflow.length > 0 && (
-                <div className="pt-4 border-t border-b-border">
-                  <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
-                    Workflow
-                  </p>
-                  <div className="b-progress-bar mb-2">
-                    <div className="b-progress-fill" style={{ width: '100%' }} />
+                      )}
+                    </div>
                   </div>
-                  <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
-                    {project.workflow.join(' → ')}
-                  </p>
-                </div>
-              )}
-            </ExpandableCard>
-          ))}
+                )
+              })}
+            </div>
+          </ExpandableCard>
         </div>
-      </div>
+      </Reveal>
 
       <div className="b-divider" />
 
-      <div className="b-fade-up b-stagger-8">
+      <Reveal delay={0.1}>
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 rounded-full bg-b-slate-dim flex items-center justify-center">
+              <Video size={15} className="text-b-slate" />
+            </div>
+            <h3 className="font-b-serif text-2xl text-b-ink">项目作品</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {mediaData.projects.map((project) => (
+              <ExpandableCard
+                key={project.id}
+                title={project.title}
+                badges={
+                  <span className="b-tag b-tag-terracotta flex-shrink-0 text-[11px]">
+                    {project.period}
+                  </span>
+                }
+                subtitle={truncate(project.summary, 50)}
+                keywords={project.tags?.slice(0, 3).map((tag) => (
+                  <span key={tag} className="b-tag b-tag-terracotta">
+                    {tag}
+                  </span>
+                ))}
+                cardClass="b-card b-card-slate"
+              >
+                <p className="font-b-sans text-sm text-b-ink-light leading-relaxed mb-4">
+                  {project.summary}
+                </p>
+
+                {project.tags && project.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.tags.map((tag) => (
+                      <span key={tag} className="b-tag b-tag-terracotta">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {project.highlights && project.highlights.length > 0 && (
+                  <div className="pt-4 border-t border-b-border">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
+                      Highlights
+                    </p>
+                    <ul className="space-y-2">
+                      {project.highlights.map((highlight, hIdx) => (
+                        <li key={hIdx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 flex-shrink-0" />
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {highlight}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {project.outcomes && project.outcomes.length > 0 && (
+                  <div className="pt-4 border-t border-b-border">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
+                      Outcomes
+                    </p>
+                    <ul className="space-y-2">
+                      {project.outcomes.map((outcome, oIdx) => (
+                        <li key={oIdx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-b-sage mt-1.5 flex-shrink-0" />
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {outcome}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {project.impact && project.impact.length > 0 && (
+                  <div className="pt-4 border-t border-b-border">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
+                      Impact
+                    </p>
+                    <ul className="space-y-2">
+                      {project.impact.map((item, iIdx) => (
+                        <li key={iIdx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-b-terracotta mt-1.5 flex-shrink-0" />
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {item}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {project.activities && project.activities.length > 0 && (
+                  <div className="pt-4 border-t border-b-border">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
+                      Activities
+                    </p>
+                    <ul className="space-y-2">
+                      {project.activities.map((activity, aIdx) => (
+                        <li key={aIdx} className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-b-slate mt-1.5 flex-shrink-0" />
+                          <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                            {activity}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {project.lessons && (
+                  <div className="pt-4 border-t border-b-border mt-4">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-2">
+                      Lessons
+                    </p>
+                    <p className="font-b-sans text-xs text-b-ink-light leading-relaxed italic">
+                      {project.lessons}
+                    </p>
+                  </div>
+                )}
+
+                {project.workflow && project.workflow.length > 0 && (
+                  <div className="pt-4 border-t border-b-border">
+                    <p className="font-b-mono text-[11px] text-b-muted tracking-wider uppercase mb-3">
+                      Workflow
+                    </p>
+                    <div className="b-progress-bar mb-2">
+                      <div className="b-progress-fill" style={{ width: '100%' }} />
+                    </div>
+                    <p className="font-b-sans text-xs text-b-ink-light leading-relaxed">
+                      {project.workflow.join(' → ')}
+                    </p>
+                  </div>
+                )}
+              </ExpandableCard>
+            ))}
+          </div>
+        </div>
+      </Reveal>
+
+      <div className="b-divider" />
+
+      <Reveal delay={0.1}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="b-card b-card-terracotta p-6 text-center">
             <div className="w-12 h-12 rounded-full bg-b-terracotta-dim flex items-center justify-center mx-auto mb-4">
@@ -277,7 +396,7 @@ export default function MediaB() {
             <p className="font-b-sans text-sm text-b-muted mt-2">平台运营</p>
           </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

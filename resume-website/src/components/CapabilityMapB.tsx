@@ -1,1459 +1,444 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { gsap } from 'gsap'
-import {
-  Cog, Brain, Code2, Clapperboard, Lightbulb,
-  type LucideIcon
-} from 'lucide-react'
-import { capabilityData, MainNode, SubNode } from '@data/capabilityMap'
-import { useMediaQuery } from '@hooks/useMediaQuery'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAudioStore } from '@store/audio'
+import { useIntersection } from '@hooks/useIntersection'
+import SoftAurora from './SoftAurora'
 
-const iconMap: Record<string, LucideIcon> = {
-  energy: Cog,
-  ai: Brain,
-  dev: Code2,
-  media: Clapperboard,
-  thinking: Lightbulb,
+/* ─── Types ─── */
+interface CapabilityNode {
+  id: string
+  label: string
+  icon: React.ReactNode
+  description: string
+  color: string
+  bgColor: string
+  borderColor: string
+  hoverColor: string
+  route: string
+  position: { x: number; y: number }
+  size: number
 }
 
-/* ------------------------------------------------------------------ */
-/*  Shared constants (derived from container size)                     */
-/* ------------------------------------------------------------------ */
-const CONTAINER_SM = 380   // mobile base (px)
-const CONTAINER_MD = 760   // desktop base (px)
-const CONTAINER_LG = 920   // desktop large (px)
+/* ─── Data ─── */
+const nodes: CapabilityNode[] = [
+  {
+    id: 'energy',
+    label: '能源动力',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    ),
+    description: '能源与动力工程核心技能',
+    color: 'text-b-terracotta',
+    bgColor: 'bg-b-terracotta-dim',
+    borderColor: 'border-b-terracotta/30',
+    hoverColor: 'hover:bg-b-terracotta-dim',
+    route: '/energy',
+    position: { x: 50, y: 20 },
+    size: 120,
+  },
+  {
+    id: 'ai',
+    label: 'AI 技术',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2.27A2 2 0 0 1 3 16h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 11 4a2 2 0 0 1 1-2z" />
+      </svg>
+    ),
+    description: '人工智能与大模型技术',
+    color: 'text-b-sage',
+    bgColor: 'bg-b-sage-dim',
+    borderColor: 'border-b-sage/30',
+    hoverColor: 'hover:bg-b-sage-dim',
+    route: '/ai',
+    position: { x: 80, y: 50 },
+    size: 100,
+  },
+  {
+    id: 'media',
+    label: '自媒体',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M23 7l-7 5 7 5V7z" />
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+      </svg>
+    ),
+    description: '内容创作与平台运营',
+    color: 'text-b-slate',
+    bgColor: 'bg-b-slate-dim',
+    borderColor: 'border-b-slate/30',
+    hoverColor: 'hover:bg-b-slate-dim',
+    route: '/media',
+    position: { x: 65, y: 80 },
+    size: 100,
+  },
+  {
+    id: 'thought',
+    label: '思想领域',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
+        <path d="M9 21h6" />
+      </svg>
+    ),
+    description: '职业规划与思维方式',
+    color: 'text-b-terracotta',
+    bgColor: 'bg-b-terracotta-dim',
+    borderColor: 'border-b-terracotta/30',
+    hoverColor: 'hover:bg-b-terracotta-dim',
+    route: '/thought',
+    position: { x: 35, y: 80 },
+    size: 100,
+  },
+  {
+    id: 'other',
+    label: '其他',
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+    description: '获奖、证书与联系方式',
+    color: 'text-b-sage',
+    bgColor: 'bg-b-sage-dim',
+    borderColor: 'border-b-sage/30',
+    hoverColor: 'hover:bg-b-sage-dim',
+    route: '/other',
+    position: { x: 20, y: 50 },
+    size: 100,
+  },
+]
 
-function useContainerSize() {
-  const isMd = useMediaQuery('(min-width: 768px)')
-  const isLg = useMediaQuery('(min-width: 1024px)')
-  return {
-    size: isLg ? CONTAINER_LG : isMd ? CONTAINER_MD : CONTAINER_SM,
-    isMobile: !isMd,
-  }
+/* ─── Particle type for exit animation ─── */
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  life: number
+  maxLife: number
+  size: number
+  color: string
 }
 
-/* ------------------------------------------------------------------ */
-/*  Modal                                                              */
-/* ------------------------------------------------------------------ */
-interface CaseStudyModalProps {
-  node: MainNode
-  onClose: () => void
-}
-
-function CaseStudyModalB({ node, onClose }: CaseStudyModalProps) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="relative max-w-lg w-full bg-b-cream border border-b-border rounded-2xl p-6 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-b-cream-dark flex items-center justify-center text-b-muted hover:text-b-ink transition-colors"
-        >
-          ×
-        </button>
-
-        <div className="flex items-center gap-3 mb-4">
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: `${node.color}20` }}
-          >
-            {(() => {
-              const Icon = iconMap[node.id]
-              return Icon ? <Icon size={20} style={{ color: node.color }} /> : null
-            })()}
-          </div>
-          <div>
-            <h3 className="font-b-serif text-lg text-b-ink">{node.label}</h3>
-            <p className="font-b-sans text-sm text-b-muted">{node.caseStudy?.title}</p>
-          </div>
-        </div>
-
-        <p className="font-b-sans text-sm text-b-ink-light mb-4 leading-relaxed">
-          {node.caseStudy?.description}
-        </p>
-
-        {node.caseStudy?.metrics && (
-          <div className="grid grid-cols-3 gap-3">
-            {Object.entries(node.caseStudy.metrics).map(([key, value]) => (
-              <div key={key} className="text-center p-3 rounded-xl bg-b-cream-dark">
-                <p className="font-b-mono text-xs text-b-muted mb-1">{key}</p>
-                <p className="font-b-serif text-sm text-b-terracotta font-medium">{value}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Text Scramble Effect                                               */
-/* ------------------------------------------------------------------ */
-function useTextScramble(text: string, active: boolean) {
-  const [display, setDisplay] = useState(text)
-  const frameRef = useRef<number>(0)
+/* ─── Galaxy Collapse Exit Animation ─── */
+function ExitParticles({ centerX, centerY, color, onComplete }: { centerX: number; centerY: number; color: string; onComplete: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const particlesRef = useRef<Particle[]>([])
 
   useEffect(() => {
-    if (!active) {
-      setDisplay(text)
-      return
-    }
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'
-    let iteration = 0
-    const total = text.length * 4
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    const tick = () => {
-      setDisplay(
-        text
-          .split('')
-          .map((char, idx) => {
-            if (char === ' ') return ' '
-            if (iteration / 4 > idx) return text[idx]
-            return chars[Math.floor(Math.random() * chars.length)]
-          })
-          .join('')
-      )
-      iteration++
-      if (iteration <= total) {
-        frameRef.current = requestAnimationFrame(tick)
-      } else {
-        setDisplay(text)
-      }
-    }
-    frameRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frameRef.current)
-  }, [active, text])
+    const w = window.innerWidth
+    const h = window.innerHeight
+    canvas.width = w
+    canvas.height = h
 
-  return display
-}
-
-/* ------------------------------------------------------------------ */
-/*  Floating Particles                                                 */
-/* ------------------------------------------------------------------ */
-function FloatingParticlesB({ activeNodeIndex, allExpanded, showAll, nodePositions }: {
-  activeNodeIndex: number
-  allExpanded: boolean
-  showAll: boolean
-  nodePositions: { x: number; y: number }[]
-}) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const particlesRef = useRef<HTMLDivElement[]>([])
-  const animRef = useRef<gsap.core.Tween[]>([])
-
-  useEffect(() => {
-    if (!containerRef.current) return
-    const particles = particlesRef.current.filter(Boolean)
-    if (!particles.length) return
-
-    animRef.current.forEach(t => t.kill())
-    animRef.current = []
-
-    const active = activeNodeIndex >= 0 && !showAll
-    const targetX = active ? nodePositions[activeNodeIndex]?.x ?? 0 : 0
-    const targetY = active ? nodePositions[activeNodeIndex]?.y ?? 0 : 0
-    const color = active ? capabilityData.mainNodes[activeNodeIndex]?.color : '#9B9590'
-
-    particles.forEach((p, i) => {
-      if (active) {
-        const angle = Math.random() * Math.PI * 2
-        const dist = 80 + Math.random() * 100
-        const tx = targetX + Math.cos(angle) * dist
-        const ty = targetY + Math.sin(angle) * dist
-        const t1 = gsap.to(p, {
-          x: tx,
-          y: ty,
-          duration: 1.5 + Math.random(),
-          ease: 'power2.out',
-          repeat: -1,
-          yoyo: true,
-        })
-        const t2 = gsap.to(p, {
-          opacity: 0.4 + Math.random() * 0.4,
-          scale: 1.2 + Math.random() * 0.8,
-          backgroundColor: color,
-          boxShadow: `0 0 8px ${color}, 0 0 16px ${color}`,
-          duration: 0.8,
-        })
-        animRef.current.push(t1, t2)
-      } else if (allExpanded && !showAll) {
-        const angle = (i / particles.length) * Math.PI * 2
-        const radius = 120 + (i % 3) * 80
-        const t1 = gsap.to(p, {
-          x: Math.cos(angle) * radius,
-          y: Math.sin(angle) * radius,
-          duration: 3 + Math.random() * 2,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        })
-        const t2 = gsap.to(p, {
-          opacity: 0.2,
-          scale: 1,
-          backgroundColor: '#C4BFB9',
-          boxShadow: 'none',
-          duration: 0.8,
-        })
-        animRef.current.push(t1, t2)
-      } else {
-        const t1 = gsap.to(p, {
-          x: (Math.random() - 0.5) * 600,
-          y: (Math.random() - 0.5) * 600,
-          duration: 8 + Math.random() * 4,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        })
-        const t2 = gsap.to(p, {
-          opacity: 0.15,
-          scale: 1,
-          backgroundColor: '#C4BFB9',
-          boxShadow: 'none',
-          duration: 0.8,
-        })
-        animRef.current.push(t1, t2)
-      }
-    })
-
-    return () => {
-      animRef.current.forEach(t => t.kill())
-    }
-  }, [activeNodeIndex, allExpanded, showAll, nodePositions])
-
-  return (
-    <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-      {Array.from({ length: 24 }).map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => { if (el) particlesRef.current[i] = el }}
-          className="absolute left-1/2 top-1/2 w-1 h-1 rounded-full opacity-0"
-          style={{
-            backgroundColor: '#C4BFB9',
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Center Rings                                                       */
-/* ------------------------------------------------------------------ */
-function CenterRingsB({ active }: { active: boolean }) {
-  const ringsRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!ringsRef.current) return
-    const rings = ringsRef.current.querySelectorAll('.center-ring-b')
-    if (active) {
-      rings.forEach((ring, i) => {
-        gsap.fromTo(ring,
-          { scale: 0.8, opacity: 0 },
-          {
-            scale: 2.2 + i * 0.6,
-            opacity: 0.15 - i * 0.03,
-            duration: 2 + i * 0.5,
-            ease: 'power2.out',
-            repeat: -1,
-            delay: i * 0.4,
-          }
-        )
-      })
-    } else {
-      rings.forEach((ring) => {
-        gsap.killTweensOf(ring)
-        gsap.to(ring, { scale: 0.8, opacity: 0, duration: 0.5 })
-      })
-    }
-  }, [active])
-
-  return (
-    <div ref={ringsRef} className="absolute inset-0 pointer-events-none">
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="center-ring-b absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-b-terracotta/30"
-          style={{
-            width: '80px',
-            height: '80px',
-            opacity: 0,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Rotating Hexagon Mesh                                              */
-/* ------------------------------------------------------------------ */
-function HexagonMeshB({ active, containerSize }: { active: boolean; containerSize: number }) {
-  const svgRef = useRef<SVGSVGElement>(null)
-
-  useEffect(() => {
-    if (!svgRef.current) return
-    const group = svgRef.current.querySelector('.hex-group-b')
-    if (!group) return
-    if (active) {
-      gsap.to(group, {
-        rotation: 360,
-        duration: 60,
-        ease: 'none',
-        repeat: -1,
-        transformOrigin: '50% 50%',
-      })
-      gsap.fromTo(group, { opacity: 0 }, { opacity: 0.25, duration: 1 })
-    } else {
-      gsap.killTweensOf(group)
-      gsap.to(group, { opacity: 0, duration: 0.6 })
-    }
-  }, [active])
-
-  const cx = containerSize / 2
-  const cy = containerSize / 2
-  const r = 120
-  const hexPoints = Array.from({ length: 6 }).map((_, i) => {
-    const a = (i * 60 - 30) * (Math.PI / 180)
-    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
-  }).join(' ')
-
-  return (
-    <svg
-      ref={svgRef}
-      className="absolute pointer-events-none"
-      style={{
-        left: '50%',
-        top: '50%',
-        width: containerSize,
-        height: containerSize,
-        transform: 'translate(-50%, -50%)',
-        zIndex: 2,
-      }}
-    >
-      <g className="hex-group-b" opacity="0">
-        <polygon
-          points={hexPoints}
-          fill="none"
-          stroke="#C46C54"
-          strokeWidth="1"
-          opacity="0.6"
-        />
-        <polygon
-          points={hexPoints}
-          fill="none"
-          stroke="#8B9D78"
-          strokeWidth="0.5"
-          opacity="0.4"
-          transform={`rotate(30 ${cx} ${cy})`}
-        />
-      </g>
-    </svg>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Shooting Stars                                                     */
-/* ------------------------------------------------------------------ */
-function ShootingStarsB({ active }: { active: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    if (!containerRef.current || !active) return
-    const container = containerRef.current
-
-    const spawn = () => {
-      const star = document.createElement('div')
+    // Create particles
+    const count = 60
+    const particles: Particle[] = []
+    for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2
-      const len = 60 + Math.random() * 80
-      star.style.position = 'absolute'
-      star.style.left = '50%'
-      star.style.top = '50%'
-      star.style.width = `${len}px`
-      star.style.height = '2px'
-      star.style.borderRadius = '1px'
-      star.style.background = 'linear-gradient(90deg, rgba(196,108,84,0.8), transparent)'
-      star.style.boxShadow = '0 0 6px rgba(196,108,84,0.6)'
-      star.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`
-      star.style.opacity = '0'
-      star.style.pointerEvents = 'none'
-      container.appendChild(star)
+      const speed = 2 + Math.random() * 4
+      particles.push({
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        maxLife: 0.6 + Math.random() * 0.4,
+        size: 2 + Math.random() * 4,
+        color,
+      })
+    }
+    particlesRef.current = particles
 
-      const dist = 200 + Math.random() * 250
-      const tx = Math.cos(angle) * dist
-      const ty = Math.sin(angle) * dist
+    let animId = 0
+    const animate = () => {
+      ctx.clearRect(0, 0, w, h)
+      let alive = false
 
-      gsap.fromTo(star,
-        { x: 0, y: 0, opacity: 1, scale: 0.5 },
-        {
-          x: tx,
-          y: ty,
-          opacity: 0,
-          scale: 1.2,
-          duration: 0.8 + Math.random() * 0.6,
-          ease: 'power2.out',
-          onComplete: () => star.remove(),
-        }
-      )
+      particles.forEach((p) => {
+        if (p.life <= 0) return
+        alive = true
+        p.x += p.vx
+        p.y += p.vy
+        p.vx *= 0.98
+        p.vy *= 0.98
+        p.life -= 0.015
+
+        const alpha = Math.max(0, p.life / p.maxLife)
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2)
+        ctx.fillStyle = p.color.replace('0.12)', `${alpha * 0.5})`).replace('0.10)', `${alpha * 0.4})`).replace('0.08)', `${alpha * 0.3})`)
+        ctx.fill()
+      })
+
+      if (alive) {
+        animId = requestAnimationFrame(animate)
+      } else {
+        onComplete()
+      }
     }
 
-    timerRef.current = setInterval(spawn, 1200)
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-      container.innerHTML = ''
-    }
-  }, [active])
-
-  return <div ref={containerRef} className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 6 }} />
-}
-
-/* ------------------------------------------------------------------ */
-/*  Glowing Node Halos                                                 */
-/* ------------------------------------------------------------------ */
-function NodeHaloB({ active, color }: { active: boolean; color: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!ref.current) return
-    if (active) {
-      gsap.fromTo(ref.current,
-        { scale: 1, opacity: 0.6 },
-        { scale: 1.6, opacity: 0, duration: 1.5, ease: 'power2.out', repeat: -1 }
-      )
-    } else {
-      gsap.killTweensOf(ref.current)
-      gsap.to(ref.current, { scale: 1, opacity: 0, duration: 0.4 })
-    }
-  }, [active])
+    animId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animId)
+  }, [centerX, centerY, color, onComplete])
 
   return (
-    <div
-      ref={ref}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
-      style={{
-        width: 56,
-        height: 56,
-        background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
-        opacity: 0,
-        zIndex: 0,
-      }}
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none"
+      style={{ zIndex: 60 }}
     />
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Particle Burst on Activation                                       */
-/* ------------------------------------------------------------------ */
-function ParticleBurstB({ active, color }: { active: boolean; color: string }) {
-  const containerRef = useRef<HTMLDivElement>(null)
+/* ─── Node Detail Panel ─── */
+function NodeDetail({ node, onClose }: { node: CapabilityNode; onClose: () => void }) {
+  const navigate = useNavigate()
+  const { isPlaying } = useAudioStore()
 
-  useEffect(() => {
-    if (!containerRef.current || !active) return
-    const container = containerRef.current
-    container.innerHTML = ''
-
-    const count = 12
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement('div')
-      p.className = 'absolute left-1/2 top-1/2 rounded-full pointer-events-none'
-      p.style.width = '3px'
-      p.style.height = '3px'
-      p.style.backgroundColor = color
-      p.style.boxShadow = `0 0 4px ${color}`
-      container.appendChild(p)
-
-      const angle = (i / count) * Math.PI * 2
-      const dist = 30 + Math.random() * 40
-      gsap.fromTo(p,
-        { x: 0, y: 0, opacity: 1, scale: 1 },
-        {
-          x: Math.cos(angle) * dist,
-          y: Math.sin(angle) * dist,
-          opacity: 0,
-          scale: 0,
-          duration: 0.6 + Math.random() * 0.4,
-          ease: 'power2.out',
-          delay: Math.random() * 0.1,
-          onComplete: () => p.remove(),
-        }
-      )
+  const handleNavigate = useCallback(() => {
+    if (isPlaying) {
+      // Keep playing
     }
-  }, [active, color])
-
-  return <div ref={containerRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 15 }} />
-}
-
-/* ------------------------------------------------------------------ */
-/*  Energy Beam with Traveling Light                                   */
-/* ------------------------------------------------------------------ */
-function EnergyBeamB({ active, fromX, fromY, toX, toY, color, containerSize }: {
-  active: boolean
-  fromX: number
-  fromY: number
-  toX: number
-  toY: number
-  color: string
-  containerSize: number
-}) {
-  const svgRef = useRef<SVGSVGElement>(null)
-
-  useEffect(() => {
-    if (!svgRef.current || !active) return
-    const line = svgRef.current.querySelector('.energy-line-b')
-    const glow = svgRef.current.querySelector('.energy-glow-b')
-    const travel = svgRef.current.querySelector('.energy-travel-b')
-    if (!line || !glow || !travel) return
-
-    gsap.fromTo(line,
-      { strokeDashoffset: 300, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.8, duration: 0.6, ease: 'power2.out' }
-    )
-    gsap.fromTo(glow,
-      { strokeDashoffset: 300, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.4, duration: 0.6, ease: 'power2.out', delay: 0.1 }
-    )
-
-    const pulse = gsap.to(line, {
-      opacity: 0.4,
-      duration: 0.8,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-    })
-
-    const len = Math.hypot(toX - fromX, toY - fromY)
-    const travelAnim = gsap.fromTo(travel,
-      { strokeDashoffset: len, opacity: 1 },
-      { strokeDashoffset: -len, opacity: 1, duration: 1.2, ease: 'none', repeat: -1 }
-    )
-
-    return () => {
-      pulse.kill()
-      travelAnim.kill()
-    }
-  }, [active, fromX, fromY, toX, toY])
-
-  if (!active) return null
-
-  const half = containerSize / 2
+    navigate(node.route)
+  }, [navigate, node.route, isPlaying])
 
   return (
-    <svg
-      ref={svgRef}
-      className="absolute pointer-events-none"
+    <div
+      className="absolute z-50 bg-b-card/95 backdrop-blur-xl border border-b-border rounded-2xl p-6 shadow-2xl max-w-xs transition-all duration-400"
       style={{
-        left: '50%',
-        top: '50%',
-        width: containerSize,
-        height: containerSize,
-        transform: 'translate(-50%, -50%)',
-        zIndex: 5,
+        left: `${node.position.x}%`,
+        top: `${node.position.y}%`,
+        transform: 'translate(-50%, -120%)',
+        animation: 'fadeScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both',
       }}
     >
-      <line
-        className="energy-glow-b"
-        x1={fromX + half}
-        y1={fromY + half}
-        x2={toX + half}
-        y2={toY + half}
-        stroke={color}
-        strokeWidth="6"
-        strokeLinecap="round"
-        opacity="0"
-        strokeDasharray="300"
-        strokeDashoffset="300"
-        filter="blur(4px)"
-      />
-      <line
-        className="energy-line-b"
-        x1={fromX + half}
-        y1={fromY + half}
-        x2={toX + half}
-        y2={toY + half}
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        opacity="0"
-        strokeDasharray="8,4"
-        strokeDashoffset="300"
-      />
-      <line
-        className="energy-travel-b"
-        x1={fromX + half}
-        y1={fromY + half}
-        x2={toX + half}
-        y2={toY + half}
-        stroke="#FFFFFF"
-        strokeWidth="3"
-        strokeLinecap="round"
-        opacity="0"
-        strokeDasharray="20,200"
-      />
-    </svg>
+      <div className="flex items-center gap-3 mb-3">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${node.bgColor} ${node.color}`}>
+          {node.icon}
+        </div>
+        <div>
+          <h3 className="font-b-serif text-lg text-b-ink">{node.label}</h3>
+          <p className="font-b-sans text-xs text-b-muted">{node.description}</p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={handleNavigate}
+          className="flex-1 px-4 py-2 rounded-lg bg-b-terracotta text-white font-b-sans text-sm hover:bg-b-terracotta-dark transition-colors"
+        >
+          进入
+        </button>
+        <button
+          onClick={onClose}
+          className="px-4 py-2 rounded-lg border border-b-border font-b-sans text-sm text-b-muted hover:bg-b-sand/30 transition-colors"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Constellation Lines                                                */
-/* ------------------------------------------------------------------ */
-function ConstellationLinesB({ positions, showAll, allExpanded, containerSize }: {
-  positions: { x: number; y: number }[]
-  showAll: boolean
-  allExpanded: boolean
-  containerSize: number
-}) {
-  const svgRef = useRef<SVGSVGElement>(null)
-
-  useEffect(() => {
-    if (!svgRef.current) return
-    const lines = svgRef.current.querySelectorAll('.constellation-line-b')
-    const visible = showAll || allExpanded
-
-    lines.forEach((line, i) => {
-      if (visible) {
-        gsap.fromTo(line,
-          { opacity: 0, strokeDashoffset: 200 },
-          { opacity: 0.12, strokeDashoffset: 0, duration: 1, delay: i * 0.1, ease: 'power2.out' }
-        )
-      } else {
-        gsap.to(line, { opacity: 0, duration: 0.5 })
+/* ─── Connection Lines ─── */
+function ConnectionLines({ activeIndex }: { activeIndex: number }) {
+  const lines = useMemo(() => {
+    const result: { x1: number; y1: number; x2: number; y2: number; opacity: number }[] = []
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const isActive = activeIndex === i || activeIndex === j
+        result.push({
+          x1: nodes[i].position.x,
+          y1: nodes[i].position.y,
+          x2: nodes[j].position.x,
+          y2: nodes[j].position.y,
+          opacity: isActive ? 0.3 : 0.08,
+        })
       }
-    })
-  }, [showAll, allExpanded])
-
-  if (!positions.length) return null
-
-  const half = containerSize / 2
-  const lines: { x1: number; y1: number; x2: number; y2: number }[] = []
-  for (let i = 0; i < positions.length; i++) {
-    const next = (i + 1) % positions.length
-    lines.push({
-      x1: positions[i].x + half,
-      y1: positions[i].y + half,
-      x2: positions[next].x + half,
-      y2: positions[next].y + half,
-    })
-  }
+    }
+    return result
+  }, [activeIndex])
 
   return (
     <svg
-      ref={svgRef}
-      className="absolute pointer-events-none"
-      style={{
-        left: '50%',
-        top: '50%',
-        width: containerSize,
-        height: containerSize,
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1,
-      }}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 1 }}
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
     >
       {lines.map((line, i) => (
         <line
           key={i}
-          className="constellation-line-b"
-          x1={line.x1}
-          y1={line.y1}
-          x2={line.x2}
-          y2={line.y2}
-          stroke="#9B9590"
-          strokeWidth="1"
-          strokeDasharray="200"
-          strokeDashoffset="200"
-          opacity="0"
+          x1={`${line.x1}%`}
+          y1={`${line.y1}%`}
+          x2={`${line.x2}%`}
+          y2={`${line.y2}%`}
+          stroke="var(--color-b-terracotta)"
+          strokeWidth="0.15"
+          opacity={line.opacity}
+          style={{
+            strokeDasharray: 100,
+            strokeDashoffset: 0,
+            animation: `dashDraw 1.2s ease-in-out ${i * 0.1}s both`,
+          }}
         />
       ))}
     </svg>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Orbiting Labels                                                    */
-/* ------------------------------------------------------------------ */
-function OrbitingLabelsB({ node, active, dimmed }: {
-  node: MainNode
-  active: boolean
-  dimmed: boolean
-}) {
+/* ─── Main Component ─── */
+export default function CapabilityMapB() {
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
+  const [exitingNode, setExitingNode] = useState<{ index: number; x: number; y: number; color: string } | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const [sectionRef, sectionVisible] = useIntersection<HTMLDivElement>({ threshold: 0.1 })
 
   useEffect(() => {
-    if (!containerRef.current) return
-    const labels = containerRef.current.querySelectorAll('.orbit-label-b')
-    labels.forEach((label, i) => {
-      const angle = (i / labels.length) * 360
-      const radius = 42 + (i % 2) * 10
-      const duration = 4 + (i % 3) * 1.5
-      gsap.to(label, {
-        rotation: angle + 360,
-        duration,
-        ease: 'none',
-        repeat: -1,
-        transformOrigin: `0px ${radius}px`,
-      })
-    })
+    if (sectionVisible) {
+      const timer = setTimeout(() => setIsVisible(true), 100)
+      return () => clearTimeout(timer)
+    }
+  }, [sectionVisible])
+
+  const handleNodeClick = useCallback((index: number) => {
+    if (activeNodeIndex === index) {
+      // Exit animation
+      const node = nodes[index]
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (rect) {
+        const x = rect.left + (node.position.x / 100) * rect.width
+        const y = rect.top + (node.position.y / 100) * rect.height
+        setExitingNode({ index, x, y, color: node.bgColor.replace('bg-', 'var(--color-b-').replace('-dim', '') })
+      }
+      setActiveNodeIndex(-1)
+    } else {
+      setActiveNodeIndex(index)
+    }
+  }, [activeNodeIndex])
+
+  const handleExitComplete = useCallback(() => {
+    setExitingNode(null)
   }, [])
 
-  const labels = ['01', '02', '03']
-  return (
-    <div ref={containerRef} className="absolute inset-0 pointer-events-none">
-      {labels.map((text, i) => (
-        <div
-          key={i}
-          className="orbit-label-b absolute left-1/2 top-1/2 opacity-0"
-          style={{
-            marginLeft: '-3px',
-            marginTop: '-3px',
-            opacity: active ? 0.5 : dimmed ? 0.05 : 0.2,
-            transition: 'opacity 0.7s ease',
-          }}
-        >
-          <span
-            className="text-[7px] font-b-mono"
-            style={{
-              color: active ? node.color : '#9B9590',
-            }}
-          >
-            {text}
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Ripple Wave                                                        */
-/* ------------------------------------------------------------------ */
-function RippleWaveB({ active }: { active: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!containerRef.current || !active) return
-    const ripples = containerRef.current.querySelectorAll('.ripple-ring-b')
-
-    ripples.forEach((ripple, i) => {
-      gsap.fromTo(ripple,
-        { scale: 0, opacity: 0.6 },
-        {
-          scale: 3.5,
-          opacity: 0,
-          duration: 2.5,
-          delay: i * 0.8,
-          ease: 'power2.out',
-          repeat: -1,
-        }
-      )
-    })
-
-    return () => {
-      ripples.forEach((r) => gsap.killTweensOf(r))
+  const handleCloseDetail = useCallback(() => {
+    const node = nodes[activeNodeIndex]
+    if (node) {
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (rect) {
+        const x = rect.left + (node.position.x / 100) * rect.width
+        const y = rect.top + (node.position.y / 100) * rect.height
+        setExitingNode({ index: activeNodeIndex, x, y, color: node.bgColor.replace('bg-', 'var(--color-b-').replace('-dim', '') })
+      }
     }
-  }, [active])
-
-  if (!active) return null
-
-  return (
-    <div ref={containerRef} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{ zIndex: 4 }}>
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="ripple-ring-b absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-b-terracotta/40"
-          style={{
-            width: '100px',
-            height: '100px',
-            opacity: 0,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Spider Web Sub-Nodes (curved lines)                                */
-/* ------------------------------------------------------------------ */
-function SpiderWebSubNodesB({
-  node,
-  expanded,
-  isMobile,
-  nodeRadius,
-  webSize,
-}: {
-  node: MainNode
-  expanded: boolean
-  isMobile: boolean
-  nodeRadius: number
-  webSize: number
-}) {
-  const subCount = node.subNodes.length
-  const subRadius = nodeRadius
-  const webRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!webRef.current || !expanded) return
-
-    const lines = webRef.current.querySelectorAll('.web-line-b')
-    const ringLines = webRef.current.querySelectorAll('.web-ring-b')
-    const subNodes = webRef.current.querySelectorAll('.sub-node-item-b')
-    const secLines = webRef.current.querySelectorAll('.sec-web-line-b')
-    const secNodes = webRef.current.querySelectorAll('.sec-sub-node-item-b')
-
-    gsap.fromTo(
-      lines,
-      { strokeDashoffset: 200, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.3, duration: 0.8, stagger: 0.1, ease: 'power2.out', delay: 0.2 }
-    )
-
-    gsap.fromTo(
-      ringLines,
-      { strokeDashoffset: 100, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.2, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.6 }
-    )
-
-    gsap.fromTo(
-      subNodes,
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5 }
-    )
-
-    gsap.fromTo(
-      secLines,
-      { strokeDashoffset: 60, opacity: 0 },
-      { strokeDashoffset: 0, opacity: 0.2, duration: 0.5, stagger: 0.06, ease: 'power2.out', delay: 1.2 }
-    )
-
-    gsap.fromTo(
-      secNodes,
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'back.out(1.7)', delay: 1.4 }
-    )
-  }, [expanded])
-
-  if (!expanded) return null
-
-  const generateSecSubNodes = (sub: SubNode, parentIndex: number) => {
-    const secCount = isMobile ? 2 : 2 + (parentIndex % 2)
-    const result: { label: string; angle: number; parentAngle: number }[] = []
-    for (let i = 0; i < secCount; i++) {
-      result.push({
-        label: `${sub.label.split(' ')[0]}·${i + 1}`,
-        angle: ((i / secCount) * Math.PI) - Math.PI / 2,
-        parentAngle: (parentIndex / subCount) * 2 * Math.PI - Math.PI / 2,
-      })
-    }
-    return result
-  }
-
-  const half = webSize / 2
+    setActiveNodeIndex(-1)
+  }, [activeNodeIndex])
 
   return (
-    <div
-      ref={webRef}
-      className="absolute pointer-events-none"
-      style={{
-        left: '50%',
-        top: '50%',
-        width: webSize,
-        height: webSize,
-        marginLeft: -half,
-        marginTop: -half,
-      }}
-    >
-      <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
-        {node.subNodes.map((_, i) => {
-          const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const x2 = half + Math.cos(angle) * subRadius
-          const y2 = half + Math.sin(angle) * subRadius
-          return (
-            <line
-              key={`line-${i}`}
-              className="web-line-b"
-              x1={half}
-              y1={half}
-              x2={x2}
-              y2={y2}
-              stroke={node.color}
-              strokeWidth="1"
-              opacity="0"
-              strokeDasharray="200"
-              strokeDashoffset="200"
-            />
-          )
-        })}
-        {node.subNodes.map((_, i) => {
-          const angle1 = (i / subCount) * 2 * Math.PI - Math.PI / 2
-          const angle2 = (((i + 1) % subCount) / subCount) * 2 * Math.PI - Math.PI / 2
-          const x1 = half + Math.cos(angle1) * subRadius
-          const y1 = half + Math.sin(angle1) * subRadius
-          const x2 = half + Math.cos(angle2) * subRadius
-          const y2 = half + Math.sin(angle2) * subRadius
-          const mx = (x1 + x2) / 2 + Math.cos((angle1 + angle2) / 2) * 10
-          const my = (y1 + y2) / 2 + Math.sin((angle1 + angle2) / 2) * 10
-          return (
-            <path
-              key={`ring-${i}`}
-              className="web-ring-b"
-              d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
-              stroke={node.color}
-              strokeWidth="0.5"
-              fill="none"
-              opacity="0"
-              strokeDasharray="100"
-              strokeDashoffset="100"
-            />
-          )
-        })}
-        {node.subNodes.map((sub, pi) => {
-          const parentAngle = (pi / subCount) * 2 * Math.PI - Math.PI / 2
-          const px = half + Math.cos(parentAngle) * subRadius
-          const py = half + Math.sin(parentAngle) * subRadius
-          const secNodes = generateSecSubNodes(sub, pi)
-          return secNodes.map((sec, si) => {
-            const secAngle = parentAngle + sec.angle * 0.6
-            const sx = px + Math.cos(secAngle) * (isMobile ? 30 : 45)
-            const sy = py + Math.sin(secAngle) * (isMobile ? 30 : 45)
-            const mx = (px + sx) / 2 + Math.cos((parentAngle + secAngle) / 2) * 6
-            const my = (py + sy) / 2 + Math.sin((parentAngle + secAngle) / 2) * 6
-            return (
-              <path
-                key={`sec-line-${pi}-${si}`}
-                className="sec-web-line-b"
-                d={`M ${px} ${py} Q ${mx} ${my} ${sx} ${sy}`}
-                stroke={node.color}
-                strokeWidth="0.5"
-                fill="none"
-                opacity="0"
-                strokeDasharray="60"
-                strokeDashoffset="60"
-              />
-            )
-          })
-        })}
-      </svg>
+    <div ref={sectionRef} className="relative w-full min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
+      {/* Soft Aurora Background */}
+      <SoftAurora />
 
-      {node.subNodes.map((sub: SubNode, i: number) => {
-        const angle = (i / subCount) * 2 * Math.PI - Math.PI / 2
-        const x = Math.cos(angle) * subRadius
-        const y = Math.sin(angle) * subRadius
+      {/* Connection Lines */}
+      <ConnectionLines activeIndex={activeNodeIndex} />
 
-        return (
-          <div
-            key={sub.id}
-            className="sub-node-item-b absolute pointer-events-auto"
-            style={{
-              left: `calc(50% + ${x}px)`,
-              top: `calc(50% + ${y}px)`,
-              transform: 'translate(-50%, -50%) scale(0)',
-              zIndex: 2,
-            }}
-          >
-            <div
-              className="flex flex-col items-center gap-0.5 px-1.5 py-0.5 rounded-md border backdrop-blur-sm"
-              style={{
-                backgroundColor: `${node.color}08`,
-                borderColor: `${node.color}25`,
-                minWidth: isMobile ? '44px' : '60px',
-              }}
-            >
-              <span className="font-b-sans text-[8px] text-b-ink-light text-center leading-tight whitespace-nowrap">
-                {sub.label}
-              </span>
-              {sub.level && (
-                <span className="font-b-mono text-[8px]">
-                  {[...Array(5)].map((_, j) => (
-                    <span key={j} className={j < (sub.level ?? 0) ? 'text-b-terracotta' : 'text-b-sand'}>
-                      ★
-                    </span>
-                  ))}
-                </span>
-              )}
-            </div>
-          </div>
-        )
-      })}
+      {/* Nodes Container */}
+      <div ref={containerRef} className="relative w-full max-w-2xl aspect-square">
+        {nodes.map((node, index) => {
+          const isActive = activeNodeIndex === index
+          const isOtherActive = activeNodeIndex !== -1 && activeNodeIndex !== index
 
-      {node.subNodes.map((sub, pi) => {
-        const parentAngle = (pi / subCount) * 2 * Math.PI - Math.PI / 2
-        const px = Math.cos(parentAngle) * subRadius
-        const py = Math.sin(parentAngle) * subRadius
-        const secNodes = generateSecSubNodes(sub, pi)
-        return secNodes.map((sec, si) => {
-          const secAngle = parentAngle + sec.angle * 0.6
-          const sx = px + Math.cos(secAngle) * (isMobile ? 30 : 45)
-          const sy = py + Math.sin(secAngle) * (isMobile ? 30 : 45)
           return (
             <div
-              key={`sec-${pi}-${si}`}
-              className="sec-sub-node-item-b absolute pointer-events-none"
+              key={node.id}
+              className="absolute cursor-pointer transition-all duration-500"
               style={{
-                left: `calc(50% + ${sx}px)`,
-                top: `calc(50% + ${sy}px)`,
-                transform: 'translate(-50%, -50%) scale(0)',
-                zIndex: 2,
+                left: `${node.position.x}%`,
+                top: `${node.position.y}%`,
+                width: node.size,
+                height: node.size,
+                marginLeft: -node.size / 2,
+                marginTop: -node.size / 2,
+                zIndex: isActive ? 40 : 10,
+                opacity: isVisible ? (isOtherActive ? 0.3 : 1) : 0,
+                transform: isVisible
+                  ? `scale(${isActive ? 1.15 : 1}) translateY(0)`
+                  : 'scale(0) translateY(20px)',
+                transitionDelay: `${index * 0.1}s`,
+                transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
               }}
+              onClick={() => handleNodeClick(index)}
             >
+              {/* Glow ring */}
               <div
-                className="w-1.5 h-1.5 rounded-full"
+                className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-500 ${node.bgColor}`}
                 style={{
-                  backgroundColor: node.color,
-                  boxShadow: `0 0 4px ${node.color}`,
+                  opacity: isActive ? 0.6 : 0.2,
+                  transform: isActive ? 'scale(1.3)' : 'scale(1)',
+                  transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               />
-              <span className="text-[6px] text-b-sand font-b-mono whitespace-nowrap absolute -bottom-3 left-1/2 -translate-x-1/2">
-                {sec.label}
-              </span>
+
+              {/* Main circle */}
+              <div
+                className={`relative w-full h-full rounded-full border-2 flex flex-col items-center justify-center gap-1.5 transition-all duration-500 ${node.bgColor} ${node.borderColor} ${node.hoverColor} ${isActive ? 'shadow-2xl border-opacity-60' : ''}`}
+              >
+                <div className={`transition-transform duration-300 ${node.color} ${isActive ? 'scale-110' : ''}`}>
+                  {node.icon}
+                </div>
+                <span className={`font-b-sans text-xs font-medium transition-all duration-300 ${node.color}`}>
+                  {node.label}
+                </span>
+              </div>
+
+              {/* Orbiting dots */}
+              {isActive && (
+                <>
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className={`absolute w-2 h-2 rounded-full ${node.bgColor.replace('-dim', '')}`}
+                      style={{
+                        left: '50%',
+                        top: '50%',
+                        animation: `orbitDot 2s ease-in-out ${i * 0.3}s infinite`,
+                        ['--orbit-angle' as any]: `${(i * 360) / 3}deg`,
+                      }}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           )
-        })
-      })}
+        })}
 
-      <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: '-6px', zIndex: 2 }}>
-        <a
-          href={`/${node.id === 'dev' ? 'other' : node.id}`}
-          onClick={(e) => {
-            e.stopPropagation()
-          }}
-          className="inline-block font-b-sans text-[9px] text-b-terracotta hover:text-b-terracotta/80 px-2 py-0.5 rounded-full border border-b-terracotta/20 hover:border-b-terracotta/40 bg-b-cream/80 backdrop-blur-sm transition-colors pointer-events-auto"
-        >
-          查看详情 →
-        </a>
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Center Orbiting Particles                                          */
-/* ------------------------------------------------------------------ */
-function CenterOrbitingParticlesB({ active }: { active: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!containerRef.current) return
-    const particles = containerRef.current.querySelectorAll('.orbit-particle-b')
-    if (active) {
-      particles.forEach((p, i) => {
-        const angle = (i / particles.length) * 360
-        const radius = 50 + (i % 3) * 12
-        const duration = 2 + (i % 3) * 0.8
-        gsap.to(p, {
-          rotation: angle + 360,
-          duration,
-          ease: 'none',
-          repeat: -1,
-          transformOrigin: `0px ${radius}px`,
-        })
-        gsap.to(p, {
-          opacity: 1,
-          scale: 1,
-          duration: 0.4,
-          delay: i * 0.1,
-        })
-      })
-    } else {
-      particles.forEach((p) => {
-        gsap.killTweensOf(p)
-        gsap.to(p, { opacity: 0, scale: 0, duration: 0.3 })
-      })
-    }
-  }, [active])
-
-  const colors = ['#C46C54', '#8B9D78', '#7B6BAE', '#B85C7A', '#5A8F7B', '#C4A35A']
-  return (
-    <div ref={containerRef} className="absolute inset-0 pointer-events-none">
-      {colors.map((c, i) => (
-        <div
-          key={i}
-          className="orbit-particle-b absolute left-1/2 top-1/2 w-1.5 h-1.5 rounded-full opacity-0"
-          style={{
-            backgroundColor: c,
-            boxShadow: `0 0 6px ${c}, 0 0 12px ${c}`,
-            marginLeft: '-3px',
-            marginTop: '-3px',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Static Center Icon                                                 */
-/* ------------------------------------------------------------------ */
-function StaticCenterIconB() {
-  return (
-    <div className="text-2xl md:text-3xl" style={{ display: 'inline-block' }}>
-      👤
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Main Node Item (extracted to allow hooks per node)                */
-/* ------------------------------------------------------------------ */
-function MainNodeItemB({
-  node,
-  index,
-  isLoaded,
-  activeNodeIndex,
-  allExpanded,
-  showAll,
-  nodeRefs,
-  setSelectedNode,
-  isMobile,
-}: {
-  node: MainNode
-  index: number
-  isLoaded: boolean
-  activeNodeIndex: number
-  allExpanded: boolean
-  showAll: boolean
-  nodeRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>
-  setSelectedNode: (node: MainNode | null) => void
-  isMobile: boolean
-}) {
-  const total = capabilityData.mainNodes.length
-  const angle = (index / total) * 2 * Math.PI - Math.PI / 2
-  const radius = isLoaded ? (isMobile ? 150 : 280) : 0
-  const pos = { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
-  const active = activeNodeIndex === index
-  const dimmed = activeNodeIndex >= 0 && activeNodeIndex !== index && !showAll && !allExpanded
-  const Icon = iconMap[node.id]
-  const labelText = useTextScramble(node.label, active)
-  const nodeRadiusWeb = isMobile ? 70 : 110
-  const webSize = isMobile ? 220 : 320
-
-  return (
-    <div
-      className="main-node-b absolute"
-      style={{
-        left: `calc(50% + ${pos.x}px)`,
-        top: `calc(50% + ${pos.y}px)`,
-        transform: 'translate(-50%, -50%)',
-        transition: isLoaded ? 'left 0.5s ease-out, top 0.5s ease-out' : 'none',
-        zIndex: active ? 25 : 10,
-      }}
-    >
-      <svg
-        className="absolute pointer-events-none transition-opacity duration-700"
-        style={{
-          width: `${Math.abs(pos.x)}px`,
-          height: '2px',
-          left: pos.x > 0 ? `-${Math.abs(pos.x)}px` : `${60}px`,
-          top: '32px',
-          transform: pos.x < 0 ? 'scaleX(-1)' : 'none',
-          transformOrigin: pos.x < 0 ? 'right' : 'left',
-          opacity: dimmed ? 0.05 : active ? 0.8 : 0.4,
-          zIndex: 1,
-        }}
-      >
-        <line
-          x1="0"
-          y1="0"
-          x2="100%"
-          y2="0"
-          stroke={active ? node.color : '#C4BFB9'}
-          strokeWidth={active ? 3 : 2}
-          strokeDasharray="4,4"
-        />
-      </svg>
-
-      {/* Node halo */}
-      <NodeHaloB active={active} color={node.color} />
-
-      {/* Particle burst */}
-      <ParticleBurstB active={active} color={node.color} />
-
-      <button
-        ref={(el) => { nodeRefs.current[index] = el }}
-        onClick={() => node.caseStudy && setSelectedNode(node)}
-        className="relative w-14 h-14 md:w-16 md:h-16 rounded-xl border-2 backdrop-blur-md transition-all duration-700 flex items-center justify-center cursor-pointer"
-        style={{
-          backgroundColor: active ? `${node.color}18` : dimmed ? 'rgba(220,215,208,0.5)' : '#FAF8F5',
-          borderColor: active ? node.color : dimmed ? '#E8E4DF' : '#E8E4DF',
-          boxShadow: active
-            ? `0 0 50px ${node.glowColor}, 0 0 100px ${node.glowColor}, 0 0 150px ${node.glowColor}`
-            : dimmed ? 'none' : '0 4px 20px rgba(0,0,0,0.05)',
-          opacity: dimmed ? 0.2 : 1,
-          transform: active ? 'scale(1.25)' : dimmed ? 'scale(0.8)' : 'scale(1)',
-          zIndex: active ? 30 : 10,
-        }}
-      >
-        {Icon && (
-          <Icon
-            size={active ? 28 : 20}
-            style={{
-              color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
-              transition: 'all 0.7s ease',
-              filter: active ? `drop-shadow(0 0 8px ${node.color})` : 'none',
-            }}
+        {/* Detail Panel */}
+        {activeNodeIndex !== -1 && (
+          <NodeDetail
+            node={nodes[activeNodeIndex]}
+            onClose={handleCloseDetail}
           />
         )}
-      </button>
-
-      {/* Label with scramble */}
-      <span
-        className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap font-b-serif text-[11px] transition-all duration-700"
-        style={{
-          color: active ? node.color : dimmed ? '#D5CFC8' : '#9B9590',
-          opacity: dimmed ? 0.3 : 1,
-          transform: active ? 'scale(1.15)' : 'scale(1)',
-          textShadow: active ? `0 0 10px ${node.glowColor}` : 'none',
-        }}
-      >
-        {labelText}
-      </span>
-
-      {/* Orbiting labels */}
-      <OrbitingLabelsB node={node} active={active} dimmed={dimmed} />
-
-      {/* Spider web */}
-      <SpiderWebSubNodesB
-        node={node}
-        expanded={active || allExpanded}
-
-        isMobile={isMobile}
-        nodeRadius={nodeRadiusWeb}
-        webSize={webSize}
-      />
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/*  Main Component                                                     */
-/* ------------------------------------------------------------------ */
-export default function CapabilityMapB() {
-  const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
-  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
-  const [allExpanded, setAllExpanded] = useState(false)
-  const [showAll, setShowAll] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const hasAnimated = useRef(false)
-  const nodeRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const overlayRef = useRef<HTMLDivElement>(null)
-
-  const { size: containerSize, isMobile } = useContainerSize()
-  const nodeRadius = isMobile ? 150 : 280
-
-  // Spotlight sequence
-  const runSpotlightSequence = useCallback(() => {
-    const nodes = capabilityData.mainNodes
-    let current = 0
-
-    const highlightNext = () => {
-      if (current >= nodes.length) {
-        setActiveNodeIndex(-1)
-        setAllExpanded(true)
-        setTimeout(() => {
-          setShowAll(true)
-        }, 5000)
-        return
-      }
-
-      setActiveNodeIndex(current)
-
-      const btn = nodeRefs.current[current]
-      if (btn) {
-        gsap.fromTo(
-          btn,
-          { scale: 0.5, opacity: 0.3 },
-          { scale: 1.2, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' }
-        )
-      }
-
-      current++
-      setTimeout(highlightNext, 5000)
-    }
-
-    highlightNext()
-  }, [])
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        '.map-connection-b',
-        { scaleX: 0, opacity: 0 },
-        { scaleX: 1, opacity: 1, duration: 1.2, ease: 'power2.out', stagger: 0.25, delay: 0.8 }
-      )
-
-      gsap.fromTo(
-        '.main-node-b',
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.5)', stagger: 0.2, delay: 1.2 }
-      )
-
-      setTimeout(() => setIsLoaded(true), 2500)
-    }, containerRef)
-
-    return () => ctx.revert()
-  }, [])
-
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated.current) {
-            hasAnimated.current = true
-            setTimeout(() => {
-              runSpotlightSequence()
-            }, 1200)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-
-    observer.observe(container)
-    return () => observer.disconnect()
-  }, [runSpotlightSequence])
-
-  // Overlay fade in/out
-  useEffect(() => {
-    if (!overlayRef.current) return
-    const shouldShow = (activeNodeIndex >= 0 || allExpanded) && !showAll
-    if (shouldShow) {
-      gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out' })
-    } else {
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.6, ease: 'power2.in' })
-    }
-  }, [activeNodeIndex, allExpanded, showAll])
-
-  const totalNodes = capabilityData.mainNodes.length
-  const nodePositions = capabilityData.mainNodes.map((_, i) => {
-    const angle = (i / totalNodes) * 2 * Math.PI - Math.PI / 2
-    const radius = isLoaded ? nodeRadius : 0
-    return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius }
-  })
-
-  const activePos = activeNodeIndex >= 0 ? nodePositions[activeNodeIndex] : null
-  const activeColor = activeNodeIndex >= 0 ? capabilityData.mainNodes[activeNodeIndex]?.color : undefined
-
-  return (
-    <div ref={containerRef} className="relative w-full max-w-4xl mx-auto py-16">
-      {/* Spotlight overlay with GSAP fade */}
-      <div
-        ref={overlayRef}
-        className="absolute inset-0 z-[5] pointer-events-none opacity-0"
-        style={{
-          background: 'rgba(245, 242, 237, 0.85)',
-        }}
-      />
-
-      <div className="text-center mb-10 relative z-10">
-        <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mb-4" />
-        <h2 className="font-b-serif text-2xl md:text-3xl text-b-ink mb-3">能力地图</h2>
-        <p className="font-b-sans text-sm text-b-muted">核心能力星系 · Core Capabilities</p>
-        <span className="inline-block w-12 h-px bg-b-terracotta/30 mx-3 align-middle mt-4" />
       </div>
 
-      <div
-        className="relative mx-auto"
-        style={{
-          width: containerSize,
-          height: containerSize,
-        }}
-      >
-        {/* Floating particles background */}
-        <FloatingParticlesB
-          activeNodeIndex={activeNodeIndex}
-          allExpanded={allExpanded}
-          showAll={showAll}
-          nodePositions={nodePositions}
+      {/* Exit Particles */}
+      {exitingNode && (
+        <ExitParticles
+          key={exitingNode.index}
+          centerX={exitingNode.x}
+          centerY={exitingNode.y}
+          color={exitingNode.color}
+          onComplete={handleExitComplete}
         />
-
-        {/* Constellation lines between main nodes */}
-        <ConstellationLinesB
-          positions={nodePositions}
-          showAll={showAll}
-          allExpanded={allExpanded}
-          containerSize={containerSize}
-        />
-
-        {/* Hexagon mesh */}
-        <HexagonMeshB active={activeNodeIndex >= 0 && !showAll} containerSize={containerSize} />
-
-        {/* Shooting stars */}
-        <ShootingStarsB active={activeNodeIndex >= 0 && !showAll} />
-
-        {/* Ripple wave from center when allExpanded */}
-        <RippleWaveB active={allExpanded && !showAll} />
-
-        {/* Energy beam to active node */}
-        {activePos && activeColor && (
-          <EnergyBeamB
-            active={activeNodeIndex >= 0 && !showAll}
-            fromX={0}
-            fromY={0}
-            toX={activePos.x}
-            toY={activePos.y}
-            color={activeColor}
-            containerSize={containerSize}
-          />
-        )}
-
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30"
-        >
-          <div className="center-node-b relative w-24 h-24 md:w-28 md:h-28">
-            <CenterRingsB active={activeNodeIndex >= 0 && !showAll} />
-            <div
-              className="absolute inset-0 rounded-full animate-pulse"
-              style={{
-                background: activeNodeIndex >= 0 && !showAll
-                  ? 'radial-gradient(circle, rgba(196,108,84,0.35) 0%, rgba(139,157,120,0.2) 50%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(196,108,84,0.25) 0%, rgba(139,157,120,0.12) 50%, transparent 70%)',
-                animationDuration: activeNodeIndex >= 0 ? '1s' : '2s',
-              }}
-            />
-            <div className="absolute inset-1 rounded-full bg-b-cream border-2 border-b-terracotta/50 flex items-center justify-center shadow-lg"
-              style={{
-                boxShadow: activeNodeIndex >= 0 && !showAll
-                  ? '0 0 30px rgba(196,108,84,0.4), 0 0 60px rgba(139,157,120,0.25), inset 0 0 20px rgba(196,108,84,0.1)'
-                  : '0 0 15px rgba(196,108,84,0.15)',
-                transition: 'box-shadow 0.5s ease',
-              }}
-            >
-              <div className="text-center relative">
-                <CenterOrbitingParticlesB active={activeNodeIndex >= 0 && !showAll} />
-                <StaticCenterIconB />
-                <p className="font-b-mono text-[9px] text-b-ink mt-0.5">{capabilityData.center.title}</p>
-              </div>
-            </div>
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
-              <span className="font-b-mono text-[9px] text-b-terracotta">{capabilityData.center.mbti}</span>
-            </div>
-          </div>
-        </div>
-
-        {capabilityData.mainNodes.map((node, index) => (
-          <MainNodeItemB
-            key={node.id}
-            node={node}
-            index={index}
-            isLoaded={isLoaded}
-            activeNodeIndex={activeNodeIndex}
-            allExpanded={allExpanded}
-            showAll={showAll}
-            nodeRefs={nodeRefs}
-            setSelectedNode={setSelectedNode}
-            isMobile={isMobile}
-          />
-        ))}
-      </div>
-
-      {selectedNode && (
-        <CaseStudyModalB node={selectedNode} onClose={() => setSelectedNode(null)} />
       )}
     </div>
   )

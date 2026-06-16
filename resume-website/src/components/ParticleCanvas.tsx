@@ -76,6 +76,13 @@ export default function ParticleCanvas() {
 
     const animate = () => {
       frameCountRef.current++
+      // Skip frames on low-end devices: render every 2nd frame
+      const isLowEnd = navigator.hardwareConcurrency !== undefined && navigator.hardwareConcurrency <= 4
+      if (isLowEnd && frameCountRef.current % 2 !== 0) {
+        rafRef.current = requestAnimationFrame(animate)
+        return
+      }
+
       timeRef.current += 0.016
       const w = window.innerWidth
       const h = window.innerHeight

@@ -5,6 +5,7 @@ import CoverLayout from '@layouts/CoverLayout'
 import otherData from '@data/other.json'
 import CapabilityMapB from '@components/CapabilityMapB'
 import MagazineTimeline from '@components/MagazineTimeline'
+import BlurText from '@components/BlurText'
 
 const traits = [
   {
@@ -193,7 +194,7 @@ export default function HomeB() {
         </p>
 
         <h1 className="hb-name font-b-serif text-6xl md:text-8xl lg:text-9xl text-b-ink leading-[1.05] tracking-tight mb-5">
-          <span className="block">胡亚伟</span>
+          <BlurText text="胡亚伟" className="block" delay={0.4} duration={1.2} stagger={0.08} />
         </h1>
 
         <div className="flex items-center gap-3 mb-6">
@@ -203,7 +204,7 @@ export default function HomeB() {
         </div>
 
         <p className="hb-subtitle font-b-sans text-lg md:text-xl lg:text-2xl text-b-ink-light max-w-xl mb-5 leading-relaxed">
-          一名对能源动力技术与人工智能交叉领域充满热情的工科生
+          <BlurText text="一名对能源动力技术与人工智能交叉领域充满热情的工科生" delay={0.7} duration={0.8} stagger={0.02} />
         </p>
 
         <div className="hb-meta flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-b-muted text-sm mb-6 font-b-sans">

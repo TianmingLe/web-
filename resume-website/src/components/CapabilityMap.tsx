@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { gsap } from 'gsap'
 import {
   Cog, Brain, Code2, Clapperboard, Lightbulb,
@@ -39,7 +39,7 @@ interface CaseStudyModalProps {
   onClose: () => void
 }
 
-function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
+const CaseStudyModal = memo(function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
@@ -89,7 +89,7 @@ function CaseStudyModal({ node, onClose }: CaseStudyModalProps) {
       </div>
     </div>
   )
-}
+})
 
 /* ------------------------------------------------------------------ */
 /*  Text Scramble Effect                                               */
@@ -1097,7 +1097,7 @@ function StaticCenterIcon() {
 /* ------------------------------------------------------------------ */
 /*  Main Node Item (extracted to allow hooks per node)                */
 /* ------------------------------------------------------------------ */
-function MainNodeItem({
+const MainNodeItem = memo(function MainNodeItem({
   node,
   index,
   isLoaded,
@@ -1225,12 +1225,12 @@ function MainNodeItem({
       />
     </div>
   )
-}
+})
 
 /* ------------------------------------------------------------------ */
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
-export default function CapabilityMap() {
+const CapabilityMap = memo(function CapabilityMap() {
   const [selectedNode, setSelectedNode] = useState<MainNode | null>(null)
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(-1)
   const [allExpanded, setAllExpanded] = useState(false)
@@ -1462,4 +1462,6 @@ export default function CapabilityMap() {
       )}
     </div>
   )
-}
+})
+
+export default CapabilityMap

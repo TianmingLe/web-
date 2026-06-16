@@ -64,10 +64,37 @@ function SocialIcon({ icon }: { icon: string }) {
   }
 }
 
+/* ─── 图片展示组件 ─── */
+function ImageGallery({ images, caption }: { images: string[]; caption?: string }) {
+  if (!images || images.length === 0) return null
+  return (
+    <div className="mt-4">
+      <div className={`grid gap-3 ${images.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        {images.map((src, i) => (
+          <div key={i} className="relative rounded-xl overflow-hidden border border-b-border bg-b-cream-dark">
+            <img
+              src={src}
+              alt={caption || `图片 ${i + 1}`}
+              className="w-full h-40 object-cover hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      {caption && (
+        <p className="font-b-sans text-xs text-b-muted mt-2 text-center">{caption}</p>
+      )}
+    </div>
+  )
+}
+
 export default function OtherB() {
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 max-w-5xl mx-auto">
-      <div className="b-section-header b-fade-up">
+      <div className="b-section-header">
         <p className="font-b-sans text-sm tracking-widest uppercase text-b-muted mb-2">
           {otherData.subtitle}
         </p>
@@ -95,7 +122,6 @@ export default function OtherB() {
             </>
           }
           cardClass="b-card b-card-terracotta"
-          className="b-fade-up b-stagger-1"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {otherData.awards.map((award, i) => (
@@ -138,7 +164,6 @@ export default function OtherB() {
             </>
           }
           cardClass="b-card b-card-sage"
-          className="b-fade-up b-stagger-2"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {otherData.certificates.map((cert, i) => (
@@ -157,6 +182,13 @@ export default function OtherB() {
                 <p className="font-b-sans text-sm text-b-ink-light leading-relaxed">
                   {cert.desc}
                 </p>
+                {/* 证书图片展示 */}
+                {'image' in cert && cert.image && (
+                  <ImageGallery images={[cert.image as string]} />
+                )}
+                {'images' in cert && cert.images && (cert.images as string[]).length > 0 && (
+                  <ImageGallery images={cert.images as string[]} />
+                )}
               </div>
             ))}
           </div>
@@ -177,7 +209,6 @@ export default function OtherB() {
             </>
           }
           cardClass="b-card b-card-slate"
-          className="b-fade-up b-stagger-3"
         >
           <div className="relative pl-10">
             <div className="b-timeline-line" />
@@ -226,7 +257,6 @@ export default function OtherB() {
             </>
           }
           cardClass="b-card b-card-terracotta"
-          className="b-fade-up b-stagger-4"
         >
           <div className="space-y-6">
             {otherData.internship.map((intern, i) => (
@@ -243,7 +273,12 @@ export default function OtherB() {
                   </span>
                 </div>
 
-                <div className="mb-4">
+                {/* 实习图片展示 */}
+                {'image' in intern && intern.image && (
+                  <ImageGallery images={[intern.image as string]} caption={`${intern.company}实习证明`} />
+                )}
+
+                <div className="mb-4 mt-4">
                   <p className="font-b-sans text-xs uppercase tracking-widest text-b-muted mb-2">
                     工作内容
                   </p>
@@ -294,7 +329,6 @@ export default function OtherB() {
             </>
           }
           cardClass="b-card"
-          className="b-fade-up b-stagger-5"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Object.entries(otherData.skills).map(([key, skill]) => (
@@ -323,7 +357,7 @@ export default function OtherB() {
           </div>
         </ExpandableCard>
 
-        <div className="b-card p-6 md:p-8 b-fade-up b-stagger-6">
+        <div className="b-card p-6 md:p-8">
           <div className="flex items-center gap-3 mb-5">
             <Mail size={22} className="text-b-terracotta" />
             <h3 className="font-b-serif text-2xl text-b-ink">联系方式</h3>
