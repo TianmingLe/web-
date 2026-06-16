@@ -17,11 +17,13 @@ interface PlaybackState {
   currentTrackIndex: number
   currentTime: number
   duration: number
+  playlistLength: number
 
   setPlaying: (playing: boolean) => void
   setCurrentTime: (time: number) => void
   setDuration: (duration: number) => void
   setCurrentTrackIndex: (index: number) => void
+  setPlaylistLength: (length: number) => void
   play: () => void
   pause: () => void
   toggle: () => void
@@ -34,12 +36,14 @@ export const usePlaybackStore = create<PlaybackState>((set, get) => ({
   currentTrackIndex: 0,
   currentTime: 0,
   duration: 0,
+  playlistLength: 0,
 
   setPlaying: (playing) => set({ isPlaying: playing }),
   setCurrentTime: (time) => set({ currentTime: time }),
   setDuration: (duration) => set({ duration }),
+  setPlaylistLength: (length) => set({ playlistLength: length }),
   setCurrentTrackIndex: (index) =>
-    set({ currentTrackIndex: Math.max(0, Math.min(index, get().playlist?.length - 1 || 0)) }),
+    set({ currentTrackIndex: Math.max(0, Math.min(index, get().playlistLength - 1 || 0)) }),
 
   play: () => set({ isPlaying: true }),
   pause: () => set({ isPlaying: false }),
@@ -48,8 +52,8 @@ export const usePlaybackStore = create<PlaybackState>((set, get) => ({
   nextTrack: () =>
     set((state) => ({
       currentTrackIndex:
-        state.playlist?.length > 0
-          ? (state.currentTrackIndex + 1) % state.playlist.length
+        state.playlistLength > 0
+          ? (state.currentTrackIndex + 1) % state.playlistLength
           : 0,
       currentTime: 0,
     })),
@@ -57,8 +61,8 @@ export const usePlaybackStore = create<PlaybackState>((set, get) => ({
   prevTrack: () =>
     set((state) => ({
       currentTrackIndex:
-        state.playlist?.length > 0
-          ? (state.currentTrackIndex - 1 + state.playlist.length) % state.playlist.length
+        state.playlistLength > 0
+          ? (state.currentTrackIndex - 1 + state.playlistLength) % state.playlistLength
           : 0,
       currentTime: 0,
     })),
@@ -111,6 +115,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   playlist: [],
   currentTime: 0,
   duration: 0,
+  playlistLength: 0,
 
   setPlaying: (playing) => set({ isPlaying: playing }),
   setMuted: (muted) => set({ isMuted: muted }),
@@ -118,7 +123,8 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   setVolume: (volume) => set({ volume: Math.max(0, Math.min(1, volume)) }),
   setCurrentTime: (time) => set({ currentTime: time }),
   setDuration: (duration) => set({ duration }),
-  setPlaylist: (playlist) => set({ playlist }),
+  setPlaylist: (playlist) => set({ playlist, playlistLength: playlist.length }),
+  setPlaylistLength: (length) => set({ playlistLength: length }),
   setCurrentTrackIndex: (index) =>
     set({ currentTrackIndex: Math.max(0, Math.min(index, get().playlist.length - 1)) }),
 

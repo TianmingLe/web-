@@ -8,9 +8,9 @@ interface UseIntersectionOptions {
 
 export function useIntersection<T extends HTMLElement>(
   options: UseIntersectionOptions = {}
-): [React.RefObject<T | null>, boolean] {
+): [React.RefObject<T>, boolean] {
   const { threshold = 0.1, rootMargin = '0px', triggerOnce = true } = options
-  const ref = useRef<T | null>(null)
+  const ref = useRef<T>(null!)
   const [isIntersecting, setIsIntersecting] = useState(false)
 
   useEffect(() => {
