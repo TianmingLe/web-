@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Nav from '@components/Nav'
 import ParticleCanvas from '@components/ParticleCanvas'
 import MusicDock from '@components/MusicDock'
+import BlobCursor from '@components/BlobCursor'
 import { useVersionState } from '@store/version'
 
 // Lazy load pages to reduce initial bundle size
@@ -47,6 +48,7 @@ function AppContent() {
   return (
     <div className={`relative min-h-screen transition-colors duration-500 ${isVersionB ? 'bg-b-cream' : location.pathname === '/' ? 'bg-base' : 'bg-base dark-atmosphere'}`}>
       {!isVersionB && location.pathname === '/' && <ParticleCanvas />}
+      {isVersionB && <BlobCursor />}
       <Nav />
       <main className="relative z-10" key={`${isVersionB ? 'b' : 'a'}-${location.pathname}`}>
         <Suspense fallback={<PageLoader />}>
