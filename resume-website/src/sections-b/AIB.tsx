@@ -22,6 +22,26 @@ import TextScramble from '@components/TextScramble'
 import CursorGlow from '@components/CursorGlow'
 import ParallaxLayer from '@components/ParallaxLayer'
 import GlitchText from '@components/GlitchText'
+import MediaBackground from '@components/MediaBackground'
+import ProjectShowcase from '@components/ProjectShowcase'
+
+/* ─── 示例媒体数据 ─── */
+const heroMedia = {
+  src: '/images/ai-hero-bg.jpg',
+  type: 'image' as const,
+}
+
+const projectMedia: Record<string, { src: string; type: 'image' | 'video'; caption?: string }[]> = {
+  smart_glasses: [
+    { src: '/images/smart-glasses-1.jpg', type: 'image', caption: '智能眼镜硬件原型' },
+    { src: '/images/smart-glasses-demo.mp4', type: 'video', caption: '实时演示视频' },
+    { src: '/images/smart-glasses-2.jpg', type: 'image', caption: '系统架构图' },
+  ],
+  zhixin_ai: [
+    { src: '/images/zhixin-ai-1.jpg', type: 'image', caption: '知心AI对话界面' },
+    { src: '/images/zhixin-ai-2.jpg', type: 'image', caption: 'RAG检索流程' },
+  ],
+}
 
 interface Phase {
   name: string
@@ -160,7 +180,19 @@ function CircularIndicator({
 function MagazineHero() {
   return (
     <div className="relative mb-16 md:mb-24 b-fade-up">
-      {/* 粒子网格背景 */}
+      {/* 图片/视频背景层 - 替换粒子网格 */}
+      <MediaBackground
+        src={heroMedia.src}
+        type={heroMedia.type}
+        overlay
+        overlayOpacity={0.85}
+        overlayColor="var(--color-b-cream)"
+        parallax
+        parallaxSpeed={0.3}
+        className="absolute inset-0 rounded-2xl"
+      />
+
+      {/* 粒子网格叠加 */}
       <ParticleGrid />
 
       {/* 浮动装饰元素 */}
@@ -520,6 +552,8 @@ function ShimmerCard({ children, className = '' }: { children: React.ReactNode; 
 
 /* ─── 重点项目卡片 ─── */
 function MajorProjectCard({ project, index }: { project: Project; index: number }) {
+  const media = projectMedia[project.id]
+
   return (
     <div className={`b-fade-up b-stagger-${index + 1}`}>
       <TiltCard>
@@ -568,6 +602,13 @@ function MajorProjectCard({ project, index }: { project: Project; index: number 
             <div className="absolute top-0 right-0 w-10 h-10 overflow-hidden rounded-tr-[var(--radius-lg)] pointer-events-none">
               <div className="absolute top-0 right-0 w-16 h-16 bg-b-slate/[0.05] rotate-45 translate-x-8 -translate-y-8" />
             </div>
+
+            {/* 项目媒体展示 */}
+            {media && media.length > 0 && (
+              <div className="mb-5">
+                <ProjectShowcase items={media} />
+              </div>
+            )}
 
             <p className="text-b-ink-light text-sm leading-[1.8] font-b-sans mb-5 max-w-3xl">
               {project.summary}
