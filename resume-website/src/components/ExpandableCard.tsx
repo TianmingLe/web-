@@ -19,7 +19,7 @@ export default function ExpandableCard({
   keywords,
   children,
   cardClass = 'b-card',
-  defaultExpanded = false,
+  defaultExpanded = true,
   className = '',
 }: ExpandableCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded)
