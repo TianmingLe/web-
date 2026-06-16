@@ -17,6 +17,11 @@ import {
 import aiData from '@data/ai.json'
 import ExpandableCard from '@components/ExpandableCard'
 import { useIntersection } from '@hooks/useIntersection'
+import ParticleGrid from '@components/ParticleGrid'
+import TextScramble from '@components/TextScramble'
+import CursorGlow from '@components/CursorGlow'
+import ParallaxLayer from '@components/ParallaxLayer'
+import GlitchText from '@components/GlitchText'
 
 interface Phase {
   name: string
@@ -155,6 +160,9 @@ function CircularIndicator({
 function MagazineHero() {
   return (
     <div className="relative mb-16 md:mb-24 b-fade-up">
+      {/* 粒子网格背景 */}
+      <ParticleGrid />
+
       {/* 浮动装饰元素 */}
       <div className="absolute -top-8 -left-4 md:left-0 w-24 h-24 md:w-32 md:h-32 rounded-full bg-b-terracotta/[0.04] blur-2xl pointer-events-none" />
       <div className="absolute top-1/2 -right-8 md:-right-12 w-32 h-32 md:w-48 md:h-48 rounded-full bg-b-sage/[0.05] blur-3xl pointer-events-none" />
@@ -166,8 +174,11 @@ function MagazineHero() {
       <div className="absolute top-8 right-1/4 w-2 h-2 rounded-full bg-b-terracotta/20 pointer-events-none animate-pulse-soft" />
       <div className="absolute bottom-8 right-1/3 w-1.5 h-1.5 rounded-full bg-b-sage/25 pointer-events-none animate-pulse-soft" style={{ animationDelay: '1s' }} />
 
+      {/* 扫描线效果 */}
+      <div className="scanline-overlay rounded-2xl" />
+
       {/* 装饰性边框容器 */}
-      <div className="relative border border-b-border/60 bg-b-card/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 overflow-hidden">
+      <div className="relative border border-b-border/60 bg-b-card/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 lg:p-16 overflow-hidden breathing-border">
         {/* 角落装饰 */}
         <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-b-terracotta/20 rounded-tl-2xl pointer-events-none" />
         <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-b-terracotta/20 rounded-tr-2xl pointer-events-none" />
@@ -179,29 +190,39 @@ function MagazineHero() {
           backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, var(--color-b-terracotta) 35px, var(--color-b-terracotta) 36px)`
         }} />
 
+        {/* 数据流装饰线 */}
+        <div className="absolute top-4 left-0 right-0 h-px data-stream opacity-30" />
+        <div className="absolute bottom-4 left-0 right-0 h-px data-stream opacity-30" style={{ animationDelay: '1s' }} />
+
         <div className="relative z-10">
           {/* 顶部标签栏 */}
           <div className="flex items-center justify-between mb-8 md:mb-10">
             <div className="flex items-center gap-3">
               <span className="b-ornament" />
               <span className="font-b-mono text-[10px] md:text-[11px] tracking-[0.25em] text-b-muted uppercase">
-                {aiData.subtitle}
+                <TextScramble text={aiData.subtitle} delay={200} duration={800} />
               </span>
             </div>
             <div className="hidden md:flex items-center gap-2">
               <span className="w-8 h-px bg-b-sand" />
-              <span className="font-b-mono text-[10px] text-b-muted">Vol. 01</span>
+              <span className="font-b-mono text-[10px] text-b-muted">
+                <TextScramble text="Vol. 01" delay={600} duration={600} />
+              </span>
             </div>
           </div>
 
           {/* 大号标题 */}
           <div className="mb-6 md:mb-8">
             <h1 className="font-b-serif text-5xl md:text-7xl lg:text-8xl text-b-ink leading-[1.05] tracking-tight mb-4">
-              <span className="block">{aiData.title}</span>
+              <GlitchText
+                text={aiData.title}
+                as="span"
+                className="block"
+              />
             </h1>
             <div className="flex items-center gap-4">
               <span className="block w-12 md:w-20 h-0.5 bg-gradient-to-r from-b-terracotta to-b-terracotta-light" />
-              <span className="font-b-mono text-[10px] text-b-muted tracking-widest uppercase">
+              <span className="font-b-mono text-[10px] text-b-muted tracking-widest uppercase typewriter-cursor">
                 Artificial Intelligence Frontier
               </span>
             </div>
@@ -219,9 +240,9 @@ function MagazineHero() {
 
           {/* 底部装饰线 */}
           <div className="flex items-center gap-3 mt-8">
-            <span className="w-2 h-2 rounded-full bg-b-terracotta/30" />
+            <span className="w-2 h-2 rounded-full bg-b-terracotta/30 ripple-effect" />
             <span className="flex-1 h-px bg-gradient-to-r from-b-sand via-b-border to-transparent" />
-            <span className="w-2 h-2 rounded-full bg-b-sage/30" />
+            <span className="w-2 h-2 rounded-full bg-b-sage/30 ripple-effect" />
           </div>
         </div>
       </div>
@@ -335,30 +356,36 @@ function CountUp({ end, duration = 1500 }: { end: number; duration?: number }) {
 /* ─── 杂志风格引用块 ─── */
 function MagazineQuote() {
   return (
-    <div className="b-fade-up my-16 md:my-20">
-      <div className="relative max-w-3xl mx-auto px-6 md:px-12">
-        {/* 大引号装饰 */}
-        <div className="absolute -top-4 left-0 md:-left-4 text-b-terracotta/10 pointer-events-none">
-          <Quote size={80} strokeWidth={1} />
-        </div>
-        <div className="absolute -bottom-4 right-0 md:-right-4 text-b-terracotta/10 pointer-events-none rotate-180">
-          <Quote size={80} strokeWidth={1} />
-        </div>
-
-        <blockquote className="relative z-10 text-center">
-          <p className="font-b-serif text-xl md:text-2xl lg:text-3xl text-b-ink leading-relaxed italic mb-6">
-            在算法与工程的交汇处，构建能够理解世界、辅助决策的智能系统
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <span className="w-8 h-px bg-b-terracotta/30" />
-            <span className="font-b-mono text-[10px] text-b-muted tracking-[0.2em] uppercase">
-              AI Engineering Philosophy
-            </span>
-            <span className="w-8 h-px bg-b-terracotta/30" />
+    <ParallaxLayer speed={0.3}>
+      <div className="b-fade-up my-16 md:my-20">
+        <div className="relative max-w-3xl mx-auto px-6 md:px-12">
+          {/* 大引号装饰 */}
+          <div className="absolute -top-4 left-0 md:-left-4 text-b-terracotta/10 pointer-events-none">
+            <Quote size={80} strokeWidth={1} />
           </div>
-        </blockquote>
+          <div className="absolute -bottom-4 right-0 md:-right-4 text-b-terracotta/10 pointer-events-none rotate-180">
+            <Quote size={80} strokeWidth={1} />
+          </div>
+
+          <blockquote className="relative z-10 text-center">
+            <p className="font-b-serif text-xl md:text-2xl lg:text-3xl text-b-ink leading-relaxed italic mb-6">
+              <TextScramble
+                text="在算法与工程的交汇处，构建能够理解世界、辅助决策的智能系统"
+                delay={400}
+                duration={1500}
+              />
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <span className="w-8 h-px bg-b-terracotta/30" />
+              <span className="font-b-mono text-[10px] text-b-muted tracking-[0.2em] uppercase">
+                <TextScramble text="AI Engineering Philosophy" delay={800} duration={800} />
+              </span>
+              <span className="w-8 h-px bg-b-terracotta/30" />
+            </div>
+          </blockquote>
+        </div>
       </div>
-    </div>
+    </ParallaxLayer>
   )
 }
 
@@ -842,6 +869,9 @@ export default function AIB() {
 
   return (
     <section className="pt-24 pb-16 md:pt-32 md:pb-20 px-6 md:px-12 lg:px-20 max-w-6xl mx-auto relative">
+      {/* 鼠标跟随光斑 */}
+      <CursorGlow />
+
       {/* 纹理背景 */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.015]" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, var(--color-b-ink) 1px, transparent 0)`,
@@ -857,7 +887,9 @@ export default function AIB() {
         <MagazineHero />
 
         {/* 数据可视化统计 */}
-        <StatsSection />
+        <ParallaxLayer speed={-0.2}>
+          <StatsSection />
+        </ParallaxLayer>
 
         {/* 杂志引用块 */}
         <MagazineQuote />
@@ -884,7 +916,7 @@ export default function AIB() {
             </div>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-8 card-stack-3d">
             {majorProjects.map((project, index) => (
               <MajorProjectCard key={project.id} project={project} index={index} />
             ))}

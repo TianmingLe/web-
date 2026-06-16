@@ -881,6 +881,190 @@
     transform-origin: top;
     transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  /* ─── 粒子网格背景 ─── */
+  .particle-grid-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .particle-grid-bg canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ─── 文字乱码解码效果 ─── */
+  .scramble-text {
+    font-family: var(--font-b-mono);
+  }
+
+  /* ─── 霓虹故障文字 ─── */
+  .glitch-text {
+    position: relative;
+    animation: glitchSkew 4s infinite linear alternate-reverse;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+  }
+
+  .glitch-text::before {
+    color: var(--color-b-terracotta);
+    animation: glitchClip1 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  }
+
+  .glitch-text::after {
+    color: var(--color-b-sage);
+    animation: glitchClip2 2.5s infinite linear alternate-reverse;
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitchSkew {
+    0%, 90%, 100% { transform: skew(0deg); }
+    91% { transform: skew(-2deg); }
+    92% { transform: skew(2deg); }
+    93% { transform: skew(0deg); }
+  }
+
+  @keyframes glitchClip1 {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(3px); }
+  }
+
+  @keyframes glitchClip2 {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(2px); }
+    35% { transform: translateX(-3px); }
+    55% { transform: translateX(1px); }
+    75% { transform: translateX(-2px); }
+  }
+
+  /* ─── 鼠标跟随光斑 ─── */
+  .cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle, var(--color-b-terracotta) 0%, transparent 70%);
+    opacity: 0.04;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    mix-blend-mode: screen;
+  }
+
+  /* ─── 视差滚动层 ─── */
+  .parallax-layer {
+    will-change: transform;
+  }
+
+  /* ─── 3D 卡片堆叠 ─── */
+  .card-stack-3d {
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+  }
+
+  .card-stack-item {
+    transform-style: preserve-3d;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-stack-item:hover {
+    transform: translateZ(60px) rotateX(-5deg) rotateY(5deg);
+  }
+
+  /* ─── 扫描线效果 ─── */
+  .scanline-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.02) 2px,
+      rgba(0, 0, 0, 0.02) 4px
+    );
+    opacity: 0.3;
+  }
+
+  /* ─── 磁性按钮效果 ─── */
+  .magnetic-btn {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ─── 打字机光标 ─── */
+  .typewriter-cursor::after {
+    content: '|';
+    animation: cursorBlink 1s step-end infinite;
+    color: var(--color-b-terracotta);
+    margin-left: 2px;
+  }
+
+  @keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ─── 呼吸边框 ─── */
+  .breathing-border {
+    animation: breathingBorder 3s ease-in-out infinite;
+  }
+
+  @keyframes breathingBorder {
+    0%, 100% { border-color: rgba(192, 108, 84, 0.15); }
+    50% { border-color: rgba(192, 108, 84, 0.35); }
+  }
+
+  /* ─── 波纹扩散效果 ─── */
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple-effect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--color-b-terracotta);
+    opacity: 0;
+    transform: scale(0.8);
+    animation: rippleExpand 3s ease-out infinite;
+  }
+
+  @keyframes rippleExpand {
+    0% { transform: scale(0.8); opacity: 0.4; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+
+  /* ─── 数据流动画 ─── */
+  .data-stream {
+    background: linear-gradient(90deg, transparent, var(--color-b-terracotta), transparent);
+    background-size: 200% 100%;
+    animation: dataStream 2s linear infinite;
+  }
+
+  @keyframes dataStream {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 }
 
 @layer utilities {
