@@ -398,6 +398,41 @@ export default function OtherB() {
             </div>
           </div>
 
+          {/* 社交平台数据展示 */}
+          <div className="mb-6">
+            <p className="font-b-sans text-xs text-b-muted uppercase tracking-wider mb-4">
+              社交平台数据
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* B站粉丝截图 */}
+              <div className="rounded-xl overflow-hidden border border-b-border bg-b-cream-dark">
+                <LazyImage
+                  src="https://s41.ax1x.com/2026/06/16/pm1UwOx.png"
+                  alt="B站粉丝数据"
+                  aspectRatio="16/10"
+                  objectFit="cover"
+                  className="w-full"
+                />
+                <div className="p-3 text-center">
+                  <span className="font-b-sans text-xs text-b-muted">B站运营数据</span>
+                </div>
+              </div>
+              {/* 小红书粉丝截图 */}
+              <div className="rounded-xl overflow-hidden border border-b-border bg-b-cream-dark">
+                <LazyImage
+                  src="https://s41.ax1x.com/2026/06/16/pm1Ud61.png"
+                  alt="小红书粉丝数据"
+                  aspectRatio="16/10"
+                  objectFit="cover"
+                  className="w-full"
+                />
+                <div className="p-3 text-center">
+                  <span className="font-b-sans text-xs text-b-muted">小红书运营数据</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div>
             <p className="font-b-sans text-xs text-b-muted uppercase tracking-wider mb-4">
               社交平台
