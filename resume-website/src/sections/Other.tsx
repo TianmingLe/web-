@@ -40,10 +40,32 @@ export default function Other() {
             <h3 className="text-lg font-serif text-warm">证书资质</h3>
           </div>
           <div className="space-y-3">
-            {otherData.certificates.map((cert, i) => (
+            {otherData.certificates.map((cert: { name: string; desc: string; image?: string; images?: string[] }, i: number) => (
               <div key={i} className="p-3 rounded-lg bg-warm-ghost/5 border border-white/[0.06]">
                 <p className="text-warm text-sm font-medium font-sans">{cert.name}</p>
                 <p className="text-xs text-warm-faint font-sans">{cert.desc}</p>
+                {/* 证书图片 */}
+                {(cert.image || cert.images) && (
+                  <div className="flex gap-2 mt-2">
+                    {cert.image && (
+                      <img
+                        src={cert.image}
+                        alt={cert.name}
+                        className="h-20 rounded-lg border border-white/10 object-cover cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => window.open(cert.image, '_blank')}
+                      />
+                    )}
+                    {cert.images?.map((img: string, j: number) => (
+                      <img
+                        key={j}
+                        src={img}
+                        alt={`${cert.name} ${j + 1}`}
+                        className="h-20 rounded-lg border border-white/10 object-cover cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => window.open(img, '_blank')}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -84,6 +106,17 @@ export default function Other() {
                 </div>
                 <span className="text-xs text-warm-faint font-mono">{intern.period}</span>
               </div>
+              {/* 实习图片 */}
+              {(intern as { company: string; role: string; period: string; work: string[]; achievements: string[]; image?: string }).image && (
+                <div className="mb-3">
+                  <img
+                    src={(intern as { company: string; role: string; period: string; work: string[]; achievements: string[]; image?: string }).image}
+                    alt={intern.company}
+                    className="h-24 rounded-lg border border-white/10 object-cover cursor-pointer hover:scale-105 transition-transform"
+                    onClick={() => window.open((intern as { company: string; role: string; period: string; work: string[]; achievements: string[]; image?: string }).image, '_blank')}
+                  />
+                </div>
+              )}
               <div className="space-y-2 mb-4">
                 {intern.work.map((item, i) => (
                   <div key={i} className="flex items-start gap-2">

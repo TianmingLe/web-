@@ -41,6 +41,9 @@ const projectMedia: Record<string, { src: string; type: 'image' | 'video'; capti
     { src: '/images/zhixin-ai-1.jpg', type: 'image', caption: '知心AI对话界面' },
     { src: '/images/zhixin-ai-2.jpg', type: 'image', caption: 'RAG检索流程' },
   ],
+  internlm_finetune: [
+    { src: 'https://s1.ax1x.com/2023/06/10/pm1KEIx.png', type: 'image', caption: '书生·浦语大模型实战营证书' },
+  ],
 }
 
 interface Phase {
