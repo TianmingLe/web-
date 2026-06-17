@@ -11,6 +11,9 @@
       "keywords": "智能眼镜、ESP32-S3、BLE音频、视觉特征提取、Flutter、FastAPI",
       "summary": "基于「轻眼镜+重后端」架构的智能眼镜系统，实现眼镜-手机-PC-云的多条链路。包含ESP32-S3固件（BLE音频/视觉特征提取）、Flutter移动应用、FastAPI后端和PC中继服务，支持断点续传与OTA升级。",
       "tags": ["ESP32-S3", "Flutter", "FastAPI", "TFLite Micro", "BLE", "WebSocket"],
+      "images": [
+        "https://s41.ax1x.com/2026/06/16/pm1KAd1.png"
+      ],
       "highlights": [
         "音频传输延迟<100ms",
         "视觉特征提取耗时<50ms，RAM占用<2MB",
@@ -35,6 +38,9 @@
       "keywords": "Spring AI、智能体、RAG、PGvector、MCP协议、ReAct模式",
       "summary": "基于Spring AI框架构建AI智能体应用，实现多轮情感咨询与自主规划两大核心功能。支持知识库问答、动态工具调用、任务自主分解执行，完成从用户指令到行动交付的完整闭环。",
       "tags": ["Spring AI", "RAG", "PGvector", "MCP", "ReAct", "Tool Calling"],
+      "images": [
+        "https://s41.ax1x.com/2026/06/16/pm1KZi6.png"
+      ],
       "highlights": [
         "RAG检索准确率92%",
         "工具调用成功率>98%",
